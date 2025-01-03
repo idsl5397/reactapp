@@ -11,13 +11,19 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@tailwindcss/typography": "^0.5.15",
+    "culori": "^4.0.1",
+    "daisyui": "^4.12.22",
+    "dayjs": "^1.11.13",
     "flowbite-react": "^0.10.2",
     "next": "15.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/culori": "^2.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,17 +1,17 @@
-import Base from "@/components/header"
-import Index from "@/app/home/page"
-import {Component} from "@/components/footer"
+'use client';
+import React from "react";
 
-export default function Home() {
-  return (
-      <div className="flex flex-col min-h-screen">
-          <Base/>
-          <div className="flex-grow">
-          <Index/>
-          </div>
-          <div className="fixed bottom-0 left-0 right-0">
-              <Component/>
-          </div>
-      </div>
-  );
+export default function Dashboard() {
+
+    return (
+        // <div className="flex flex-col min-h-screen">
+        <div>
+            <div className="flex-grow">
+
+                <h1>Welcome to the Dashboard!</h1>
+
+            </div>
+
+        </div>
+    );
 }
