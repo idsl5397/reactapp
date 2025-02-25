@@ -1,8 +1,53 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
+// import {EnterPrise} from "@/types/EnterPriseType";
+import axios from 'axios';
+
 export default function Register() {
+
+    const [data, setData] = useState([]); // 保存企業數據
+    const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業
+    const [selectedCompany, setSelectedCompany] = useState(""); // 選中的公司
+    const [companies, setCompanies] = useState([]); // 當前顯示的公司
+    const [factories, setFactories] = useState([]); // 當前顯示的工廠
+
+    // 請求 API 獲取企業數據
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:5013/Enterprise/GetEnterprise");
+                setData(response.data);
+            } catch (error) {
+                console.error("API 請求失敗:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // 當選擇企業時更新公司列表
+    const handleEnterpriseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const enterpriseId = e.target.value;
+        setSelectedEnterprise(enterpriseId);
+
+        // 根據選中的企業查找公司
+        const enterprise = data.find((ent) => ent.id === enterpriseId);
+        setCompanies(enterprise ? enterprise.children : []);
+        setFactories([]); // 重置工廠
+        setSelectedCompany(""); // 重置選中的公司
+    };
+
+    // 當選擇公司時更新工廠列表
+    const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const companyId = e.target.value;
+        setSelectedCompany(companyId);
+
+        // 根據選中的公司查找工廠
+        const company = companies.find((comp) => comp.id === companyId);
+        setFactories(company ? company.children : []);
+    };
+
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
@@ -19,7 +64,7 @@ export default function Register() {
                                     </label>
                                     <div className="mt-2">
                                         <div
-                                            className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                                            className="flex items-center rounded-md bg-white pl-1 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                             <div
                                                 className="shrink-0 select-none text-base text-gray-500 sm:text-sm/6">
                                             </div>
@@ -28,7 +73,7 @@ export default function Register() {
                                                 name="username"
                                                 type="email"
                                                 placeholder="輸入電子郵件"
-                                                className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+                                                className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 sm:text-sm/6"
                                             />
                                         </div>
                                     </div>
@@ -39,7 +84,7 @@ export default function Register() {
                                     </label>
                                     <div className="mt-2">
                                         <div
-                                            className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                                            className="flex items-center rounded-md bg-white pl-1 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                             <div
                                                 className="shrink-0 select-none text-base text-gray-500 sm:text-sm/6">
                                             </div>
@@ -59,7 +104,7 @@ export default function Register() {
                                     </label>
                                     <div className="mt-2">
                                         <div
-                                            className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                                            className="flex items-center rounded-md bg-white pl-1 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                             <div
                                                 className="shrink-0 select-none text-base text-gray-500 sm:text-sm/6">
                                             </div>
@@ -81,12 +126,16 @@ export default function Register() {
                                         <select
                                             id="enterprise"
                                             name="enterprise"
-                                            autoComplete="enterprise-name"
-                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                            value={selectedEnterprise}
+                                            onChange={handleEnterpriseChange}
+                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                                         >
-                                            <option>United States</option>
-                                            <option>Canada</option>
-                                            <option>Mexico</option>
+                                            <option value="">請選擇企業</option>
+                                            {data.map((enterprise) => (
+                                                <option key={enterprise.id} value={enterprise.id}>
+                                                    {enterprise.name}
+                                                </option>
+                                            ))}
                                         </select>
                                         <ChevronDownIcon
                                             aria-hidden="true"
@@ -102,12 +151,17 @@ export default function Register() {
                                         <select
                                             id="company"
                                             name="company"
-                                            autoComplete="company-name"
-                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                            value={selectedCompany}
+                                            onChange={handleCompanyChange}
+                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                            disabled={!companies.length} // 如果沒有公司數據則禁用
                                         >
-                                            <option>United States</option>
-                                            <option>Canada</option>
-                                            <option>Mexico</option>
+                                            <option value="">請選擇公司</option>
+                                            {companies.map((company) => (
+                                                <option key={company.id} value={company.id}>
+                                                    {company.name}
+                                                </option>
+                                            ))}
                                         </select>
                                         <ChevronDownIcon
                                             aria-hidden="true"
@@ -124,11 +178,15 @@ export default function Register() {
                                             id="factory"
                                             name="factory"
                                             autoComplete="factory-name"
-                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                            disabled={!factories.length} // 如果沒有工廠數據則禁用
                                         >
-                                            <option>United States</option>
-                                            <option>Canada</option>
-                                            <option>Mexico</option>
+                                            <option value="">請選擇工廠</option>
+                                            {factories.map((factory) => (
+                                                <option key={factory.id} value={factory.id}>
+                                                    {factory.name}
+                                                </option>
+                                            ))}
                                         </select>
                                         <ChevronDownIcon
                                             aria-hidden="true"
@@ -361,12 +419,12 @@ export default function Register() {
                     </div>
 
                     <div className="mt-6 flex items-center justify-end gap-x-6">
-                        <button type="button" className="text-sm/6 font-semibold text-gray-900">
+                        <button type="button" className="text-sm/6 font-semibold text-gray-900 btn btn-ghost">
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 btn btn-ghost"
                         >
                             Save
                         </button>
