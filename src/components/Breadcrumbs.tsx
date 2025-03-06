@@ -1,0 +1,34 @@
+import React from "react";
+
+interface BreadcrumbItem {
+    label: string;
+    href?: string;
+}
+
+interface BreadcrumbsProps {
+    items: BreadcrumbItem[];
+}
+
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
+    return (
+        <div className="breadcrumbs text-sm">
+            <ul className="flex space-x-2">
+                <a id="content" href="#" accessKey="c" tabIndex={0} title="中央內容區塊">:::</a>
+                {items.map((item, index) => (
+                    <li key={index} className="flex items-center">
+                        {item.href ? (
+                            <a href={item.href} className="text-blue-500 hover:underline">
+                                {item.label}
+                            </a>
+                        ) : (
+                            <span className="text-gray-500">{item.label}</span>
+                        )}
+                        {index < items.length - 1 }
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default Breadcrumbs;

@@ -21,9 +21,6 @@
   outline: 4px dashed #ff1493 !important;
   outline-offset: 2px !important;
 }
-input:focus {
-  outline: none;
-}
 
 /* 僅在鍵盤操作焦點時顯示輪廓 */
 input:focus-visible {
@@ -50,3 +47,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
+.process-steps{
+  width:100%;
+  text-align: center;
+  :global(.ant-progress){
+    width:100%
+  }
+  :global(.ant-progress .ant-progress-steps-item){
+    width:calc(20% - 2px) !important
+  }
+}

@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 // 從環境變數取得 API 基本 URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL||"https://api.isafe.org.tw";
+const API_URL = process.env.API || "http://127.0.0.1:5013";
+// const isDev = process.env.NODE_ENV === "development";
+// const Mydomain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
+const RAG_API = process.env.RAG_API || "http://127.0.0.1:5013";
 
 const nextConfig: NextConfig = {
     async rewrites() {
@@ -11,6 +14,12 @@ const nextConfig: NextConfig = {
                 destination: `${API_URL}/:path*`,  // 將路徑轉發到 API_URL
                 basePath: false,  // 停用 basePath 處理
                 locale: false,    // 停用 locale 處理
+            },
+            {
+                source: "/app/:path*",
+                destination: `${RAG_API}/:path*`,
+                basePath: false,
+                locale: false,
             },
         ];
     },

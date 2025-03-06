@@ -30,9 +30,9 @@ const products = [
         href: '/kpi',
         icon: PencilSquareIcon
     },
-    { name: '建立KPI報告', href: '#', icon: CursorArrowRaysIcon },
-    { name: '改善成果', href: '#', icon: CheckCircleIcon },
-    { name: '改善計畫', href: '#', icon: CalendarDateRangeIcon },
+    { name: '建立KPI報告', href: '/kpiReport', icon: CursorArrowRaysIcon },
+    { name: '改善報告書', href: '/improvement', icon: CheckCircleIcon },
+    { name: '委員回覆及改善計畫', href: '/actionPlan', icon: CalendarDateRangeIcon },
     { name: '報表', href: '/report', icon: ChartPieIcon },
 ]
 const account = [
@@ -47,15 +47,15 @@ export default function Example() {
 
     return (
         <div className="border-b border-gray-900/10">
-            <header className="bg-white">
-                <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6 lg:px-8">
+            <header className="bg-white"> {/*bg-[#E0E8FA]*/}
+                <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
                     <div className="flex lg:flex-1">
                         <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
                             <img
                                 alt=""
                                 src="/logo.svg"
-                                className="h-11 w-auto"
+                                className="h-11 w-auto md:h-8 lg:h-11"
                             />
                         </Link>
                     </div>
@@ -69,10 +69,15 @@ export default function Example() {
                             <Bars3Icon aria-hidden="true" className="size-8"/>
                         </button>
                     </div>
-                    <PopoverGroup className="hidden md:flex lg:gap-x-12">
+                    <PopoverGroup className="hidden md:flex md:gap-x-6 lg:gap-x-6">
                         <Link href="/" className="text-base font-semibold text-gray-900 btn btn-ghost">
                             首頁
                         </Link>
+
+                        <Link href="/direction" className="text-base font-semibold text-gray-900 btn btn-ghost">
+                            網站導覽
+                        </Link>
+
                         <Popover className="relative">
                             <PopoverButton
                                 className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
@@ -108,10 +113,6 @@ export default function Example() {
                             </PopoverPanel>
                         </Popover>
 
-
-                        <Link href="#" className="text-base font-semibold text-gray-900 btn btn-ghost">
-                            說明
-                        </Link>
                         <Popover className="relative">
                             <PopoverButton
                                 className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
@@ -144,20 +145,21 @@ export default function Example() {
                                 </div>
                             </PopoverPanel>
                         </Popover>
+                        <div className="hidden md:flex md:flex-1 md:justify-end lg:justify-end">
+                            <Link href="#" className="text-sm/6 font-semibold text-gray-900 btn btn-ghost">
+                                <UserCircleIcon className="h-8 w-8 text-gray-900"/>
+                                {/*Log in <span aria-hidden="true">&rarr;</span>*/}
+                            </Link>
+                        </div>
                     </PopoverGroup>
-                    
-                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <Link href="#" className="text-sm/6 font-semibold text-gray-900 btn btn-ghost">
-                            <UserCircleIcon className="h-8 w-8 text-gray-900"/>
-                            {/*Log in <span aria-hidden="true">&rarr;</span>*/}
-                        </Link>
-                    </div>
+
+
                 </nav>
                 <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
                     <div className="fixed inset-0 z-10"/>
                     <DialogPanel
                         className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                        <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                             <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
                                 <span className="sr-only">首頁</span>
                                 <img
@@ -184,6 +186,14 @@ export default function Example() {
                                     >
                                         首頁
                                     </Link>
+
+                                    <Link
+                                        href="/direction"
+                                        className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                    >
+                                        網站導覽
+                                    </Link>
+
                                     <Disclosure as="div" className="-mx-3">
                                         <DisclosureButton
                                             className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
@@ -205,12 +215,7 @@ export default function Example() {
                                         </DisclosurePanel>
                                     </Disclosure>
 
-                                    <Link
-                                        href="#"
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                    >
-                                        說明
-                                    </Link>
+
                                     <Disclosure as="div" className="-mx-3">
                                         <DisclosureButton
                                             className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">

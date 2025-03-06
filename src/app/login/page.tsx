@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from "next/navigation";
+import axios from 'axios';
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function Login() {
 
@@ -16,49 +18,43 @@ export default function Login() {
     const [userData, setUserData] = useState<UserData | null>(null);
     const router = useRouter();
 
+    const breadcrumbItems = [
+        { label: "首頁", href: "/" },
+        { label: "登入" }
+    ];
+
+    const api = axios.create({
+        baseURL: '/proxy', //  timeout: 10000  // 添加請求超時設置
+    });
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 阻止表單預設提交行為
 
         try {
-            const response = await fetch('https://localhost:7199/api/User/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
+            const response = await api.post('https://localhost:7199/api/User/login', {
+                username: username,
+                password: password,
             });
 
-            if (!response.ok) {
-                // 如果後端返回的狀態不是 200，則處理錯誤
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || '登陸失敗');
-                return;
-            }
-
-            const data = await response.json();
-            setUserData(data); // 儲存成功的用戶數據
-            setErrorMessage(''); // 清空錯誤訊息
-            router.push('/home');
+            // 登入成功，儲存用戶數據
+            setUserData(response.data);
+            setErrorMessage('');
+            router.push('/home'); // 導向首頁
         } catch (error) {
-            console.error('網路錯誤:', error);
-            setErrorMessage('網路錯誤，請稍後再試');
+            // Axios 會自動解析錯誤回應
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data?.message || '登陸失敗');
+            } else {
+                setErrorMessage('網路錯誤，請稍後再試');
+            }
         }
     };
     return (
         <>
-            {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
-            <div className="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">
-
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
+            <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
 
                     <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
@@ -131,5 +127,5 @@ export default function Login() {
                 </div>
             </div>
         </>
-    )
-}
+    );
+};

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Base from "@/components/header"
 import Component from "@/components/footer"
+import React from "react";
 
 
 /**
@@ -47,15 +48,14 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
       <div className="flex flex-col min-h-screen">
-        <Base/>
-
-        {children}
-        <Component/>
+          <Base/>
+          {children}
+          <Component/>
       </div>
 
       </body>
 
-</html>
-)
-  ;
+      </html>
+  )
+      ;
 }
