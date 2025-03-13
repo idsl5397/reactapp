@@ -12,10 +12,10 @@ interface BreadcrumbsProps {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
     return (
         <div className="breadcrumbs text-sm">
-            <ul className="flex space-x-2">
-                <a id="content" href="#" accessKey="c" tabIndex={0} title="中央內容區塊">:::</a>
+            <ul className="flex space-x-2 pl-2">
+                {/*<a id="content" href="#" accessKey="c" tabIndex={0} title="中央內容區塊">:::</a>*/}
                 {items.map((item, index) => (
-                    <li key={index} className="flex items-center">
+                    <li key={index} className="flex items-center ml-2">
                         {item.href ? (
                             <a href={item.href} className="text-blue-500 hover:underline">
                                 {item.label}

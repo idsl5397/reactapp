@@ -28,6 +28,10 @@ input:focus-visible {
   outline-offset: 2px !important;
 }
 
+a:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 2px !important;
+}
 
 .custom-select:focus-visible {
   outline: 4px dashed #ff1493 !important;

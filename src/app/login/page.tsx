@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from "next/navigation";
+import React, {useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
+import Cookies from 'js-cookie';
 
 export default function Login() {
 
     interface UserData {
         username: string;
         email: string;
+        token: string;
     }
 
-    const [username, setusername] = useState('');
+    const [usermail, setusermail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [userData, setUserData] = useState<UserData | null>(null);
-    const router = useRouter();
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
@@ -31,15 +31,19 @@ export default function Login() {
         event.preventDefault(); // 阻止表單預設提交行為
 
         try {
-            const response = await api.post('https://localhost:7199/api/User/login', {
-                username: username,
+            const token = Cookies.get('token');
+            const response = await api.post('/User/login', {
+                usermail: usermail,
                 password: password,
+                headers: {
+                    'Authorization': `Bearer ${token}` // 使用 Bearer Token
+                }
             });
-
             // 登入成功，儲存用戶數據
             setUserData(response.data);
+            Cookies.set('token', response.data.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
             setErrorMessage('');
-            router.push('/home'); // 導向首頁
+            window.location.replace('/home');
         } catch (error) {
             // Axios 會自動解析錯誤回應
             if (axios.isAxiosError(error) && error.response) {
@@ -51,6 +55,10 @@ export default function Login() {
     };
     return (
         <>
+            {/*<Head>*/}
+            {/*    <title>登入 - 績效指標平台</title>*/}
+            {/*    <meta name="description" content="登入您的平台帳號密碼" />*/}
+            {/*</Head>*/}
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
@@ -64,17 +72,20 @@ export default function Login() {
                 <div className="card bg-base-100 shadow-xl w-96 p-6 mr-4">
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit}>
+                            <h2 id="login-form-title" className="sr-only">
+                                登入表單
+                            </h2>
                             <div>
                                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                                    帳號
+                                    輸入信箱
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        id="username"
-                                        name="username"
-                                        type="text"
-                                        value={username}
-                                        onChange={(e) => setusername(e.target.value)}
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value={usermail}
+                                        onChange={(e) => setusermail(e.target.value)}
                                         required
                                         autoComplete="email"
                                         className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -85,7 +96,7 @@ export default function Login() {
                             <div className="pb-12">
                                 <div className="flex items-center justify-between">
                                     <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
-                                        密碼
+                                        輸入密碼
                                     </label>
                                     <div className="text-sm">
                                         <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
@@ -115,12 +126,13 @@ export default function Login() {
                                 </button>
                             </div>
                         </form>
-                        {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
+                        {errorMessage && <p role="alert" style={{color: 'red'}}>{errorMessage}</p>}
                         {userData && (
                             <div>
-                                <h2>登陸成功</h2>
+                                <h2 className="text-lg font-semibold mt-4">登入成功</h2>
                                 <p>用戶名: {userData.username}</p>
                                 <p>郵箱: {userData.email}</p>
+                                <p>JWT: {userData.token}</p>
                             </div>
                         )}
                     </div>

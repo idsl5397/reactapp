@@ -1,67 +1,224 @@
 'use client'
-import { useState } from 'react'
+import React, {useEffect, useState} from 'react'
+import Cookies from 'js-cookie';
 import {
     Dialog,
     DialogPanel,
     Disclosure,
     DisclosureButton, DisclosurePanel,
     Popover,
-    PopoverButton,
     PopoverGroup,
-    PopoverPanel,
 } from '@headlessui/react'
-import {
-    Bars3Icon,
-    ChartPieIcon,
-    CursorArrowRaysIcon,
-    FingerPrintIcon, UserCircleIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline'
+
+import * as Icon from '@heroicons/react/24/outline'
 import { ChevronDownIcon} from '@heroicons/react/20/solid'
-import ArrowRightEndOnRectangleIcon from "@heroicons/react/24/outline/ArrowRightEndOnRectangleIcon";
-import CheckCircleIcon from "@heroicons/react/24/outline/CheckCircleIcon";
-import CalendarDateRangeIcon from "@heroicons/react/24/outline/CalendarDateRangeIcon";
-import PencilSquareIcon from "@heroicons/react/24/outline/PencilSquareIcon";
 import Link from "next/link";
+import axios from "axios";
+import {Bars3Icon, FingerPrintIcon, XMarkIcon} from "@heroicons/react/24/outline";
+import Ava from "./avatar/avatarMenu";
+import ArrowRightEndOnRectangleIcon from "@heroicons/react/24/outline/ArrowRightEndOnRectangleIcon";
 
-const products = [
-    {
-        name: '新增/修改績效指標',
-        href: '/kpi',
-        icon: PencilSquareIcon
-    },
-    { name: '建立KPI報告', href: '/kpiReport', icon: CursorArrowRaysIcon },
-    { name: '改善報告書', href: '/improvement', icon: CheckCircleIcon },
-    { name: '委員回覆及改善計畫', href: '/actionPlan', icon: CalendarDateRangeIcon },
-    { name: '報表', href: '/report', icon: ChartPieIcon },
-]
-const account = [
-    { name: '登入帳號', href: '/login', icon: ArrowRightEndOnRectangleIcon },
-    { name: '新增帳號',href: '/register', icon: FingerPrintIcon },
+const illustrate = [
+    { name: '關於我們', href: '/about', icon: ArrowRightEndOnRectangleIcon },
+    { name: '網站導覽',href: '/direction', icon: FingerPrintIcon },
 
 ]
 
+interface MenuItem {
+    id: number;
+    label: string;
+    link: string;
+    icon: string | null;
+    parentId: number | null;
+    sortOrder: number;
+    isActive: number;
+    menuType: string;
+    children?: MenuItem[]; // 有可能會有 children
+}
 
-export default function Example() {
+const getIcon = (iconName: string | null) => {
+    if (iconName && Icon[iconName as keyof typeof Icon]) {
+        return React.createElement(Icon[iconName as keyof typeof Icon], { className: 'size-6 text-gray-600 group-hover:text-indigo-600' });
+    }
+    return null;
+};
+
+export default function Header() {
+    const [avatarMenuState, setAvatarMenuState] = useState<string | null>(null);
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [menu, setMenu] = useState<MenuItem[]>([]);
+    const api = axios.create({
+        baseURL: '/proxy', //  timeout: 10000  // 添加請求超時設置
+    });
 
-    return (
-        <div className="border-b border-gray-900/10">
-            <header className="bg-white"> {/*bg-[#E0E8FA]*/}
-                <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
-                    <div className="flex lg:flex-1">
-                        <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
-                            <span className="sr-only">首頁</span>
-                            <img
-                                alt=""
-                                src="/logo.svg"
-                                className="h-11 w-auto md:h-8 lg:h-11"
-                            />
-                        </Link>
-                    </div>
-                    <div className="flex md:hidden ml-auto">
-                        <button
-                            type="button"
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        setWindowWidth(window.innerWidth);
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        const token = Cookies.get('token')
+
+        api.get("/Menu/GetMenus", {
+            headers: {
+                Authorization: token ? `Bearer ${token}` : "", // 如果沒有 token，仍發送請求但不附帶 Authorization
+            },
+        })
+            .then((response) => {
+                setMenu(response.data);
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                    // 如果是 401，保持 menu 為空，不顯示錯誤訊息
+                    console.warn("未授權 (401)，不顯示選單");
+                    setMenu([]); // 確保選單為空
+                } else {
+                    console.error("獲取選單失敗:", error);
+                }
+            });
+    }, []);
+
+    if (windowWidth >= 768) {
+        return (
+            <>
+                <header className="bg-white shadow-md">
+                    <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
+                        <div className="flex lg:flex-1">
+                            <div className="flex lg:flex-1">
+                                <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
+                                    <span className="sr-only">首頁</span>
+                                    <img
+                                        alt=""
+                                        src="/logo.svg"
+                                        className="h-11 w-auto md:h-8 lg:h-11"
+                                    />
+                                </Link>
+                            </div>
+                        </div>
+
+                        <PopoverGroup className="hidden md:flex md:gap-x-3 lg:gap-x-5">
+                            {menu.map((item) => {
+                                if (item.children && item.children.length > 0) {
+                                    // 如果有 children，就渲染 Popover
+                                    return (
+
+                                        <Popover key={item.id} className="relative">
+                                            <Popover.Button
+                                                className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
+                                                {item.label}
+                                                <ChevronDownIcon aria-hidden="true"
+                                                                 className="size-5 flex-none text-gray-400"/>
+                                            </Popover.Button>
+
+                                            <Popover.Panel
+                                                transition
+                                                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+                                            >
+                                                <div className="p-4">
+                                                    {item.children.map((child) => (
+                                                        <div key={child.id}
+                                                             className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
+                                                            <div
+                                                                className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                                                {getIcon(child.icon)}
+                                                            </div>
+                                                            <div className="flex-auto">
+                                                                <Link href={child.link}
+                                                                      className="block font-semibold text-gray-900">
+                                                                    {child.label}
+                                                                    <span className="absolute inset-0"/>
+                                                                </Link>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Popover.Panel>
+                                        </Popover>
+                                    );
+                                } else {
+                                    // 如果沒有 children，就渲染普通的 Link
+                                    return (
+                                        <Link key={item.id} href={item.link}
+                                              className="text-base font-semibold text-gray-900 btn btn-ghost">
+                                            {item.label}
+                                        </Link>
+                                    );
+                                }
+                            })}
+                            <Popover className="relative">
+                                <Popover.Button
+                                    className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
+                                    說明
+                                    <ChevronDownIcon aria-hidden="true"
+                                                     className="size-5 flex-none text-gray-400"/>
+                                </Popover.Button>
+
+                                <Popover.Panel
+                                    transition
+                                    className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+                                >
+                                    <div className="p-4">
+                                        {illustrate.map((item) => (
+                                            <div
+                                                key={item.name}
+                                                className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
+                                            >
+                                                <div
+                                                    className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                                    <item.icon aria-hidden="true"
+                                                               className="size-6 text-gray-600 group-hover:text-indigo-600"/>
+                                                </div>
+                                                <div className="flex-auto">
+                                                    <Link href={item.href}
+                                                          className="block font-semibold text-gray-900">
+                                                        {item.name}
+                                                        <span className="absolute inset-0"/>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Popover.Panel>
+                            </Popover>
+                        </PopoverGroup>
+
+                        <Ava
+                            // name={localStorage.getItem("token") ? JSON.parse(atob(localStorage.getItem("token")!.split(".")[1])).name : "Guest"}
+                            name="使用者"
+                            state={avatarMenuState}
+                            setState={setAvatarMenuState}
+                        />
+                    </nav>
+                </header>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <header className="bg-white shadow-md"> {/*bg-[#E0E8FA]*/}
+                    <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
+                        <div className="flex lg:flex-1">
+                            <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
+                                <span className="sr-only">首頁</span>
+                                <img
+                                    alt=""
+                                    src="/logo.svg"
+                                    className="h-11 w-auto md:h-8 lg:h-11"
+                                />
+                            </Link>
+                        </div>
+                        <div className="flex md:hidden ml-auto">
+
+                            <button
+                                type="button"
                             onClick={() => setMobileMenuOpen(true)}
                             className="-m-2.5 inline-flex items-center rounded-md p-2.5 text-gray-700"
                         >
@@ -69,187 +226,102 @@ export default function Example() {
                             <Bars3Icon aria-hidden="true" className="size-8"/>
                         </button>
                     </div>
-                    <PopoverGroup className="hidden md:flex md:gap-x-6 lg:gap-x-6">
-                        <Link href="/" className="text-base font-semibold text-gray-900 btn btn-ghost">
-                            首頁
-                        </Link>
-
-                        <Link href="/direction" className="text-base font-semibold text-gray-900 btn btn-ghost">
-                            網站導覽
-                        </Link>
-
-                        <Popover className="relative">
-                            <PopoverButton
-                                className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
-                                績效指標
-                                <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400"/>
-                            </PopoverButton>
-
-                            <PopoverPanel
-                                transition
-                                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-                            >
-
-                                <div className="p-4">
-                                    {products.map((item) => (
-                                        <div
-                                            key={item.name}
-                                            className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
-                                        >
-                                            <div
-                                                className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                                <item.icon aria-hidden="true"
-                                                           className="size-6 text-gray-600 group-hover:text-indigo-600"/>
-                                            </div>
-                                            <div className="flex-auto">
-                                                <Link href={item.href} className="block font-semibold text-gray-900">
-                                                    {item.name}
-                                                    <span className="absolute inset-0"/>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </PopoverPanel>
-                        </Popover>
-
-                        <Popover className="relative">
-                            <PopoverButton
-                                className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
-                                帳號管理
-                                <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400"/>
-                            </PopoverButton>
-                            <PopoverPanel
-                                transition
-                                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-                            >
-                                <div className="p-4">
-                                    {account.map((item) => (
-                                        <div
-                                            key={item.name}
-                                            className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
-                                        >
-                                            <div
-                                                className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                                <item.icon aria-hidden="true"
-                                                           className="size-6 text-gray-600 group-hover:text-indigo-600"/>
-                                            </div>
-                                            <div className="flex-auto">
-                                                <Link href={item.href} className="block font-semibold text-gray-900">
-                                                    {item.name}
-                                                    <span className="absolute inset-0"/>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </PopoverPanel>
-                        </Popover>
-                        <div className="hidden md:flex md:flex-1 md:justify-end lg:justify-end">
-                            <Link href="#" className="text-sm/6 font-semibold text-gray-900 btn btn-ghost">
-                                <UserCircleIcon className="h-8 w-8 text-gray-900"/>
-                                {/*Log in <span aria-hidden="true">&rarr;</span>*/}
-                            </Link>
-                        </div>
-                    </PopoverGroup>
-
-
                 </nav>
                 <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                    <div className="fixed inset-0 z-10"/>
-                    <DialogPanel
-                        className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                    <div className="flex items-center justify-between">
-                            <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
-                                <span className="sr-only">首頁</span>
-                                <img
-                                    alt=""
-                                    src="/logo.svg"
-                                    className="h-11 w-auto"
-                                />
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="-m-2.5 rounded-md p-2.5 text-gray-700"
-                            >
-                                <span className="sr-only">Close menu</span>
-                                <XMarkIcon aria-hidden="true" className="size-6" />
-                            </button>
-                        </div>
-                        <div className="mt-6 flow-root">
-                            <div className="-my-6 divide-y divide-gray-500/10">
-                                <div className="space-y-2 py-6">
-                                    <Link
-                                        href="/"
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                    >
-                                        首頁
+                            <div className="fixed inset-0 z-10"/>
+                            <DialogPanel
+                                className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                                <div className="flex items-center justify-between">
+                                    <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
+                                        <span className="sr-only">首頁</span>
+                                        <img
+                                            alt=""
+                                            src="/logo.svg"
+                                            className="h-11 w-auto"
+                                        />
                                     </Link>
-
-                                    <Link
-                                        href="/direction"
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                    <button
+                                        type="button"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="-m-2.5 rounded-md p-2.5 text-gray-700"
                                     >
-                                        網站導覽
-                                    </Link>
-
-                                    <Disclosure as="div" className="-mx-3">
-                                        <DisclosureButton
-                                            className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
-                                            績效指標
-                                            <ChevronDownIcon aria-hidden="true"
-                                                             className="size-5 flex-none group-data-[open]:rotate-180"/>
-                                        </DisclosureButton>
-                                        <DisclosurePanel className="mt-2 space-y-2">
-                                            {products.map((item) => (
-                                                <DisclosureButton
-                                                    key={item.name}
-                                                    as="a"
-                                                    href={item.href}
-                                                    className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                                >
-                                                    {item.name}
-                                                </DisclosureButton>
-                                            ))}
-                                        </DisclosurePanel>
-                                    </Disclosure>
-
-
-                                    <Disclosure as="div" className="-mx-3">
-                                        <DisclosureButton
-                                            className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
-                                            帳號管理
-                                            <ChevronDownIcon aria-hidden="true"
-                                                             className="size-5 flex-none group-data-[open]:rotate-180"/>
-                                        </DisclosureButton>
-                                        <DisclosurePanel className="mt-2 space-y-2">
-                                            {account.map((item) => (
-                                                <DisclosureButton
-                                                    key={item.name}
-                                                    as="a"
-                                                    href={item.href}
-                                                    className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                                >
-                                                    {item.name}
-                                                </DisclosureButton>
-                                            ))}
-                                        </DisclosurePanel>
-                                    </Disclosure>
+                                        <span className="sr-only">Close menu</span>
+                                        <XMarkIcon aria-hidden="true" className="size-6"/>
+                                    </button>
                                 </div>
-                                <div className="py-6">
-                                    <Link
-                                        href="#"
-                                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                    >
-                                        Log in
-                                    </Link>
+                                <div className="mt-6 flow-root">
+                                    <div className="-my-6 divide-y divide-gray-500/10">
+                                        <div className="space-y-2 py-6">
+                                            {menu.map((item) => {
+                                                if (item.children && item.children.length > 0) {
+                                                    return (
+                                                        <Disclosure key={item.id} as="div" className="-mx-3">
+                                                            <DisclosureButton
+                                                                className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                                                                {item.label}
+                                                                <ChevronDownIcon aria-hidden="true"
+                                                                                 className="size-5 flex-none group-data-[open]:rotate-180"/>
+                                                            </DisclosureButton>
+                                                            <DisclosurePanel className="mt-2 space-y-2">
+                                                                {item.children.map((child) => (
+                                                                    <DisclosureButton
+                                                                        key={child.id}
+                                                                        as="a"
+                                                                        href={child.link}
+                                                                        className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                                    >
+                                                                        {child.label}
+                                                                    </DisclosureButton>
+                                                                ))}
+                                                            </DisclosurePanel>
+                                                        </Disclosure>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <Link
+                                                            key={item.id} href={item.link}
+                                                            className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                        >
+                                                            {item.label}
+                                                        </Link>
+                                                    );
+                                                }
+                                            })}
+                                            <Disclosure as="div" className="-mx-3">
+                                                <DisclosureButton
+                                                    className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                                                    說明
+                                                    <ChevronDownIcon aria-hidden="true"
+                                                                     className="size-5 flex-none group-data-[open]:rotate-180"/>
+                                                </DisclosureButton>
+                                                <DisclosurePanel className="mt-2 space-y-2">
+                                                    {illustrate.map((item) => (
+                                                        <DisclosureButton
+                                                            key={item.name}
+                                                            as="a"
+                                                            href={item.href}
+                                                            className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                        >
+                                                            {item.name}
+                                                        </DisclosureButton>
+                                                    ))}
+                                                </DisclosurePanel>
+                                            </Disclosure>
+                                        </div>
+                                        <div className="py-6">
+                                            <Link
+                                                href="#"
+                                                className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                            >
+                                                登入
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </DialogPanel>
-                </Dialog>
-            </header>
-        </div>
+                            </DialogPanel>
+                        </Dialog>
+                </header>
+            </>
     )
-}
+    }
+    }
