@@ -1,9 +1,9 @@
 name: Next.js Docker Build and Push
 on:
   push:
-    branches: [ "main" ]  # 當推送到 main 分支時觸發
+    branches: [ "master" ]  # 當推送到 main 分支時觸發
   pull_request:
-    branches: [ "main" ]  # 當對 main 分支發起 PR 時觸發
+    branches: [ "master" ]  # 當對 main 分支發起 PR 時觸發
   workflow_dispatch:  # 允許手動觸發
 
 jobs:
