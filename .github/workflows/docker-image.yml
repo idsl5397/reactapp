@@ -32,5 +32,5 @@ jobs:
         tags: piau880906/frontend:latest
         build-args: |
           NODE_ENV=production
-        cache-from: type=registry,ref=s225002731650/ishafrontend:buildcache
-        cache-to: type=registry,ref=s225002731650/ishafrontend:buildcache,mode=max
+        cache-from: type=registry,ref=piau880906/frontend:buildcache
+        cache-to: type=registry,ref=piau880906/frontend:buildcache,mode=max
