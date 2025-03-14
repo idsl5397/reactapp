@@ -19,10 +19,4 @@ export const userService = {
             return null;
         }
     },
-    Signup : async (usermail:string,password:string) => {
-
-    },
-    PasswordChange : async (usermail:string,password:string) => {
-
-    }
 }
