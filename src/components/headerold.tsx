@@ -42,7 +42,7 @@ const account = [
 
 export default function Example() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [menu, setMenu] = useState([]);
+    const [_menu, setMenu] = useState([]);
     const api = axios.create({
         baseURL: '/proxy', //  timeout: 10000  // 添加請求超時設置
     });

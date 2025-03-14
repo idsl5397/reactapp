@@ -72,17 +72,6 @@ const GridExample = () => {
 
     const [editingRow, setEditingRow] = useState<number | null>(null);
 
-    const handleEditClick = (id: number) => {
-        setEditingRow(id);
-    };
-
-    const handleInputChange = (id: number, field: keyof IRow, value: string) => {
-        setRowData((prev) =>
-            prev.map((row) =>
-                row.id === id ? { ...row, [field]: value } : row
-            )
-        );
-    };
 
     const handleSave = () => {
         setEditingRow(null);

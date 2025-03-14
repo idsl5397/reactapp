@@ -1,6 +1,6 @@
-'use client';
 
-export default function kpiReport(){
+
+export default function page(){
 
 
     return (

@@ -37,17 +37,7 @@ interface Step2Props {
     selectedFactory: string | null;
     enterpriseTree: Enterprise[] | null; // 企業結構樹
 }
-const Step2funtion: Step2Props = {
-    setEnterpriseTree: () => {}, // 這是一個空的函式範例，實際情況應該是 setState 函式
-    setSelectedEnterprise: () => {}, // 這是選擇企業的設置函式，實際情況應該是 setState 函式
-    setSelectedCompany: () => {}, // 同上，設置選擇公司
-    setSelectedFactory: () => {}, // 同上，設置選擇工廠
-    companyId: null, // 可以為 null，表示沒有選擇的公司
-    selectedEnterprise: null, // 同上，選擇的企業
-    selectedCompany: null, // 同上，選擇的公司
-    selectedFactory: null, // 同上，選擇的工廠
-    enterpriseTree: [{ Id: "", Name: "", Children: [] }],
-};
+
 
 
 // 步驟容器組件
@@ -425,8 +415,8 @@ export default function Steps() {
     const [currentStep, setCurrentStep] = useState(1); //預設第一步
 
     const [email, setEmail] = useState("");
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [_error, setError] = useState("");
+    const [_isLoading, setIsLoading] = useState(false);
     const modalRef = useRef<HTMLDialogElement>(null);
     const [companyId, setCompanyId] = useState<number | null>(null);
 

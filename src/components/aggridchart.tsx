@@ -15,7 +15,7 @@ function getSuggestionData() {
 
 export default function SuggestionPieChart() {
     const data = getSuggestionData(); // 取得數據
-    // const totalCount = data.reduce((sum, item) => sum + item.count, 0); // 計算總數量
+
 
     const options: AgChartOptions = useMemo(() => ({
         data,

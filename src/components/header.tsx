@@ -1,4 +1,3 @@
-'use client'
 import React, {useEffect, useState} from 'react'
 import Cookies from 'js-cookie';
 import {
@@ -53,13 +52,13 @@ export default function Header() {
         baseURL: '/proxy', //  timeout: 10000  // 添加請求超時設置
     });
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState<number>(0);
 
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
         };
-        setWindowWidth(window.innerWidth);
+        handleResize(); // 設定初始值
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
