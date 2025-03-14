@@ -34,12 +34,22 @@ export default function Login() {
         try {
 
             const response = await userService.Login(usermail,password)
-            // 登入成功，儲存用戶數據
-            setUserData(response.data);
-            Cookies.set('name', response.data.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
-            Cookies.set('token', response.data.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
-            setErrorMessage('');
-            window.location.replace('/home');
+            if (response.success && response.username && response.email && response.token) {
+                // 登入成功，儲存用戶數據
+                setUserData({
+                    username: response.username,
+                    email: response.email,
+                    token: response.token
+                });
+                Cookies.set('name', response.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
+                Cookies.set('token', response.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
+                setErrorMessage('');
+                window.location.replace('/home');
+            }
+            else {
+                setErrorMessage(response.message);
+            }
+
         } catch (error) {
             // Axios 會自動解析錯誤回應
             if (axios.isAxiosError(error) && error.response) {
