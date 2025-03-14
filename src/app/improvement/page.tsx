@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise from "@/components/selectEnterprise";
+import SelectEnterprise from "@/components/select/selectEnterprise";
 
 export default function improvement(){
 

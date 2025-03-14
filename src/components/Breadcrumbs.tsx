@@ -8,12 +8,13 @@ interface BreadcrumbItem {
 interface BreadcrumbsProps {
     items: BreadcrumbItem[];
 }
+import {HomeIcon} from "@heroicons/react/24/outline";
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
     return (
         <div className="breadcrumbs text-sm">
             <ul className="flex space-x-2 pl-2">
-                {/*<a id="content" href="#" accessKey="c" tabIndex={0} title="中央內容區塊">:::</a>*/}
+                <HomeIcon aria-hidden="true" className="size-4"/>
                 {items.map((item, index) => (
                     <li key={index} className="flex items-center ml-2">
                         {item.href ? (

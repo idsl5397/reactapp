@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {enterpriseService} from "@/services/selectCompany";
 import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
 
-export default function selectEnterprise() {
+export default function SelectEnterprise() {
     const [data, setData] = useState<Enterprise[]>([]); // 保存企業數據
     const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業
     const [selectedCompany, setSelectedCompany] = useState(""); // 選中的公司

@@ -1,3 +1,4 @@
+'use client';
 // import type { Metadata } from "next";
 import 'focus-visible';
 import { Geist, Geist_Mono } from "next/font/google";
@@ -34,28 +35,63 @@ const geistMono = Geist_Mono({
  * @property {string} title 應用的標題
  * @property {string} description 應用的描述
  */
+const appMetadata = {
+    title: '績效指標平台',
+    description: '這是一個績效指標平台'
+};
 
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-      <html lang="en" data-theme="fantasy">
+export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
+    return (
+        <html lang="zh-TW" data-theme="fantasy">
+        <title>{appMetadata.title}</title>
+        <meta name="description" content={appMetadata.description}/>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="flex flex-col min-h-screen">
+            <a
+                href="#"
+                accessKey="U"
+                tabIndex={0}
+                title="上方功能服務選項區"
+                className="invisible absolute"
+                // onFocus={(e) => e.target.classList.remove("invisible")}
+                // onBlur={(e) => e.target.classList.add("invisible")}
+            >
+                :::
+            </a>
+            <header>
+                <Base/>
+            </header>
+            <a
+                id="skip-to-content"
+                href="#center"
+                accessKey="C"
+                tabIndex={0}
+                title="跳轉到中央內容區塊"
+                className="invisible absolute"
+            >
+                :::
+            </a>
 
-      <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-      <div className="flex flex-col min-h-screen">
-          <Base/>
-          {children}
-          <Component/>
-      </div>
+            <main id="center" className="flex-1">
+                {children}
+            </main>
+            <a
+                id="skip-to-footer"
+                href="#footer"
+                accessKey="B"
+                tabIndex={0}
+                title="跳轉到下方功能區塊"
+                className="invisible absolute"
+            >
+                :::
+            </a>
+            <footer id="footer">
+                <Component/>
+            </footer>
+        </div>
+        </body>
+        </html>
 
-      </body>
-
-      </html>
-  )
-      ;
+    );
 }

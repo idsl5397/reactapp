@@ -22,7 +22,7 @@ import {enterpriseService} from "@/services/selectCompany";
 //     factoryName: string;
 // }
 
-export default function page() {
+export default function Detialreg() {
 
     const [data, setData] = useState<Enterprise[]>([]); // 保存企業數據
     const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業

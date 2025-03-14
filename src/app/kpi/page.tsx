@@ -3,7 +3,9 @@
 import React, {useState} from 'react';
 import Aggrid from "@/components/aggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise from "@/components/selectEnterprise";
+import SelectEnterprise from "@/components/select/selectEnterprise";
+import Link from 'next/link';
+
 
 const categories = [
     { id: "process", name: "製程安全管理" },
@@ -30,7 +32,27 @@ export default function Kpi() {
                     <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
                         新增/修改績效指標
                     </h1>
+                    <div className="flex justify-end gap-x-8">
+                        <Link href="/kpi/newkpi">
+                            <button
+                                type="button"
+                                className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
+                            >
+                                新增指標
+                            </button>
+                        </Link>
+                    </div>
                     <SelectEnterprise/>
+                    <div className="flex justify-end gap-x-8">
+                        <Link href="/kpi/newkpi">
+                            <button
+                                type="button"
+                                className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
+                            >
+                                查詢
+                            </button>
+                        </Link>
+                    </div>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="w-full mx-auto">
                             {/* 第一層：Tab 切換主要類別 */}

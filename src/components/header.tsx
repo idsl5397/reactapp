@@ -17,6 +17,7 @@ import axios from "axios";
 import {Bars3Icon, FingerPrintIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import Ava from "./avatar/avatarMenu";
 import ArrowRightEndOnRectangleIcon from "@heroicons/react/24/outline/ArrowRightEndOnRectangleIcon";
+import Image from 'next/image';
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: ArrowRightEndOnRectangleIcon },
@@ -66,7 +67,6 @@ export default function Header() {
 
     useEffect(() => {
         const token = Cookies.get('token')
-
         api.get("/Menu/GetMenus", {
             headers: {
                 Authorization: token ? `Bearer ${token}` : "", // 如果沒有 token，仍發送請求但不附帶 Authorization
@@ -95,10 +95,12 @@ export default function Header() {
                             <div className="flex lg:flex-1">
                                 <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
                                     <span className="sr-only">首頁</span>
-                                    <img
-                                        alt=""
+                                    <Image
+                                        alt="Logo"
                                         src="/logo.svg"
                                         className="h-11 w-auto md:h-8 lg:h-11"
+                                        width={100} // 設定寬度
+                                        height={40} // 設定高度
                                     />
                                 </Link>
                             </div>
@@ -191,8 +193,7 @@ export default function Header() {
                         </PopoverGroup>
 
                         <Ava
-                            // name={localStorage.getItem("token") ? JSON.parse(atob(localStorage.getItem("token")!.split(".")[1])).name : "Guest"}
-                            name="使用者"
+                            name={Cookies.get('name') || '使用者'}
                             state={avatarMenuState}
                             setState={setAvatarMenuState}
                         />
@@ -208,10 +209,12 @@ export default function Header() {
                         <div className="flex lg:flex-1">
                             <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
                                 <span className="sr-only">首頁</span>
-                                <img
+                                <Image
                                     alt=""
                                     src="/logo.svg"
                                     className="h-11 w-auto md:h-8 lg:h-11"
+                                    width={100} // 設定寬度
+                                    height={40} // 設定高度
                                 />
                             </Link>
                         </div>
@@ -234,10 +237,12 @@ export default function Header() {
                                 <div className="flex items-center justify-between">
                                     <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
                                         <span className="sr-only">首頁</span>
-                                        <img
+                                        <Image
                                             alt=""
                                             src="/logo.svg"
                                             className="h-11 w-auto"
+                                            width={100} // 設定寬度
+                                            height={40} // 設定高度
                                         />
                                     </Link>
                                     <button

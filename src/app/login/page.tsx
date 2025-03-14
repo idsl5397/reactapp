@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Cookies from 'js-cookie';
+import {userService} from "@/services/userServices";
 
 export default function Login() {
 
@@ -31,16 +32,11 @@ export default function Login() {
         event.preventDefault(); // 阻止表單預設提交行為
 
         try {
-            const token = Cookies.get('token');
-            const response = await api.post('/User/login', {
-                usermail: usermail,
-                password: password,
-                headers: {
-                    'Authorization': `Bearer ${token}` // 使用 Bearer Token
-                }
-            });
+
+            const response = await userService.Login(usermail,password)
             // 登入成功，儲存用戶數據
             setUserData(response.data);
+            Cookies.set('name', response.data.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
             Cookies.set('token', response.data.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
             setErrorMessage('');
             window.location.replace('/home');
