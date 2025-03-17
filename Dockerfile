@@ -25,7 +25,8 @@ COPY . .
 # 構建應用
 ARG NEXT_PUBLIC_API_URL=https://api.isafe.org.tw
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
+ARG API=http://frontend:8080
+ENV API=${API}
 RUN yarn build
 
 # 運行階段
