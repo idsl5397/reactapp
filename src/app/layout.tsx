@@ -49,7 +49,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="flex flex-col min-h-screen">
             <a
-                href="#"
+                href="#top"
                 accessKey="U"
                 tabIndex={0}
                 title="上方功能服務選項區"

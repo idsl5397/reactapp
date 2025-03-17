@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Cookies from 'js-cookie';
@@ -21,6 +21,7 @@ export default function Login() {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState<boolean>(false); // 控制驗證狀態
+    const turnstile = useRef<any>(null);
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
@@ -30,6 +31,7 @@ export default function Login() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 阻止表單預設提交行為
+        setErrorMessage('');
 
         // 檢查 Turnstile 驗證是否完成
         if (!captchaToken) {
@@ -79,6 +81,7 @@ export default function Login() {
             }
         } finally {
             setIsVerifying(false); // 完成請求後，解除驗證狀態
+            turnstile.current?.reset();
         }
     };
     return (
@@ -146,6 +149,7 @@ export default function Login() {
                                     options={{
                                         language: "zh-TW",
                                     }}
+                                    ref={turnstile}
                                     siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"
                                     onSuccess={(token) => setCaptchaToken(token)} // 取得驗證 Token
                                     onError={() => setErrorMessage("驗證失敗，請重試")}
