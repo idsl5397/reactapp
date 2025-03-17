@@ -1,9 +1,11 @@
-import Direction from "@/components/Help/Direction";
+import About from "@/components/Help/About";
 
 
 export default function page(){
 
     return (
-        <Direction/>
+        <>
+        <About/>
+        </>
     )
 }

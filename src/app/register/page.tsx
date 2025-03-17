@@ -1,5 +1,5 @@
 
-import Steps from "@/components/register/Steps";
+import Steps from "@/components/Auth/Steps";
 
 
 export default function page()

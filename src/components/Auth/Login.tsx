@@ -5,6 +5,7 @@ import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Cookies from 'js-cookie';
 import {userService} from "@/services/userServices";
+import {Turnstile} from "@marsidev/react-turnstile";
 
 export default function Login() {
 
@@ -18,6 +19,8 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [userData, setUserData] = useState<UserData | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [isVerifying, setIsVerifying] = useState<boolean>(false); // 控制驗證狀態
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
@@ -28,7 +31,27 @@ export default function Login() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 阻止表單預設提交行為
 
+        // 檢查 Turnstile 驗證是否完成
+        if (!captchaToken) {
+            setErrorMessage("請先完成驗證");
+            return;
+        }
+
         try {
+            setIsVerifying(true); // 設置驗證進行中，避免重複請求
+
+            // **Step 1: 驗證 Turnstile Captcha**
+            const captchaResponse = await axios.post(
+                "/api/verify",
+                { token: captchaToken }, // 送出 Captcha Token
+                { headers: { "Content-Type": "application/json" } }
+            );
+
+            if (!captchaResponse.data.success) {
+                setErrorMessage("驗證失敗，請重新嘗試");
+                setIsVerifying(false);
+                return;
+            }
 
             const response = await userService.Login(usermail,password)
             if (response.success && response.username && response.email && response.token) {
@@ -54,14 +77,12 @@ export default function Login() {
             } else {
                 setErrorMessage('網路錯誤，請稍後再試');
             }
+        } finally {
+            setIsVerifying(false); // 完成請求後，解除驗證狀態
         }
     };
     return (
         <>
-            {/*<Head>*/}
-            {/*    <title>登入 - 績效指標平台</title>*/}
-            {/*    <meta name="description" content="登入您的平台帳號密碼" />*/}
-            {/*</Head>*/}
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
@@ -120,12 +141,24 @@ export default function Login() {
                                     />
                                 </div>
                             </div>
+                            <div className="mt-4 flex justify-center">
+                                <Turnstile
+                                    options={{
+                                        language: "zh-TW",
+                                    }}
+                                    siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"
+                                    onSuccess={(token) => setCaptchaToken(token)} // 取得驗證 Token
+                                    onError={() => setErrorMessage("驗證失敗，請重試")}
+                                    onExpire={() => setCaptchaToken(null)} // 驗證過期時清除 Token
+                                />
+                            </div>
                             <div className="grid gap-x-8">
                                 <button
                                     type="submit"
+                                    disabled={isVerifying}
                                     className="flex btn btn-primary w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm "
                                 >
-                                    登入
+                                    {isVerifying ? "驗證中..." : "登入"}
                                 </button>
                             </div>
                         </form>
