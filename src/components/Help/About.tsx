@@ -41,8 +41,8 @@ export default function Direction(){
                             <h2 className="mt-6 text-lg font-semibold text-gray-800">使用對象</h2>
                             <ul className="list-disc pl-6 space-y-2 text-gray-700">
                                 <li>政府單位：負責監管企業績效並制定安全政策</li>
-                                <li>企業管理者：查閱績效指標與工安改善建議</li>
-                                <li>工安審查委員：記錄與提交審查意見</li>
+                                <li>企業管理者：查閱與上傳績效指標與改善建議狀況</li>
+                                <li>工安審查委員：查看提交之審查意見</li>
                             </ul>
 
                             <p className="mt-4 text-gray-700">
