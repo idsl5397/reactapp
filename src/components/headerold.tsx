@@ -28,7 +28,7 @@ import Image from 'next/image';
 
 const products = [
     { name: '新增/修改績效指標', href: '/kpi', icon: PencilSquareIcon},
-    { name: '建立KPI報告', href: '/kpiReport', icon: CursorArrowRaysIcon },
+    { name: '建立KPI報告', href: '/reportEntry', icon: CursorArrowRaysIcon },
     { name: '改善報告書', href: '/improvement', icon: CheckCircleIcon },
     { name: '委員回覆及改善計畫', href: '/actionPlan', icon: CalendarDateRangeIcon },
     { name: '報表', href: '/report', icon: ChartPieIcon },

@@ -1,4 +1,4 @@
-import Suggest from "@/components/KPI/Suggest";
+import Suggest from "@/components/Suggest/Suggest";
 
 
 export default function page(){

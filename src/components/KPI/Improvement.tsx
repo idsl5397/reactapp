@@ -7,6 +7,7 @@ export default function Improvement(){
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
+        { label: "建立報告" , href: "/reportEntry" },
         { label: "改善報告書" }
     ];
 

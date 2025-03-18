@@ -44,7 +44,7 @@ export default function KPI() {
                     </div>
                     <SelectEnterprise/>
                     <div className="flex justify-end gap-x-8">
-                        <Link href="/kpi/newkpi">
+                        <Link href=" ">
                             <button
                                 type="button"
                                 className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
@@ -80,7 +80,7 @@ export default function KPI() {
                                     className={`join-item btn ${activeType === "custom" ? "btn-active btn-primary" : "btn-ghost"}`}
                                     onClick={() => setActiveType("custom")}
                                 >
-                                    課制型指標
+                                    課製型指標
                                 </button>
                             </div>
 

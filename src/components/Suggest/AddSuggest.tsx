@@ -11,7 +11,7 @@ export default function AddKPI() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "建立報告" , href: "/reportEntry" },
-        { label: "新增績效指標"}
+        { label: "新增委員建議"}
     ];
 
     return (
@@ -22,7 +22,7 @@ export default function AddKPI() {
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
                     <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                        新增績效指標
+                        新增委員建議
                     </h1>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -47,7 +47,7 @@ export default function AddKPI() {
                                 <Aggrid/>
                             </div>
                             <div className="flex justify-end gap-x-8">
-                                <Link href=" ">
+                                <Link href="">
                                     <button
                                         type="button"
                                         className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
