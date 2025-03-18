@@ -6,6 +6,65 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise from "@/components/select/selectEnterprise";
 import Link from 'next/link';
 
+const rowData = [
+    {
+        id: 1,
+        company: "中油石化事業部",
+        factory: "新三輕組",
+        indicator: "製程安全資訊之完整性",
+        indicatorDetail: "實際具備製程安全資訊文件數",
+        department: "件",
+        isApplied: "是",
+        baselineYear: "110年",
+        baselineValue: "18",
+        q1Status: "16",
+        q3Status: "18",
+        targetValue: "18"
+    },
+    {
+        id: 2,
+        company: "中油石化事業部",
+        factory: "新三輕組",
+        indicator: "製程安全資訊之完整性",
+        indicatorDetail: "勞工參與製程安全管理提案已改善之件數",
+        department: "件",
+        isApplied: "是",
+        baselineYear: "110年",
+        baselineValue: "199",
+        q1Status: "160",
+        q3Status: "94",
+        targetValue: "60"
+    },
+    {
+        id: 3,
+        company: "中油石化事業部",
+        factory: "新三輕組",
+        indicator: "製程安全資訊之完整性",
+        indicatorDetail: "實際參與製程安全管理活動總人次",
+        department: "人",
+        isApplied: "是",
+        baselineYear: "110年",
+        baselineValue: "129",
+        q1Status: "129",
+        q3Status: "129",
+        targetValue: "129"
+    }
+];
+
+const columnDefs = [
+    { field: "id", headerName: "編號" },
+    { field: "company", headerName: "公司" },
+    { field: "factory", headerName: "工廠/製程廠" },
+    { field: "indicator", headerName: "指標項目" },
+    { field: "indicatorDetail", headerName: "指標細項" },
+    { field: "department", headerName: "單位" },
+    { field: "isApplied", headerName: "是否應用" },
+    { field: "baselineYear", headerName: "基線值數據年限" },
+    { field: "baselineValue", headerName: "基線值" },
+    { field: "q1Status", headerName: "111年Q1執行狀況" },
+    { field: "q3Status", headerName: "111年Q3執行狀況" },
+    { field: "targetValue", headerName: "目標值" }
+];
 
 const categories = [
     { id: "process", name: "製程安全管理" },
@@ -98,7 +157,7 @@ export default function KPI() {
 
                             {/* AgGrid 表格 */}
                             <div className="mt-6 px-4 lg:px-6">
-                                <Aggrid/>
+                                <Aggrid rowData={rowData} columnDefs={columnDefs} />
                             </div>
                         </div>
                     </div>

@@ -25,5 +25,5 @@ export function middleware(req: NextRequest) {
  * 僅適用於指定的路由，確保這些頁面需要登入驗證。
  */
 export const config = {
-    matcher: ["/", "/home", "/kpi", "/improvement", "/reportEntry", "/register"],
+    matcher: ["/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/register"],
 };

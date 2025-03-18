@@ -6,6 +6,27 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectAddAll from "@/components/select/selectAddAll";
 import Link from "next/link";
 
+const rowData = [
+    {
+
+    },
+
+];
+
+const columnDefs = [
+    { field: "id", headerName: "編號" },
+    { field: "company", headerName: "公司" },
+    { field: "factory", headerName: "工廠/製程廠" },
+    { field: "indicator", headerName: "指標項目" },
+    { field: "indicatorDetail", headerName: "指標細項" },
+    { field: "department", headerName: "單位" },
+    { field: "isApplied", headerName: "是否應用" },
+    { field: "baselineYear", headerName: "基線值數據年限" },
+    { field: "baselineValue", headerName: "基線值" },
+    { field: "q1Status", headerName: "111年Q1執行狀況" },
+    { field: "q3Status", headerName: "111年Q3執行狀況" },
+    { field: "targetValue", headerName: "目標值" }
+];
 
 export default function AddKPI() {
     const breadcrumbItems = [
@@ -44,7 +65,7 @@ export default function AddKPI() {
                         <div className="space-y-8 w-full mx-auto">
                             <p>檢視檔案</p>
                             <div className="mt-6 px-4 lg:px-6">
-                                <Aggrid/>
+                                <Aggrid rowData={rowData} columnDefs={columnDefs} />
                             </div>
                             <div className="flex justify-end gap-x-8">
                                 <Link href=" ">
