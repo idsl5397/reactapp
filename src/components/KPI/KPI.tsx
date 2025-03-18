@@ -30,10 +30,10 @@ export default function KPI() {
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
                     <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                        新增/修改績效指標
+                        績效指標
                     </h1>
                     <div className="flex justify-end gap-x-8">
-                        <Link href="/kpi/newkpi">
+                        <Link href="/kpi/newKpi">
                             <button
                                 type="button"
                                 className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
