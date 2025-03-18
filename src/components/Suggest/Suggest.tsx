@@ -36,7 +36,7 @@ export default function Suggest() {
 
                     <SelectEnterprise/>
                     <div className="flex justify-end gap-x-8">
-                        <Link href="/kpi/newkpi">
+                        <Link href=" ">
                             <button
                                 type="button"
                                 className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
