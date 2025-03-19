@@ -3,6 +3,7 @@ import React, {ReactNode, useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
 import Cookies from "js-cookie";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 定義接口
 interface StepsContainerProps {
@@ -564,60 +565,69 @@ export default function Steps() {
                 return <Step1 email={email} setEmail={setEmail} />;
         }
     };
+    const breadcrumbItems = [
+        { label: "首頁", href: "/" },
+        { label: "註冊" }
+    ];
 
     return (
-        <div className="flex min-h-full flex-1 flex-col space-y-6 w-full p-4 max-w-3xl mx-auto">
-            <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                註冊步驟
-            </h1>
-
-            {/* 步驟指示器 */}
-            <StepsContainer vertical={false}>
-                <Step status={getStepStatus(1)}>確認信箱</Step>
-                <Step status={getStepStatus(2)}>填寫層級</Step>
-                <Step status={getStepStatus(3)}>個人資料</Step>
-                <Step status={getStepStatus(4)}>註冊PASSKEY</Step>
-            </StepsContainer>
-
-            {/* 當前步驟內容 */}
-            <div className="mt-8">
-                {renderStepContent()}
+        <>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
             </div>
+            <div className="flex min-h-full flex-1 flex-col space-y-6 w-full p-4 max-w-3xl mx-auto">
+                <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    註冊步驟
+                </h1>
 
-            {/* 導航按鈕 */}
-            <div className="flex justify-between mt-6">
-                <button
-                    onClick={prevStep}
-                    disabled={currentStep === 1}
-                    className={`px-6 py-2 border rounded-md ${currentStep === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    上一步
-                </button>
-                <button
-                    onClick={handleNextStep}
-                    className={`px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 ${currentStep === 4 ? 'hidden' : ''}`}
-                >
-                    下一步
-                </button>
+                {/* 步驟指示器 */}
+                <StepsContainer vertical={false}>
+                    <Step status={getStepStatus(1)}>確認信箱</Step>
+                    <Step status={getStepStatus(2)}>填寫層級</Step>
+                    <Step status={getStepStatus(3)}>個人資料</Step>
+                    <Step status={getStepStatus(4)}>註冊PASSKEY</Step>
+                </StepsContainer>
 
-                {currentStep === 4 && (
-                    <button className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                        完成註冊
+                {/* 當前步驟內容 */}
+                <div className="mt-8">
+                    {renderStepContent()}
+                </div>
+
+                {/* 導航按鈕 */}
+                <div className="flex justify-between mt-6">
+                    <button
+                        onClick={prevStep}
+                        disabled={currentStep === 1}
+                        className={`px-6 py-2 border rounded-md ${currentStep === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                        上一步
                     </button>
-                )}
+                    <button
+                        onClick={handleNextStep}
+                        className={`px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 ${currentStep === 4 ? 'hidden' : ''}`}
+                    >
+                        下一步
+                    </button>
 
-                {/* 未輸入emil 提示框 */}
-                <dialog ref={modalRef} className="modal">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg">提示</h3>
-                        <p className="py-4">請輸入 Email 才能繼續</p>
-                        <form method="dialog" className="modal-backdrop">
-                            <button className="btn">關閉</button>
-                        </form>
-                    </div>
-                </dialog>
+                    {currentStep === 4 && (
+                        <button className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                            完成註冊
+                        </button>
+                    )}
+
+                    {/* 未輸入emil 提示框 */}
+                    <dialog ref={modalRef} className="modal">
+                        <div className="modal-box">
+                            <h3 className="font-bold text-lg">提示</h3>
+                            <p className="py-4">請輸入 Email 才能繼續</p>
+                            <form method="dialog" className="modal-backdrop">
+                                <button className="btn">關閉</button>
+                            </form>
+                        </div>
+                    </dialog>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
