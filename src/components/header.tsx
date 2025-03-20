@@ -78,13 +78,13 @@ export default function Header() {
         <header className="bg-white shadow-md">
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
                 {/* Logo */}
-                <div className="flex lg:flex-1">
+                <div className="flex flex-1">
                     <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
                         <span className="sr-only">首頁</span>
                         <Image
                             alt="Logo"
                             src="/logo.svg"
-                            className="h-8 w-auto sm:h-11 md:h-8 lg:h-11"
+                            className="h-8 w-auto sm:h-11 md:h-9 lg:h-11"
                             width={100}
                             height={40}
                         />
