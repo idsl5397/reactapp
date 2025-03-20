@@ -8,7 +8,18 @@ import Link from "next/link";
 
 const rowData = [
     {
-
+        id: 1,
+        company: "中油石化事業部",
+        factory: "新三輕組",
+        indicator: "製程安全資訊之完整性",
+        indicatorDetail: "實際具備製程安全資訊文件數",
+        department: "件",
+        isApplied: "是",
+        baselineYear: "110年",
+        baselineValue: "18",
+        q1Status: "16",
+        q3Status: "18",
+        targetValue: "18"
     },
 
 ];

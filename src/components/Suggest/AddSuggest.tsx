@@ -8,8 +8,19 @@ import Link from "next/link";
 
 const rowData = [
     {
-
-    }
+        id: 1,
+        year: 2024,
+        date: "03-18",
+        event: "書面審查會議",
+        vendor: "中油公司",
+        category: "PSM",
+        committee: "張委員",
+        suggestion: "加強設備巡檢",
+        suggestionType: "預防措施",
+        department: "設備部",
+        adoption: "是",
+        improvement: "已增加每月巡檢頻率"
+    },
 ];
 
 const columnDefs = [
