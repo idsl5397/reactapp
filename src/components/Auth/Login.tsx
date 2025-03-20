@@ -96,7 +96,7 @@ export default function Login() {
                         登入
                     </h1>
                 </div>
-                <div className="card bg-base-100 shadow-xl w-96 p-6 mr-4">
+                <div className="card bg-base-100 shadow-xl w-full sm:w-96 p-6 mr-4">
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit}>
                             <h2 id="login-form-title" className="sr-only">

@@ -153,12 +153,13 @@ export default function KPI() {
                                         ? "這裡是基礎型指標的內容。"
                                         : "這裡是課制型指標的內容。"}
                                 </p>
+                                {/* AgGrid 表格 */}
+                                <div className="mt-6 px-4 lg:px-6">
+                                    <Aggrid rowData={rowData} columnDefs={columnDefs} />
+                                </div>
                             </div>
 
-                            {/* AgGrid 表格 */}
-                            <div className="mt-6 px-4 lg:px-6">
-                                <Aggrid rowData={rowData} columnDefs={columnDefs} />
-                            </div>
+
                         </div>
                     </div>
                 </div>

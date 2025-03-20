@@ -17,7 +17,17 @@ export function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    return NextResponse.next();
+    const res = NextResponse.next();
+
+    // 設定安全標頭
+    res.headers.set('X-Content-Type-Options', 'nosniff');
+    res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+    res.headers.set('X-XSS-Protection', '1; mode=block');
+    res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+
+    return res;
 }
 
 /**
@@ -27,3 +37,4 @@ export function middleware(req: NextRequest) {
 export const config = {
     matcher: ["/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/register"],
 };
+

@@ -84,7 +84,7 @@ export default function Header() {
                         <Image
                             alt="Logo"
                             src="/logo.svg"
-                            className="h-11 w-auto md:h-8 lg:h-11"
+                            className="h-8 w-auto sm:h-11 md:h-8 lg:h-11"
                             width={100}
                             height={40}
                         />

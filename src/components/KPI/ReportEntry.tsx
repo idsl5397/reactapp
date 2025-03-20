@@ -89,12 +89,13 @@ export default function Report(){
                     <div className="mt-8 card bg-base-100 shadow-xl p-6">
                         <h2 className="text-xl font-bold mb-4 text-center">執行操作</h2>
                         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
-                            <Link href="/kpi/newKpi">
+                            <Link href="/kpi/newKpi" passHref>
                                 <motion.button
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}
                                     style={{...buttonStyle, backgroundColor: "#4F46E5"}}
                                     className="shadow-md"
+                                    tabIndex={0}
                                 >
                                     更新/上傳指標項目
                                 </motion.button>

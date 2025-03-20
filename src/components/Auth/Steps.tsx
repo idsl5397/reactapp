@@ -585,7 +585,7 @@ export default function Steps() {
                     <Step status={getStepStatus(1)}>確認信箱</Step>
                     <Step status={getStepStatus(2)}>填寫層級</Step>
                     <Step status={getStepStatus(3)}>個人資料</Step>
-                    <Step status={getStepStatus(4)}>註冊PASSKEY</Step>
+                    <Step status={getStepStatus(4)}>確認註冊</Step>
                 </StepsContainer>
 
                 {/* 當前步驟內容 */}
