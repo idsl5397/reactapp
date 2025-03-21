@@ -3,7 +3,7 @@
 import React from 'react';
 import Aggrid from "@/components/aggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectAddAll from "@/components/select/selectAddAll";
+import SelectAddSuggest from "@/components/select/selectAddSuggest";
 import Link from "next/link";
 
 const rowData = [
@@ -58,7 +58,7 @@ export default function AddKPI() {
                     </h1>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                            <SelectAddAll/>
+                            <SelectAddSuggest/>
 
                         </div>
                         <div className="flex justify-end gap-x-8">
