@@ -139,7 +139,7 @@ export default function KPI() {
                                     className={`join-item btn ${activeType === "custom" ? "btn-active btn-primary" : "btn-ghost"}`}
                                     onClick={() => setActiveType("custom")}
                                 >
-                                    課製型指標
+                                    客製型指標
                                 </button>
                             </div>
 
@@ -151,7 +151,7 @@ export default function KPI() {
                                 <p className="mt-2 text-gray-600">
                                     {activeType === "basic"
                                         ? "這裡是基礎型指標的內容。"
-                                        : "這裡是課制型指標的內容。"}
+                                        : "這裡是客制型指標的內容。"}
                                 </p>
                                 {/* AgGrid 表格 */}
                                 <div className="mt-6 px-4 lg:px-6">

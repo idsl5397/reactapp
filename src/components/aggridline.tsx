@@ -7,27 +7,27 @@ import { AgChartOptions } from "ag-charts-community";
 function getData() {
     return [
         { period: "2019Q1", EP: 80, PSM: 75, FR: 60, ECO: 55 },
-        { period: "2019Q2", EP: 82, PSM: 76, FR: 62, ECO: 57 },
-        { period: "2019Q3", EP: 83, PSM: 77, FR: 63, ECO: 58 },
-        { period: "2019Q4", EP: 85, PSM: 78, FR: 65, ECO: 60 },
-        { period: "2020Q1", EP: 86, PSM: 79, FR: 66, ECO: 61 },
-        { period: "2020Q2", EP: 88, PSM: 80, FR: 68, ECO: 63 },
-        { period: "2020Q3", EP: 89, PSM: 81, FR: 69, ECO: 64 },
-        { period: "2020Q4", EP: 90, PSM: 83, FR: 70, ECO: 66 },
-        { period: "2021Q1", EP: 91, PSM: 84, FR: 72, ECO: 68 },
-        { period: "2021Q2", EP: 92, PSM: 85, FR: 74, ECO: 70 },
-        { period: "2021Q3", EP: 93, PSM: 86, FR: 75, ECO: 71 },
-        { period: "2021Q4", EP: 94, PSM: 87, FR: 77, ECO: 73 },
-        { period: "2022Q1", EP: 95, PSM: 88, FR: 78, ECO: 75 },
-        { period: "2022Q2", EP: 96, PSM: 89, FR: 80, ECO: 77 },
-        { period: "2022Q3", EP: 97, PSM: 90, FR: 82, ECO: 78 },
-        { period: "2022Q4", EP: 98, PSM: 91, FR: 83, ECO: 80 },
+        { period: "2019Q3", EP: 82, PSM: 76, FR: 62, ECO: 57 },
+        { period: "2020Q1", EP: 83, PSM: 77, FR: 63, ECO: 58 },
+        { period: "2020Q3", EP: 85, PSM: 78, FR: 65, ECO: 60 },
+        { period: "2021Q1", EP: 86, PSM: 79, FR: 66, ECO: 61 },
+        { period: "2021Q3", EP: 88, PSM: 80, FR: 68, ECO: 63 },
+        { period: "2022Q1", EP: 89, PSM: 81, FR: 69, ECO: 64 },
+        { period: "2022Q3", EP: 90, PSM: 83, FR: 70, ECO: 66 },
+        { period: "2023Q1", EP: 91, PSM: 84, FR: 72, ECO: 68 },
+        { period: "2023Q3", EP: 92, PSM: 85, FR: 74, ECO: 70 },
+        { period: "2024Q1", EP: 93, PSM: 86, FR: 75, ECO: 71 },
+        { period: "2024Q3", EP: 94, PSM: 87, FR: 77, ECO: 73 },
+        { period: "2025Q1", EP: 95, PSM: 88, FR: 78, ECO: 75 },
+        { period: "2025Q3", EP: 96, PSM: 89, FR: 80, ECO: 77 },
+        { period: "2026Q1", EP: 97, PSM: 90, FR: 82, ECO: 78 },
+        { period: "2026Q3", EP: 98, PSM: 91, FR: 83, ECO: 80 },
     ];
 }
 
 export default function LineExample() {
     const [startPeriod, setStartPeriod] = useState("2019Q1"); // 預設開始
-    const [endPeriod, setEndPeriod] = useState("2022Q4"); // 預設結束
+    const [endPeriod, setEndPeriod] = useState("2025Q3"); // 預設結束
 
     const data = getData(); // 獲取數據
 

@@ -49,6 +49,14 @@ export default function Header() {
     const [avatarMenuState, setAvatarMenuState] = useState<string | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [menu, setMenu] = useState<MenuItem[]>([]);
+    const [name, setName] = useState('使用者');
+
+    useEffect(() => {
+        const cookieName = Cookies.get('name');
+        if (cookieName) {
+            setName(cookieName);
+        }
+    }, []);
 
     const api = axios.create({
         baseURL: '/proxy',
@@ -164,7 +172,7 @@ export default function Header() {
                 </div>
 
                 {/* Avatar Menu */}
-                <Ava name={Cookies.get('name') || '使用者'} state={avatarMenuState} setState={setAvatarMenuState} />
+                <Ava name={name} state={avatarMenuState} setState={setAvatarMenuState} />
             </nav>
 
             {/* Mobile Menu */}
