@@ -15,7 +15,7 @@ export default function SelectAddAll() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
 
-        // 允許用戶輸入空值或數字或“-”符號
+        // 允許用戶輸入空值、"-" 或數字
         if (value === "" || value === "-" || /^[0-9]*$/.test(value)) {
             setInputValue(value);
         }
@@ -194,7 +194,7 @@ export default function SelectAddAll() {
             </div>
             <div>
                 <label htmlFor="enterprise" className="block text-sm/6 font-medium text-gray-900">
-                    投入(改善)經費 ("-"/元)
+                    投入(改善)經費 (-/元)
                 </label>
                 <div className="mt-2 flex items-center">
                     <input
