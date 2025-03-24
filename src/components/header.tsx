@@ -14,14 +14,13 @@ import * as Icon from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import axios from 'axios';
-import { Bars3Icon, FingerPrintIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, InformationCircleIcon, MapIcon } from '@heroicons/react/24/outline';
 import Ava from './avatar/avatarMenu';
-import ArrowRightEndOnRectangleIcon from '@heroicons/react/24/outline/ArrowRightEndOnRectangleIcon';
 import Image from 'next/image';
 
 const illustrate = [
-    { name: '關於我們', href: '/about', icon: ArrowRightEndOnRectangleIcon },
-    { name: '網站導覽', href: '/direction', icon: FingerPrintIcon },
+    { name: '關於我們', href: '/about', icon: InformationCircleIcon },
+    { name: '網站導覽', href: '/direction', icon: MapIcon },
 ];
 
 interface MenuItem {

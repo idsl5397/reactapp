@@ -92,7 +92,7 @@ export default function KPI() {
                         績效指標
                     </h1>
                     <div className="flex justify-end gap-x-8">
-                        <Link href="/kpi/newKpi">
+                        <Link href="/kpi/newKpi" tabIndex={-1}>
                             <button
                                 type="button"
                                 className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
