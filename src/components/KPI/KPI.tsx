@@ -67,10 +67,10 @@ const columnDefs = [
 ];
 
 const categories = [
-    { id: "process", name: "製程安全管理" },
-    { id: "env", name: "環保管理" },
-    { id: "energy", name: "能源管理" },
-    { id: "fire", name: "消防管理" }
+    { id: "process", name: "製程安全管理(PSM)" },
+    { id: "energy", name: "能源管理(EP)" },
+    { id: "fire", name: "消防管理(FR)" },
+    { id: "env", name: "環保管理(ECO)" }
 ];
 
 export default function KPI() {

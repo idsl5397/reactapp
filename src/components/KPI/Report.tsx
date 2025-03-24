@@ -25,19 +25,19 @@ export default function Report(){
                     <div className="w-4/5 mx-auto mb-6">
                         <div className="grid grid-cols-2 gap-6 md:grid-cols-2 lg:grid-cols-4">
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">PSM 改善完成率</h2>
+                                <h2 className="text-lg font-bold">製程安全管理(PSM) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">75%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">EP 改善完成率</h2>
+                                <h2 className="text-lg font-bold">能源管理(EP) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">50%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">FR 改善完成率</h2>
+                                <h2 className="text-lg font-bold">消防管理(FR) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">90%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">ECO 改善完成率</h2>
+                                <h2 className="text-lg font-bold">環保管理(ECO) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">65%</p>
                             </div>
                         </div>

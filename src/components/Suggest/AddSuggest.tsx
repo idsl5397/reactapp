@@ -4,7 +4,6 @@ import React from 'react';
 import Aggrid from "@/components/aggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectAddSuggest from "@/components/select/selectAddSuggest";
-import Link from "next/link";
 
 const rowData = [
     {
@@ -62,31 +61,27 @@ export default function AddKPI() {
 
                         </div>
                         <div className="flex justify-end gap-x-8">
-                            <Link href=" ">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
-                                >
-                                    暫存至檢視
-                                </button>
-                            </Link>
+                            <button
+                                type="button"
+                                className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
+                            >
+                                暫存至檢視
+                            </button>
                         </div>
                     </div>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="space-y-8 w-full mx-auto">
                             <p>檢視檔案</p>
                             <div className="mt-6 px-4 lg:px-6">
-                                <Aggrid rowData={rowData} columnDefs={columnDefs} />
+                            <Aggrid rowData={rowData} columnDefs={columnDefs} />
                             </div>
                             <div className="flex justify-end gap-x-8">
-                                <Link href="">
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
-                                    >
-                                        送出
-                                    </button>
-                                </Link>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
+                                >
+                                    送出
+                                </button>
                             </div>
                         </div>
                     </div>

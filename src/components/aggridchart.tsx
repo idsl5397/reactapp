@@ -6,10 +6,10 @@ import { AgChartOptions } from "ag-charts-community";
 // 取得委員建議類別的數據
 function getSuggestionData() {
     return [
-        { category: "PSM", count: 50 },
-        { category: "EP", count: 30 },
-        { category: "FR", count: 15 },
-        { category: "ECO", count: 5 },
+        { category: "製成安全管理(PSM)", count: 50 },
+        { category: "能源管理(EP)", count: 30 },
+        { category: "消防管理(FR)", count: 15 },
+        { category: "環保管理(ECO)", count: 5 },
     ];
 }
 
