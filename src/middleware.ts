@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+
+
+const PUBLIC_PATHS = ['/login', '/api/auth', '/_next', '/favicon.ico'];
+
 /**
  * 中介軟體（Middleware）
  *
@@ -10,22 +14,46 @@ import type { NextRequest } from "next/server";
  */
 export function middleware(req: NextRequest) {
     const token = req.cookies.get('token');
+    const isPublicPath = PUBLIC_PATHS.some(path =>
+        req.nextUrl.pathname.startsWith(path)
+    );
 
-    const isLoginPage = req.nextUrl.pathname === "/login";
-    console.log(token);
-    if (!token && !isLoginPage) {
+    // 防止 token 為 undefined
+    const tokenValue = token?.value || "";
+
+    // const isLoginPage = req.nextUrl.pathname === "/login";
+    // if (!token && !isLoginPage) {
+    //     return NextResponse.redirect(new URL("/login", req.url));
+    // }
+
+    // Token 格式验证（示例：JWT 格式）
+    if (tokenValue && !/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(tokenValue)) {
+        const response = NextResponse.redirect(new URL("/login", req.url));
+        response.cookies.set("token", "", {
+            path: "/",
+            expires: new Date(0),
+        });
+        return response;
+    }
+
+    // 未登入且訪問非公開頁面，導向 login
+    if (!tokenValue && !isPublicPath) {
         return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    const res = NextResponse.next();
-
+    const headers = new Headers(req.headers);
     // 設定安全標頭
-    res.headers.set('X-Content-Type-Options', 'nosniff');
-    res.headers.set('X-Frame-Options', 'SAMEORIGIN');
-    res.headers.set('X-XSS-Protection', '1; mode=block');
-    res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+    headers.set('X-Content-Type-Options', 'nosniff');
+    headers.set('X-Frame-Options', 'SAMEORIGIN');
+    headers.set('X-XSS-Protection', '1; mode=block');
+    headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+
+
+    const res = NextResponse.next({
+        request: { headers }
+    });
 
     return res;
 }

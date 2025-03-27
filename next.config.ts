@@ -7,6 +7,22 @@ const API_URL = process.env.API || "http://127.0.0.1:5013";
 const RAG_API = process.env.RAG_API || "http://127.0.0.1:5013";
 
 const nextConfig: NextConfig = {
+    poweredByHeader: false, // 禁用 X-Powered-By 標頭
+
+    async headers() {
+        return [
+            {
+                source: '/(.*)', // 應用於所有路徑
+                headers: [
+                    {
+                        key: 'X-Powered-By',
+                        value: '', // 雙重保險移除標頭
+                    }
+                ],
+            },
+        ];
+    },
+
     async rewrites() {
         return [
             {
@@ -24,5 +40,7 @@ const nextConfig: NextConfig = {
         ];
     },
 };
+
+
 
 export default nextConfig;
