@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import getAuthtoken, {clearAuthCookies, getUserInfo} from "@/services/serverAuthService";
+import getAuthtoken, {clearAuthCookies} from "@/services/serverAuthService";
 
 interface AvatarMenuProps {
     name: string;

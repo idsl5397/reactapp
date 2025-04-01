@@ -62,7 +62,7 @@ export async function getUserInfo() {
   try {
     // 解析 Access Token
     const decodedAccess = jwtDecode<JWTPayload>(token.value);
-    let userName = decodedAccess["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "未提供名稱";
+    const userName = decodedAccess["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "未提供名稱";
     return {
       userName: userName,
     }

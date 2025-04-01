@@ -1,11 +1,9 @@
 // services/Auth/clientAuthService.ts
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 import getAuthtoken, {
   clearAuthCookies,
   isAuthenticated as serverIsAuthenticated, storeAuthTokens,
 } from './serverAuthService';
-import {useGlobalStore} from "@/Stores/useGlobalStore";
 
 
 interface JWTPayload {

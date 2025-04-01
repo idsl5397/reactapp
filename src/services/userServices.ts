@@ -1,5 +1,4 @@
 import axios, { AxiosError } from "axios";
-import {cookies} from "next/headers";
 
 const api = axios.create({
     baseURL: "/proxy",

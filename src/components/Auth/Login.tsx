@@ -3,11 +3,9 @@
 import React, {useRef, useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Cookies from 'js-cookie';
-import {cookies} from 'next/headers'
 import {userService} from "@/services/userServices";
 import {Turnstile} from "@marsidev/react-turnstile";
-import {clearAuthCookies, getCookie, storeAuthTokens} from "@/services/serverAuthService";
+import {getCookie, storeAuthTokens} from "@/services/serverAuthService";
 import {UserData} from "@/types/UserType";
 import {useauthStore} from "@/Stores/authStore";
 
