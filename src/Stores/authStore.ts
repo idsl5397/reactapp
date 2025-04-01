@@ -27,7 +27,6 @@ export const useauthStore = create<GlobalState>()(
     persist(
         (set, get) => ({
             isLoggedIn: false,
-            userId: null,
             userName: null,
             theme: false,
 

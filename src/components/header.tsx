@@ -17,7 +17,6 @@ import { Bars3Icon, XMarkIcon, InformationCircleIcon, MapIcon } from '@heroicons
 import Ava from './avatar/avatarMenu';
 import Image from 'next/image';
 import {getCookie, getUserInfo} from "@/services/serverAuthService";
-import {authService} from "@/services/authService";
 import {useauthStore} from "@/Stores/authStore";
 
 const illustrate = [
@@ -52,10 +51,16 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [menu, setMenu] = useState<MenuItem[]>([]);
     const [name, setName] = useState('使用者');
-    const {isLoggedIn} = useauthStore()
+    const { checkIsLoggedIn,isLoggedIn } = useauthStore();
+
+    //先檢查登入狀態
+    useEffect(() => {
+        checkIsLoggedIn(); // 單純檢查登入狀態
+    }, [checkIsLoggedIn]);
 
 
     useEffect(() => {
+
         getUserInfo().then(cookieName => {
             if (cookieName) {
                 setName(cookieName?.userName);
@@ -70,17 +75,17 @@ export default function Header() {
     });
 
     useEffect(() => {
-        console.log("islogg: "+isLoggedIn);
-        if(isLoggedIn){
+        const fetchMenuIfLoggedIn = async () => {
 
-            getCookie().then(token => {
-
+            if (isLoggedIn) {
+                const token = await getCookie();
                 api.get('/Menu/GetMenus', {
                     headers: {
                         Authorization: token ? `Bearer ${token.value}` : '',
                     },
                 })
                     .then(response => {
+                        console.log(response.data);
                         setMenu(response.data);
                     })
                     .catch(error => {
@@ -91,9 +96,11 @@ export default function Header() {
                             console.error('獲取選單失敗:', error);
                         }
                     });
-            });
-        }
-    }, []);
+            }
+        };
+
+        fetchMenuIfLoggedIn();
+    }, [isLoggedIn]); //確保登入狀態已設定
 
     return (
         <header className="bg-white shadow-md">

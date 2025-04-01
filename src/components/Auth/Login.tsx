@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {userService} from "@/services/userServices";
@@ -8,9 +8,9 @@ import {Turnstile} from "@marsidev/react-turnstile";
 import {getCookie, storeAuthTokens} from "@/services/serverAuthService";
 import {UserData} from "@/types/UserType";
 import {useauthStore} from "@/Stores/authStore";
+import { useRouter } from 'next/navigation'
 
 export default function Login() {
-
 
     const [usermail, setusermail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,7 +24,20 @@ export default function Login() {
         { label: "首頁", href: "/" },
         { label: "登入" }
     ];
+    const router = useRouter()
+    const { checkIsLoggedIn,isLoggedIn } = useauthStore();
 
+    //先檢查登入狀態
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            await checkIsLoggedIn();
+            if (isLoggedIn) {
+                router.push("/home");
+            }
+        };
+
+        checkLoginStatus();
+    }, [isLoggedIn, checkIsLoggedIn, router]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 阻止表單預設提交行為
@@ -68,19 +81,17 @@ export default function Login() {
                 console.log(mycookie);
                 setErrorMessage('');
                 setIsLoggedIn(true);
-
-                window.location.replace('/home');
+                router.push("/home");
             }
             else {
                 setErrorMessage(response.message);
             }
-            // Cookies.set('name', response.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
-            // Cookies.set('token', response.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
         } catch (error) {
             // Axios 會自動解析錯誤回應
             if (axios.isAxiosError(error) && error.response) {
                 setErrorMessage(error.response.data?.message || '登陸失敗');
             } else {
+                console.log(axios.isAxiosError(error) && error.response);
                 setErrorMessage('網路錯誤，請稍後再試');
             }
         } finally {
