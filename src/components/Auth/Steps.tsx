@@ -2,8 +2,8 @@
 import React, {ReactNode, useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
-import Cookies from "js-cookie";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import {getCookie} from "@/services/serverAuthService";
 
 // 定義接口
 interface StepsContainerProps {
@@ -499,8 +499,8 @@ export default function Steps() {
 
     //取得公司資料
     const fetchEnterpriseData = async (companyId: number | null) => {
-        const token = Cookies.get("token");
 
+        const token = await getCookie();
         try {
             const response = await api.get(`/Enterprise/GetEnterprise`, {
                 params: { companyId },
