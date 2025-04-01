@@ -1,4 +1,4 @@
-// types/Selector/enterPrise.ts
+// types/enterPrise.ts
 
 export interface Factory {
     id: string;

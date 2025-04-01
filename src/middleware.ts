@@ -29,11 +29,28 @@ export function middleware(req: NextRequest) {
     // Token 格式验证（示例：JWT 格式）
     if (tokenValue && !/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(tokenValue)) {
         const response = NextResponse.redirect(new URL("/login", req.url));
-        response.cookies.set("token", "", {
-            path: "/",
-            expires: new Date(0),
-        });
+        response.cookies.delete("token");
         return response;
+    }
+
+    // 檢查 token 是否過期（如果是 JWT）
+    if (tokenValue) {
+        try {
+            const payload = JSON.parse(atob(tokenValue.split('.')[1]));
+            const expiry = payload.exp;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (expiry && now > expiry) {
+                const response = NextResponse.redirect(new URL("/login", req.url));
+                response.cookies.delete("token");
+                return response;
+            }
+        } catch (e) {
+            // 解析失敗視為無效 token
+            const response = NextResponse.redirect(new URL("/login", req.url));
+            response.cookies.delete("token");
+            return response;
+        }
     }
 
     // 未登入且訪問非公開頁面，導向 login

@@ -1,11 +1,11 @@
 'use client';
 // import type { Metadata } from "next";
-import 'focus-visible';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Base from "@/components/header"
 import Component from "@/components/footer"
-import React from "react";
+import React, {useEffect} from "react";
+import {useauthStore} from "@/Stores/authStore";
 
 
 /**
@@ -42,11 +42,19 @@ const appMetadata = {
 
 
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
+    const {checkAuthStatus} = useauthStore()
+    useEffect(() => {
+        console.log("驗證")
+        checkAuthStatus();
+    }, []); // Empty dependency array means it runs only once after the component mounts
     return (
         <html lang="zh-TW" data-theme="fantasy">
-        <title>{appMetadata.title}</title>
-        <meta name="description" content={appMetadata.description}/>
+        <head>
+            <title>{appMetadata.title}</title>
+            <meta name="description" content={appMetadata.description}/>
+        </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Base/>
         <div className="flex flex-col min-h-screen">
             <a
                 href="#top"
@@ -59,9 +67,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             >
                 :::
             </a>
-            <header>
-                <Base/>
-            </header>
+
             <a
                 id="skip-to-content"
                 href="#center"

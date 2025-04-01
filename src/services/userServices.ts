@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import {cookies} from "next/headers";
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -31,6 +32,7 @@ export const userService = {
                     username: response.data.username,
                     email: response.data.email,
                 };
+
             } else {
                 return {
                     success: false,

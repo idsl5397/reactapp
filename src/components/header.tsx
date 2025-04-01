@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
 import {
     Dialog,
     DialogPanel,
@@ -17,6 +16,9 @@ import axios from 'axios';
 import { Bars3Icon, XMarkIcon, InformationCircleIcon, MapIcon } from '@heroicons/react/24/outline';
 import Ava from './avatar/avatarMenu';
 import Image from 'next/image';
+import {getCookie, getUserInfo} from "@/services/serverAuthService";
+import {authService} from "@/services/authService";
+import {useauthStore} from "@/Stores/authStore";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -44,17 +46,23 @@ const getIcon = (iconName: string | null) => {
     return null;
 };
 
+
 export default function Header() {
     const [avatarMenuState, setAvatarMenuState] = useState<string | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [menu, setMenu] = useState<MenuItem[]>([]);
     const [name, setName] = useState('使用者');
+    const {isLoggedIn} = useauthStore()
+
 
     useEffect(() => {
-        const cookieName = Cookies.get('name');
-        if (cookieName) {
-            setName(cookieName);
-        }
+        getUserInfo().then(cookieName => {
+            if (cookieName) {
+                setName(cookieName?.userName);
+            }
+            console.log("用戶名稱:", cookieName?.userName);
+        });
+
     }, []);
 
     const api = axios.create({
@@ -62,23 +70,29 @@ export default function Header() {
     });
 
     useEffect(() => {
-        const token = Cookies.get('token');
-        api.get('/Menu/GetMenus', {
-            headers: {
-                Authorization: token ? `Bearer ${token}` : '',
-            },
-        })
-            .then((response) => {
-                setMenu(response.data);
-            })
-            .catch((error) => {
-                if (error.response && error.response.status === 401) {
-                    console.warn('未授權 (401)，不顯示選單');
-                    setMenu([]);
-                } else {
-                    console.error('獲取選單失敗:', error);
-                }
+        console.log("islogg: "+isLoggedIn);
+        if(isLoggedIn){
+
+            getCookie().then(token => {
+
+                api.get('/Menu/GetMenus', {
+                    headers: {
+                        Authorization: token ? `Bearer ${token.value}` : '',
+                    },
+                })
+                    .then(response => {
+                        setMenu(response.data);
+                    })
+                    .catch(error => {
+                        if (error.response && error.response.status === 401) {
+                            console.warn('未授權 (401)，不顯示選單');
+                            setMenu([]);
+                        } else {
+                            console.error('獲取選單失敗:', error);
+                        }
+                    });
             });
+        }
     }, []);
 
     return (

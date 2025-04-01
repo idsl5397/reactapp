@@ -4,16 +4,15 @@ import React, {useRef, useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Cookies from 'js-cookie';
+import {cookies} from 'next/headers'
 import {userService} from "@/services/userServices";
 import {Turnstile} from "@marsidev/react-turnstile";
+import {clearAuthCookies, getCookie, storeAuthTokens} from "@/services/serverAuthService";
+import {UserData} from "@/types/UserType";
+import {useauthStore} from "@/Stores/authStore";
 
 export default function Login() {
 
-    interface UserData {
-        username: string;
-        email: string;
-        token: string;
-    }
 
     const [usermail, setusermail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,7 +21,7 @@ export default function Login() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState<boolean>(false); // 控制驗證狀態
     const turnstile = useRef<any>(null);
-
+    const {setIsLoggedIn} = useauthStore()
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "登入" }
@@ -42,7 +41,7 @@ export default function Login() {
         try {
             setIsVerifying(true); // 設置驗證進行中，避免重複請求
 
-            // **Step 1: 驗證 Turnstile Captcha**
+            // 驗證 Turnstile Captcha**
             const captchaResponse = await axios.post(
                 "/api/verify",
                 { token: captchaToken }, // 送出 Captcha Token
@@ -56,6 +55,8 @@ export default function Login() {
             }
 
             const response = await userService.Login(usermail,password)
+            //
+
             if (response.success && response.username && response.email && response.token) {
                 // 登入成功，儲存用戶數據
                 setUserData({
@@ -63,15 +64,20 @@ export default function Login() {
                     email: response.email,
                     token: response.token
                 });
-                Cookies.set('name', response.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
-                Cookies.set('token', response.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
+
+                await storeAuthTokens(response.token);
+                const mycookie =await getCookie()
+                console.log(mycookie);
                 setErrorMessage('');
+                setIsLoggedIn(true);
+
                 window.location.replace('/home');
             }
             else {
                 setErrorMessage(response.message);
             }
-
+            // Cookies.set('name', response.username, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
+            // Cookies.set('token', response.token, { httponly: false, secure: true, expires: 7, sameSite: 'Strict' });
         } catch (error) {
             // Axios 會自動解析錯誤回應
             if (axios.isAxiosError(error) && error.response) {
@@ -147,7 +153,7 @@ export default function Login() {
                             <div className="mt-4 flex justify-center">
                                 <Turnstile
                                     options={{
-                                        language: "zh-TW",
+                                        language: "zh-tw",
                                     }}
                                     ref={turnstile}
                                     siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"

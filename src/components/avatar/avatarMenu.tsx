@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import Cookies from 'js-cookie';
+import getAuthtoken, {clearAuthCookies, getUserInfo} from "@/services/serverAuthService";
 
 interface AvatarMenuProps {
     name: string;
@@ -23,26 +23,28 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const avatarMenuId = "avatar-menu";
     const isAvatarMenuOpen = state === avatarMenuId;
 
+
+
     // 檢查 cookies 中是否有 JWT
     useEffect(() => {
-        const token = Cookies.get('token');
-        setIsLoggedIn(!!token); // 如果有 token，設置 isLoggedIn 為 true
+
+        getAuthtoken().then((token)=>{
+            setIsLoggedIn(!!token); // 如果有 token，設置 isLoggedIn 為 true
+        });
     }, []);
 
     const handleLogout = (e?: React.MouseEvent<HTMLSpanElement> | React.KeyboardEvent) => {
         e?.preventDefault();
-        Cookies.remove('token'); // 清除 JWT
-        Cookies.remove('name'); // 清除 JWT
-        setIsLoggedIn(false); // 設置登入狀態為 false
-        setState(null); // 關閉選單
-        // router.push('/login');
-        window.location.replace('/login');// 跳轉到登入頁面
+        clearAuthCookies().then(() => {
+            setIsLoggedIn(false);
+            setState(null);
+            window.location.replace('/login');
+        });
     };
 
     const handleLogin = (e?: React.MouseEvent<HTMLSpanElement> | React.KeyboardEvent) => {
         e?.preventDefault();
         setState(null); // 關閉選單
-        // router.push('/login');
         window.location.replace('/login');// 跳轉到登入頁面
     };
 
