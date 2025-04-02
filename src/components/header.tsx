@@ -60,15 +60,15 @@ export default function Header() {
 
 
     useEffect(() => {
-
-        getUserInfo().then(cookieName => {
-            if (cookieName) {
-                setName(cookieName?.userName);
-            }
-            console.log("用戶名稱:", cookieName?.userName);
-        });
-
-    }, []);
+        if (isLoggedIn) {  // 只有當 isLoggedIn 變為 true 時才執行
+            getUserInfo().then(cookieName => {
+                if (cookieName) {
+                    setName(cookieName?.userName);
+                }
+                console.log("用戶名稱:", cookieName?.userName);
+            });
+        }
+    }, [isLoggedIn]);
 
     const api = axios.create({
         baseURL: '/proxy',

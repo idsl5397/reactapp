@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import getAuthtoken, {clearAuthCookies} from "@/services/serverAuthService";
+import {useauthStore} from "@/Stores/authStore";
 
 interface AvatarMenuProps {
     name: string;
@@ -17,7 +18,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const avatarImage = image || "/user.svg";
 
     const [isLoading] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // 新增：登入狀態
+    const {isLoggedIn, setIsLoggedIn} = useauthStore(); // 登入狀態
     const menuRef = useRef<HTMLDivElement>(null);
 
     const avatarMenuId = "avatar-menu";
