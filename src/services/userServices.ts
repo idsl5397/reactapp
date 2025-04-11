@@ -10,7 +10,7 @@ interface LoginResponse {
     success: boolean;
     message: string;
     token?: string;
-    username?: string;
+    nickname?: string;
     email?: string;
 }
 
@@ -28,7 +28,7 @@ export const userService = {
                     success: response.data.success,
                     message: response.data.message,
                     token: response.data.token,
-                    username: response.data.username,
+                    nickname: response.data.nickname,
                     email: response.data.email,
                 };
 

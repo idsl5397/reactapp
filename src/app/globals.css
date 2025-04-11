@@ -45,6 +45,13 @@ a:focus-visible {
   }
 }
 
+@layer utilities {
+  .custom-outline-pink:focus-visible {
+    outline: 4px dashed #ff1493 !important;
+    outline-offset: 2px !important;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
@@ -55,10 +62,10 @@ body {
 .process-steps{
   width:100%;
   text-align: center;
-  :global(.ant-progress){
+  .ant-progress {
     width:100%
   }
-  :global(.ant-progress .ant-progress-steps-item){
+  .ant-progress .ant-progress-steps-item{
     width:calc(20% - 2px) !important
   }
 }

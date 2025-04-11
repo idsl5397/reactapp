@@ -68,10 +68,10 @@ export default function Login() {
             const response = await userService.Login(usermail,password)
             //
 
-            if (response.success && response.username && response.email && response.token) {
+            if (response.success && response.nickname && response.email && response.token) {
                 // 登入成功，儲存用戶數據
                 setUserData({
-                    username: response.username,
+                    nickname: response.nickname,
                     email: response.email,
                     token: response.token
                 });
@@ -181,11 +181,19 @@ export default function Login() {
                                 </button>
                             </div>
                         </form>
+                        <div className="mt-4 text-center">
+                            <p className="text-sm text-gray-600">
+                                還沒有帳號嗎？{" "}
+                                <a href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    前往註冊
+                                </a>
+                            </p>
+                        </div>
                         {errorMessage && <p role="alert" style={{color: 'red'}}>{errorMessage}</p>}
                         {userData && (
                             <div>
                                 <h2 className="text-lg font-semibold mt-4">登入成功</h2>
-                                <p>用戶名: {userData.username}</p>
+                                <p>用戶名: {userData.nickname}</p>
                                 <p>郵箱: {userData.email}</p>
                                 <p>JWT: {userData.token}</p>
                             </div>

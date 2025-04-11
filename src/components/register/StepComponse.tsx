@@ -538,7 +538,7 @@ function StepNavigationWrapper({
                 <span className="loading loading-spinner loading-xs"></span>
                 Loading...
               </>
-            ) : currentStep === totalSteps - 1 ? "Complete" : nextLabel}
+            ) : nextLabel}
           </button>
         )}
       </div>

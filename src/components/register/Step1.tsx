@@ -1,22 +1,25 @@
 import React from "react";
 import { useStepContext} from "./StepComponse";
-import {EmailVerificationFormData} from "@/app/test/page";
+import {EmailVerificationFormData} from "@/app/register/page";
 
 
 
 
 export default function Step1() {
     const { stepData, updateStepData } = useStepContext();
+
     const handleonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         //值
+
         const { name, value } = e.target;
+
         const currentFormValues = (stepData.EmailVerificationForm as EmailVerificationFormData) || {};
 
         updateStepData({
             EmailVerificationForm: {
                 ...currentFormValues,
                 [name]: value
-            }
+            },
         });
     }
 
@@ -34,7 +37,13 @@ export default function Step1() {
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Email"
                     />
+                    {(stepData as any).verificationError && (
+                        <div className="text-red-500 text-sm mt-2">
+                            {(stepData as any).verificationError}
+                        </div>
+                    )}
                 </div>
+
                 <div className="text-sm text-gray-600 mb-4">
                     我們將向此郵箱發送驗證碼，請確保能夠接收郵件。
                 </div>

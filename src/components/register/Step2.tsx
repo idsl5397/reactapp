@@ -1,149 +1,155 @@
-import React from "react";
-import { useStepContext, FormDataType } from "./StepComponse";
-import {ChevronDownIcon} from "@heroicons/react/16/solid";
+import React, {useEffect, useState} from "react";
+import { useStepContext } from "./StepComponse";
 
 
-interface Enterprise {
-    Id: string;
-    Name: string;
-    Children?: Enterprise[];
+// 用於全域暫存選擇的最底層組織節點，提供給外部呼叫
+export const selectedOrgRef = { current: null as OrgNode | null };
+export function getLatestSelectedOrganization(): OrgNode | null {
+    return selectedOrgRef.current;
 }
-interface Step2Props {
-    setEnterpriseTree: React.Dispatch<React.SetStateAction<Enterprise[] | null>>; // 用來設定 enterpriseTree 的函式
-    setSelectedEnterprise: React.Dispatch<React.SetStateAction<string | null>>; // 用來設定選擇的企業
-    setSelectedCompany: React.Dispatch<React.SetStateAction<string | null>>; // 用來設定選擇的公司
-    setSelectedFactory: React.Dispatch<React.SetStateAction<string | null>>; // 用來設定選擇的公司
-    companyId: number | null; // 公司ID，可能是 null
-    selectedEnterprise: string | null; // 選擇的企業
-    selectedCompany: string | null; // 選擇的公司
-    selectedFactory: string | null;
-    enterpriseTree: Enterprise[] | null; // 企業結構樹
+interface OrgNode {
+    data: {
+        id: number;
+        name: string;
+        typeId: number;
+        typeName: string;
+    };
+    children: OrgNode[];
 }
 
-interface ExtendedFormData extends FormDataType {
-    Step2Props?: Step2Props;
+// 將樹狀資料依照階層攤平成 Record<level, nodes[]>，方便依層渲染選單
+function flattenByLevel(tree: OrgNode): Record<number, OrgNode[]> {
+    const result: Record<number, OrgNode[]> = {};
+
+    function traverse(node: OrgNode, level: number) {
+        if (!result[level]) {
+            result[level] = [];
+        }
+        result[level].push(node);
+
+        for (const child of node.children) {
+            traverse(child, level + 1);
+        }
+    }
+
+    traverse(tree, 1); // 第 1 層為 root（例如企業）
+    return result;
 }
 
 export default function Step2() {
-    const { stepData } = useStepContext();
-    const step2Props = (stepData.step2Props as Step2Props) || {};
+    const { stepData, updateStepData } = useStepContext();
+    // 紀錄每一層級的選擇結果（e.g. { 1: 企業節點, 2: 公司節點, 3: null }）
+    const [selectedNodes, setSelectedNodes] = useState<{ [level: number]: OrgNode | null }>({});
+    // 來自 Step1 設定的組織樹資料
+    const organizationTree = stepData.organizationTree as OrgNode;
+    // 根據整棵樹生成分層節點資料（主要用於初始化）
+    const levels = flattenByLevel(organizationTree); // e.g. { 1: [企業], 2: [公司], 3: [工廠] }
 
-    const handleEnterpriseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        step2Props.setSelectedEnterprise(e.target.value);
-    };
+    // 初始化時預設選擇第一層（root 組織）
+    useEffect(() => {
+        // 初始化第一層（企業）為根節點
+        if (organizationTree) {
+            setSelectedNodes({ 1: organizationTree });
+        }
+    }, [organizationTree]);
 
-    const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        step2Props.setSelectedCompany(e.target.value);
+    const getNextLevelOptions = (node: OrgNode | null): OrgNode[] => {
+        return node?.children || [];
     };
+    // 給定某層節點，取得下一層子節點列表
+    const handleSelectChange = (level: number, selectedId: number) => {
+        const options = getOptionsForLevel(level);
+        const selectedNode = options.find((n) => n.data.id === selectedId) || null;
 
-    const handleFactoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        step2Props.setSelectedFactory(e.target.value);
+        setSelectedNodes((prev) => {
+            const updated = { ...prev };
+            for (let l = level + 1; l <= 5; l++) {
+                delete updated[l]; // 清空後續層級
+            }
+            updated[level] = selectedNode;
+            return updated;
+        });
     };
+    // 給定某一層級，取得該層的選項
+    const getOptionsForLevel = (level: number): OrgNode[] => {
+        if (level === 1) return [organizationTree!];
+        const parent = selectedNodes[level - 1];
+        return getNextLevelOptions(parent);
+    };
+    // 根據選擇情況，渲染各階層下拉選單
+    const renderSelects = () => {
+        const selects = [];
+        for (let level = 1; level <= 3; level++) {
+            const options = getOptionsForLevel(level);
+            if (!options.length) break;
+
+            const selected = selectedNodes[level];
+            selects.push(
+                <div key={level} className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {`階層${level}`}{level > 1 ? '（可選）' : ''}
+                    </label>
+                    <select
+                        className="w-full border rounded-md p-2 custom-outline-pink"
+                        value={selected?.data.id || ''}
+                        onChange={(e) => handleSelectChange(level, Number(e.target.value))}
+                    >
+                        <option value="">{`請選擇階層${level}`}{level > 1 ? '（可選）' : ''}</option>
+                        {options.map((node) => (
+                            <option key={node.data.id} value={node.data.id}>
+                                {node.data.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            );
+
+            if (!selected) break; // 沒有選就不往下展開
+        }
+        return selects;
+    };
+    // 取得目前所有選擇中「最深」的那個節點（最後選的）
+    const getDeepestSelectedNode = (): OrgNode | null => {
+        const levels = Object.keys(selectedNodes).map(Number).sort((a, b) => a - b);
+
+        for (let i = levels.length; i >= 1; i--) {
+            const node = selectedNodes[i];
+            if (node) return node;
+        }
+
+        return null;
+    };
+    // 每次選擇變動時，自動儲存最深層節點到 stepData（用於下一步）
+    useEffect(() => {
+        const deepest = getDeepestSelectedNode();
+        selectedOrgRef.current = deepest;
+        if (deepest) {
+            updateStepData({
+                userInfo: {
+                    organizationId: deepest.data.id,
+                    organizationName: deepest.data.name,
+                    typeId: deepest.data.typeId,
+                    typeName: deepest.data.typeName,
+                },
+            });
+        }
+    }, [selectedNodes]);
+
     return (
         <div className="card-body p-6">
             <div className="mb-4">
                 <div>
-                    {step2Props.companyId ? (
-                        <>
-                            <div className="sm:col-span-2">
-                                <label htmlFor="enterprise" className="block text-sm/6 font-medium text-gray-900">
-                                    企業
-                                </label>
-                                <div className="mt-2 grid grid-cols-1">
-                                    <select
-                                        id="enterprise"
-                                        name="enterprise"
-                                        value={step2Props.selectedEnterprise || ""}
-                                        onChange={handleEnterpriseChange}
-                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                                    >
-                                        <option value="">{step2Props.selectedEnterprise || "請選擇企業"}</option>
-
-                                    </select>
-                                    <ChevronDownIcon
-                                        aria-hidden="true"
-                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                                    />
-                                </div>
-
-                                <label htmlFor="company" className="block text-sm/6 font-medium text-gray-900">
-                                    公司
-                                </label>
-                                <div className="mt-2 grid grid-cols-1">
-                                    <select
-                                        id="company"
-                                        name="company"
-                                        value={step2Props.selectedCompany || ""}
-                                        onChange={handleCompanyChange}
-                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-
-                                    >
-                                        <option value="">{step2Props.selectedCompany || "請選擇公司"}</option>
-
-                                    </select>
-                                    <ChevronDownIcon
-                                        aria-hidden="true"
-                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                                    />
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="sm:col-span-2">
-                                <label htmlFor="enterprise" className="block text-sm font-medium text-gray-900">
-                                    企業
-                                </label>
-                                <select
-                                    id="enterprise"
-                                    name="enterprise"
-                                    className="w-full"
-                                    onChange={handleEnterpriseChange}
-                                >
-                                    <option value="">請選擇企業</option>
-                                    {step2Props.enterpriseTree?.map((enterprise) => (
-                                        <option key={enterprise.Id} value={enterprise.Name}>
-                                            {enterprise.Name}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <label htmlFor="company" className="block text-sm font-medium text-gray-900">
-                                    公司
-                                </label>
-                                <select
-                                    id="company"
-                                    name="company"
-                                    className="w-full"
-                                    onChange={handleCompanyChange}
-                                >
-                                    <option value="">請選擇公司</option>
-                                    {step2Props.enterpriseTree?.map((company) => (
-                                        <option key={company.Id} value={company.Name}>
-                                            {company.Name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </>
+                    <div className="sm:col-span-2">
+                        {renderSelects()}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                        請選擇你所在層級，其餘可留空（例如只選企業）。
+                    </p>
+                    {(stepData as any).userInfoError && (
+                        <div className="text-red-500 text-sm mt-2">
+                            {(stepData as any).userInfoError}
+                        </div>
                     )}
-                    <label htmlFor="factory" className="block text-sm font-medium text-gray-900">
-                        工廠
-                    </label>
-                    <select
-                        id="factory"
-                        name="factory"
-                        className="w-full"
-                        value={step2Props.selectedFactory || ""}
-                        onChange={handleFactoryChange}
-                    >
-                        <option value="">請選擇工廠</option>
-                        {step2Props.enterpriseTree?.map((factory) => (
-                            <option key={factory.Id} value={factory.Name}>
-                                {factory.Name}
-                            </option>
-                        ))}
-                    </select>
                 </div>
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <fieldset>
