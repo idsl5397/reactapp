@@ -75,10 +75,10 @@ const api = axios.create({
 
 const categories = [
     { id: "tab_all", name: "全部類別" },
-    { id: "process", name: "製程安全管理(PSM)" },
-    { id: "energy", name: "能源管理(EP)" },
-    { id: "fire", name: "消防管理(FR)" },
-    { id: "env", name: "環保管理(ECO)" }
+    { id: "製程安全管理", name: "製程安全管理(PSM)" },
+    { id: "能源管理", name: "能源管理(EP)" },
+    { id: "消防管理", name: "消防管理(FR)" },
+    { id: "環保管理", name: "環保管理(ECO)" }
 ];
 
 const columnTitleMap: Record<string, string> = {
@@ -147,7 +147,7 @@ export default function KPI() {
                 const { flatData, allPeriods } = flattenReports(raw);
                 setRowData(flatData);
                 toast.success(`查詢成功，回傳 ${flatData.length} 筆資料`);
-
+                console.log(flatData);
                 if (flatData.length > 0) {
                     const baseKeys = Object.keys(flatData[0]).filter(
                         (key) => !key.includes("執行狀況")
@@ -247,18 +247,12 @@ export default function KPI() {
 
                             {/* 內容區塊 */}
                             <div className="card bg-base-100 shadow-md p-6 mt-4">
-                                <h2 className="text-xl font-bold text-primary">
-                                    {categories.find((c) => c.id === activeTab)?.name}
-                                </h2>
-                                <p className="mt-2 text-gray-600">
-                                    {activeType === "basic"
-                                        ? "這裡是基礎型指標的內容。"
-                                        : "這裡是客制型指標的內容。"}
-                                </p>
-                                {/* AgGrid 表格 */}
-                                <div className="mt-6 px-4 lg:px-6">
-                                    <GridComponent rowData={rowData} columnDefs={columnDefs} />
-                                </div>
+                                <GridComponent
+                                    rowData={rowData}
+                                    columnDefs={columnDefs}
+                                    activeCategory={activeTab}   // 例如 tab_all、PSM、EP...
+                                    activeType={activeType}      // 例如 type_all、basic、custom
+                                />
                             </div>
 
 
