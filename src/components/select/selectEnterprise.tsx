@@ -3,12 +3,27 @@ import React, {useEffect, useState} from "react";
 import {enterpriseService} from "@/services/selectCompany";
 import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
 
-export default function SelectEnterprise() {
+export interface SelectionPayload {
+    orgId: string;
+    startYear?: string;
+    endYear?: string;
+}
+
+interface SelectEnterpriseProps {
+    onSelectionChange?: (selection: SelectionPayload) => void;
+}
+
+export default function SelectEnterprise({ onSelectionChange }: SelectEnterpriseProps) {
     const [data, setData] = useState<Enterprise[]>([]); // 保存企業數據
     const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業
     const [selectedCompany, setSelectedCompany] = useState(""); // 選中的公司
+    const [selectedFactory, setSelectedFactory] = useState("");
     const [companies, setCompanies] = useState<Company[]>([]); // 當前顯示的公司
     const [factories, setFactories] = useState<Factory[]>([]); // 當前顯示的工廠
+    const [startYear, setStartYear] = useState("");
+    const [endYear, setEndYear] = useState("");
+
+    const [selectedOrgId, setSelectedOrgId] = useState("");
 
     // 請求 API 獲取企業數據
     useEffect(() => {
@@ -28,6 +43,11 @@ export default function SelectEnterprise() {
         setCompanies(enterprise ? enterprise.children : []);
         setFactories([]); // 重置工廠
         setSelectedCompany(""); // 重置選中的公司
+        setSelectedFactory("");
+
+        const finalId = enterprise?.id || "";
+        setSelectedOrgId(finalId);
+        emitSelection(finalId, startYear, endYear); // ✅ 回傳
     };
 
     // 當選擇公司時更新工廠列表
@@ -38,6 +58,43 @@ export default function SelectEnterprise() {
         // 根據選中的公司查找工廠
         const company = companies.find((comp) => comp.id === companyId);
         setFactories(company ? company.children : []);
+
+        const finalId = company?.id || selectedEnterprise;
+        setSelectedOrgId(finalId);
+        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+    };
+
+    const handleFactoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const factoryId = e.target.value;
+        setSelectedFactory(factoryId);
+
+        const finalId = factoryId || selectedCompany || selectedEnterprise;
+        setSelectedOrgId(finalId);
+        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+    };
+
+    const handleStartYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const year = e.target.value;
+        setStartYear(year);
+        emitSelection(selectedOrgId, year, endYear);
+    };
+
+    const handleEndYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const year = e.target.value;
+        setEndYear(year);
+        emitSelection(selectedOrgId, startYear, year);
+    };
+
+    const emitSelection = (orgId: string, start: string, end: string) => {
+        onSelectionChange?.({
+            orgId,
+            startYear: start,
+            endYear: end,
+        });
+    };
+
+    const getFinalSelectedOrgId = () => {
+        return selectedFactory || selectedCompany || selectedEnterprise;
     };
 
     return (
@@ -45,7 +102,7 @@ export default function SelectEnterprise() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 <div>
                     <label htmlFor="enterprise" className="block text-sm/6 font-medium text-gray-900">
-                        企業
+                        階層1（企業/公司）
                     </label>
                     <div className="mt-2 grid grid-cols-1">
                         <select
@@ -55,7 +112,7 @@ export default function SelectEnterprise() {
                             onChange={handleEnterpriseChange}
                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                         >
-                            <option value="">請選擇企業</option>
+                            <option value="">請選擇階層1</option>
                             {data.map((enterprise) => (
                                 <option key={enterprise.id} value={enterprise.id}>
                                     {enterprise.name}
@@ -70,7 +127,7 @@ export default function SelectEnterprise() {
                 </div>
                 <div>
                     <label htmlFor="company" className="block text-sm/6 font-medium text-gray-900">
-                        公司
+                        階層2（公司/工廠）
                     </label>
                     <div className="mt-2 grid grid-cols-1">
                         <select
@@ -81,7 +138,7 @@ export default function SelectEnterprise() {
                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             disabled={!companies.length} // 如果沒有公司數據則禁用
                         >
-                            <option value="">請選擇公司</option>
+                            <option value="">請選擇階層2</option>
                             {companies.map((company) => (
                                 <option key={company.id} value={company.id}>
                                     {company.name}
@@ -96,17 +153,18 @@ export default function SelectEnterprise() {
                 </div>
                 <div>
                     <label htmlFor="factory" className="block text-sm/6 font-medium text-gray-900">
-                        工廠
+                        階層3（工廠）
                     </label>
                     <div className="mt-2 grid grid-cols-1">
                         <select
                             id="factory"
                             name="factory"
-                            autoComplete="factory-name"
+                            value={selectedFactory}
+                            onChange={handleFactoryChange}
                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             disabled={!factories.length} // 如果沒有工廠數據則禁用
                         >
-                            <option value="">請選擇工廠</option>
+                            <option value="">請選擇階層3</option>
                             {factories.map((factory) => (
                                 <option key={factory.id} value={factory.id}>
                                     {factory.name}
@@ -121,12 +179,14 @@ export default function SelectEnterprise() {
                 </div>
                 <div>
                     <label htmlFor="year" className="block text-sm/6 font-medium text-gray-900">
-                        年份
+                        開始年份
                     </label>
                     <div className="mt-2 grid grid-cols-1">
                         <select
-                            id="year"
-                            name="year"
+                            id="startyear"
+                            name="startyear"
+                            value={startYear}
+                            onChange={handleStartYearChange}
                             autoComplete="year-name"
                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                         >
@@ -144,19 +204,23 @@ export default function SelectEnterprise() {
                     </div>
                 </div>
                 <div>
-                    <label htmlFor="quarter" className="block text-sm/6 font-medium text-gray-900">
-                        季度
+                    <label htmlFor="year" className="block text-sm/6 font-medium text-gray-900">
+                        結束年份
                     </label>
                     <div className="mt-2 grid grid-cols-1">
                         <select
-                            id="quarter"
-                            name="quarter"
-                            autoComplete="quarter-name"
+                            id="endyear"
+                            name="endyear"
+                            value={endYear}
+                            onChange={handleEndYearChange}
+                            autoComplete="year-name"
                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                         >
-                            <option value="">請選擇季度</option>
-                            <option value="Q1">Q1</option>
-                            <option value="Q3">Q3</option>
+                            <option value="">請選擇年份</option>
+                            <option value="110">110</option>
+                            <option value="111">111</option>
+                            <option value="112">112</option>
+                            <option value="113">113</option>
 
                         </select>
                         <ChevronDownIcon
@@ -165,6 +229,28 @@ export default function SelectEnterprise() {
                         />
                     </div>
                 </div>
+                {/*<div>*/}
+                {/*    <label htmlFor="quarter" className="block text-sm/6 font-medium text-gray-900">*/}
+                {/*        季度*/}
+                {/*    </label>*/}
+                {/*    <div className="mt-2 grid grid-cols-1">*/}
+                {/*        <select*/}
+                {/*            id="quarter"*/}
+                {/*            name="quarter"*/}
+                {/*            autoComplete="quarter-name"*/}
+                {/*            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"*/}
+                {/*        >*/}
+                {/*            <option value="">請選擇季度</option>*/}
+                {/*            <option value="Q1">Q1</option>*/}
+                {/*            <option value="Q3">Q3</option>*/}
+
+                {/*        </select>*/}
+                {/*        <ChevronDownIcon*/}
+                {/*            aria-hidden="true"*/}
+                {/*            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
         </div>
     )

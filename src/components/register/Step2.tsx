@@ -42,8 +42,6 @@ export default function Step2() {
     const [selectedNodes, setSelectedNodes] = useState<{ [level: number]: OrgNode | null }>({});
     // 來自 Step1 設定的組織樹資料
     const organizationTree = stepData.organizationTree as OrgNode;
-    // 根據整棵樹生成分層節點資料（主要用於初始化）
-    const levels = flattenByLevel(organizationTree); // e.g. { 1: [企業], 2: [公司], 3: [工廠] }
 
     // 初始化時預設選擇第一層（root 組織）
     useEffect(() => {
@@ -154,7 +152,7 @@ export default function Step2() {
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <fieldset>
                         <h2 className="text-sm/6 font-semibold text-gray-900">身分權限</h2>
-                        <div className="mt-6 flex flex-row items-center gap-x-6">
+                        <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6">
                             <div className="flex items-center gap-x-3">
                                 <input
                                     defaultChecked

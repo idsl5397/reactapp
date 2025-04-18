@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { ColDef } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -40,6 +40,10 @@ const GridComponent: React.FC<GridComponentProps> = ({ columnDefs, rowData, defa
         setGridData(newData);
         setSelectedRows([]); // 清空選擇
     };
+
+    useEffect(() => {
+        setGridData(rowData);
+    }, [rowData]);
 
     return (
         <div className="flex flex-col gap-4">

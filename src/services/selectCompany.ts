@@ -6,7 +6,7 @@ const api = axios.create({
     baseURL: "/proxy",
 });
 
-export const enterpriseService = {
+export const oldenterpriseService = {
     fetchData: async () => {
         try {
             const token = await getCookie(); // 取得 Cookie
@@ -25,4 +25,30 @@ export const enterpriseService = {
             return null;
         }
     },
+};
+
+
+export const enterpriseService = {
+    fetchData: async () => {
+        const response = await api.get("/Organization/GetCompanyTree");
+        const rawTreeArray = response.data;
+
+        // 檢查資料是否為陣列
+        if (!Array.isArray(rawTreeArray)) {
+            console.error("⚠️ 預期回傳陣列，但收到：", rawTreeArray);
+            return [];
+        }
+
+        // 將每一個樹狀節點轉換為你要的格式
+        function transform(node: any): any {
+            return {
+                id: node.data?.id?.toString() ?? "",
+                name: node.data?.name ?? "",
+                children: (node.children || []).map(transform).filter(Boolean)
+            };
+        }
+
+        // 回傳轉換後的陣列
+        return rawTreeArray.map(transform).filter(Boolean);
+    }
 };

@@ -35,10 +35,10 @@ const geistMono = Geist_Mono({
  * @property {string} title 應用的標題
  * @property {string} description 應用的描述
  */
-const appMetadata = {
-    title: '績效指標平台',
-    description: '這是一個績效指標平台'
-};
+// const appMetadata = {
+//     title: '績效指標平台',
+//     description: '這是一個績效指標平台'
+// };
 
 
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
@@ -49,10 +49,10 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     }, []); // Empty dependency array means it runs only once after the component mounts
     return (
         <html lang="zh-TW" data-theme="fantasy">
-        <head>
-            <title>{appMetadata.title}</title>
-            <meta name="description" content={appMetadata.description}/>
-        </head>
+        {/*<head>*/}
+        {/*    <title>{appMetadata.title}</title>*/}
+        {/*    <meta name="description" content={appMetadata.description}/>*/}
+        {/*</head>*/}
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Base/>
         <div className="flex flex-col min-h-screen">

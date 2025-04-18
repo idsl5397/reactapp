@@ -1,6 +1,6 @@
 import React from "react";
 import { useStepContext} from "./StepComponse";
-import {EmailVerificationFormData} from "@/app/register/page";
+import {EmailVerificationFormData} from "@/components/Auth/Register";
 
 
 
@@ -44,9 +44,9 @@ export default function Step1() {
                     )}
                 </div>
 
-                <div className="text-sm text-gray-600 mb-4">
-                    我們將向此郵箱發送驗證碼，請確保能夠接收郵件。
-                </div>
+                {/*<div className="text-sm text-gray-600 mb-4">*/}
+                {/*    我們將向此郵箱發送驗證碼，請確保能夠接收郵件。*/}
+                {/*</div>*/}
             </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { useStepContext } from "./StepComponse";
-import {BaseUserInfo} from "@/app/register/page";
+import {BaseUserInfo} from "@/components/Auth/Register";
 
 
 export default function Step3() {
@@ -77,6 +77,9 @@ export default function Step3() {
                     className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="設定密碼"
                 />
+            </div>
+            <div className="text-sm text-gray-600 mb-4">
+                密碼原則: 至少12個字元，並包含大小寫字母、數字與特殊符號。
             </div>
             <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">確認密碼</label>

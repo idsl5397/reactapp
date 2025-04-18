@@ -1,11 +1,11 @@
 import React from "react";
 import { useStepContext } from "./StepComponse";
-import {BaseUserInfo, EmailVerificationFormData, UserInfo} from "@/app/register/page";
+import {BaseUserInfo, EmailVerificationFormData, UserInfo} from "@/components/Auth/Register";
 
 
 
 export default function Step4() {
-    const { stepData, updateStepData } = useStepContext();
+    const { stepData} = useStepContext();
     const EmailData = stepData.EmailVerificationForm as EmailVerificationFormData;
     const baseInfo = stepData.BaseUserInfo as BaseUserInfo;
     const userInfo = stepData.UserInfo as UserInfo;
