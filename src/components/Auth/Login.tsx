@@ -211,14 +211,6 @@ export default function Login() {
                             </p>
                         </div>
                         {errorMessage && <p role="alert" style={{color: 'red'}}>{errorMessage}</p>}
-                        {userData && (
-                            <div>
-                                <h2 className="text-lg font-semibold mt-4">登入成功</h2>
-                                <p>用戶名: {userData.nickname}</p>
-                                <p>郵箱: {userData.email}</p>
-                                <p>JWT: {userData.token}</p>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
