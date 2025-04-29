@@ -18,12 +18,14 @@ export default function Improvement(){
             </div>
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         改善報告書
                     </h1>
-
-                    <SelectEnterprise/>
-
+                    <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                            <SelectEnterprise/>
+                        </div>
+                    </div>
                     <div className="card bg-base-100 shadow-xl p-6 mx-auto w-4/5 max-w-screen-lg mb-6">
                         <p>上傳檔案</p>
                         <div className="flex items-center justify-center w-full">

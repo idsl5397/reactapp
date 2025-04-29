@@ -19,7 +19,7 @@ export default function Direction(){
             </div>
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         網站導覽
                     </h1>
                     <div className="card bg-base-100 shadow-xl p-6 mt-6 max-w-3xl w-full mx-auto">

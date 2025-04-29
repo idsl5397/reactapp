@@ -83,80 +83,81 @@ const SelectAddKpi = forwardRef((_, ref) => {
 
     return (
         <>
-            <div>
-                <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
-                <div className="mt-2 grid grid-cols-1">
-                    <select
-                        value={selectedEnterprise}
-                        onChange={handleEnterpriseChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                    >
-                        <option value="">請選擇階層1</option>
-                        {data.map((enterprise) => (
-                            <option key={enterprise.id} value={enterprise.id}>{enterprise.name}</option>
-                        ))}
-                    </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div>
+                    <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
+                    <div className="mt-2 grid grid-cols-1">
+                        <select
+                            value={selectedEnterprise}
+                            onChange={handleEnterpriseChange}
+                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                        >
+                            <option value="">請選擇階層1</option>
+                            {data.map((enterprise) => (
+                                <option key={enterprise.id} value={enterprise.id}>{enterprise.name}</option>
+                            ))}
+                        </select>
+                        <ChevronDownIcon
+                            aria-hidden="true"
+                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                        />
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
-                <div className="mt-2 grid grid-cols-1">
-                    <select
-                        value={selectedCompany}
-                        onChange={handleCompanyChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!companies.length}
-                    >
-                        <option value="">請選擇階層2</option>
-                        {companies.map((company) => (
-                            <option key={company.id} value={company.id}>{company.name}</option>
-                        ))}
-                    </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+                <div>
+                    <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
+                    <div className="mt-2 grid grid-cols-1">
+                        <select
+                            value={selectedCompany}
+                            onChange={handleCompanyChange}
+                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                            disabled={!companies.length}
+                        >
+                            <option value="">請選擇階層2</option>
+                            {companies.map((company) => (
+                                <option key={company.id} value={company.id}>{company.name}</option>
+                            ))}
+                        </select>
+                        <ChevronDownIcon
+                            aria-hidden="true"
+                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                        />
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
-                <div className="mt-2 grid grid-cols-1">
-                    <select
-                        value={selectedFactory}
-                        onChange={handleFactoryChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!factories.length}
-                    >
-                        <option value="">請選擇階層3</option>
-                        {factories.map((factory) => (
-                            <option key={factory.id} value={factory.id}>{factory.name}</option>
-                        ))}
-                    </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+                <div>
+                    <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
+                    <div className="mt-2 grid grid-cols-1">
+                        <select
+                            value={selectedFactory}
+                            onChange={handleFactoryChange}
+                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                            disabled={!factories.length}
+                        >
+                            <option value="">請選擇階層3</option>
+                            {factories.map((factory) => (
+                                <option key={factory.id} value={factory.id}>{factory.name}</option>
+                            ))}
+                        </select>
+                        <ChevronDownIcon
+                            aria-hidden="true"
+                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                        />
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-900">工廠/製程廠 (非必填)</label>
-                <div className="mt-2">
+                <div>
+                    <label className="block text-sm font-medium text-gray-900">工廠/製程廠 (非必填)</label>
+                    <div className="mt-2">
 
-                    <input
-                        type="text"
-                        name="productionSiteName"
-                        onChange={handleInputChange}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                    />
+                        <input
+                            type="text"
+                            name="productionSiteName"
+                            onChange={handleInputChange}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        />
+                    </div>
                 </div>
-            </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-900">指標類型</label>
                     <div className="mt-2 grid grid-cols-1">
@@ -218,6 +219,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                 ))}
+            </div>
         </>
     );
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { useStepContext} from "./StepComponse";
+import { useStepContext} from "../StepComponse";
 import {EmailVerificationFormData} from "@/components/Auth/Register";
 
 

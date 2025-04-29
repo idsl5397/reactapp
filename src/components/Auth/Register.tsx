@@ -7,7 +7,7 @@ import {
     StepCard,
     StepContent,
     StepIndicatorComponent, StepNavigationWrapper
-} from '@/components/register/StepComponse';
+} from '@/components/StepComponse';
 import Step1 from '@/components/register/Step1';
 import Step2,{ getLatestSelectedOrganization } from '@/components/register/Step2';
 import Step3 from '@/components/register/Step3';

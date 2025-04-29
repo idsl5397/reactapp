@@ -17,11 +17,14 @@ export default function Report(){
             </div>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         報表
                     </h1>
-                    <SelectEnterprise/>
-
+                    <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                            <SelectEnterprise/>
+                        </div>
+                    </div>
                     <div className="w-4/5 mx-auto mb-6">
                         <div className="grid grid-cols-2 gap-6 md:grid-cols-2 lg:grid-cols-4">
                             <div className="card bg-base-100 shadow-xl p-6">

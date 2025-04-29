@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import getAuthtoken, {clearAuthCookies} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
+import {useMenuStore} from "@/Stores/menuStore";
 
 interface AvatarMenuProps {
     name: string;
@@ -19,6 +20,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
 
     const [isLoading] = useState(false);
     const {isLoggedIn, setIsLoggedIn} = useauthStore(); // 登入狀態
+
     const menuRef = useRef<HTMLDivElement>(null);
 
     const avatarMenuId = "avatar-menu";
@@ -39,6 +41,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
         clearAuthCookies().then(() => {
             setIsLoggedIn(false);
             setState(null);
+            useMenuStore.getState().clearMenu();
             window.location.replace('/login');
         });
     };

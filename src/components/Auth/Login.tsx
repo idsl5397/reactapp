@@ -9,6 +9,11 @@ import {getCookie, storeAuthTokens} from "@/services/serverAuthService";
 import {UserData} from "@/types/UserType";
 import {useauthStore} from "@/Stores/authStore";
 import { useRouter } from 'next/navigation'
+import { useMenuStore } from "@/Stores/menuStore";
+
+const api = axios.create({
+    baseURL: "/proxy",
+});
 
 export default function Login() {
 
@@ -26,6 +31,7 @@ export default function Login() {
     ];
     const router = useRouter()
     const { checkIsLoggedIn,isLoggedIn } = useauthStore();
+
 
     //先檢查登入狀態
     useEffect(() => {
@@ -52,10 +58,10 @@ export default function Login() {
         try {
             setIsVerifying(true); // 設置驗證進行中，避免重複請求
 
-            // 驗證 Turnstile Captcha**
+            // 驗證 Turnstile Captcha
             const captchaResponse = await axios.post(
                 "/api/verify",
-                { token: captchaToken }, // 送出 Captcha Token
+                { token: captchaToken },
                 { headers: { "Content-Type": "application/json" } }
             );
 
@@ -65,38 +71,53 @@ export default function Login() {
                 return;
             }
 
-            const response = await userService.Login(usermail,password)
-            //
+            // 登入請求
+            const response = await userService.Login(usermail, password);
 
             if (response.success && response.nickname && response.email && response.token) {
-                // 登入成功，儲存用戶數據
+                // 儲存使用者資料
                 setUserData({
                     nickname: response.nickname,
                     email: response.email,
                     token: response.token
                 });
 
+                // 儲存登入 Token
                 await storeAuthTokens(response.token);
-                const mycookie =await getCookie()
+                const mycookie = await getCookie();
                 console.log(mycookie);
-                setErrorMessage('');
+                setErrorMessage("");
+
+                // 🔥 嘗試獲取選單資料
+                try {
+                    const res = await api.get('/Menu/GetMenus', {
+                        headers: {
+                            Authorization: mycookie ? `Bearer ${mycookie.value}` : '',
+                        },
+                    });
+                    useMenuStore.getState().setMenu(res.data); // ✅ 寫入全域 store
+                } catch (menuError) {
+                    console.warn("選單取得失敗，預設為空");
+                    useMenuStore.getState().setMenu([]); // ⛑️ fallback 空值，避免 Header 崩潰
+                }
+
                 setIsLoggedIn(true);
                 router.push("/home");
-            }
-            else {
-                setErrorMessage(response.message);
-            }
-        } catch (error) {
-            // Axios 會自動解析錯誤回應
-            if (axios.isAxiosError(error) && error.response) {
-                setErrorMessage(error.response.data?.message || '登陸失敗');
             } else {
-                console.log(axios.isAxiosError(error) && error.response);
+                setErrorMessage(response.message || "登入失敗，請稍後再試");
+            }
+
+        } catch (error) {
+            // 處理 Axios 例外
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data?.message || '登入失敗');
+            } else {
+                console.error("非預期錯誤:", error);
                 setErrorMessage('網路錯誤，請稍後再試');
             }
         } finally {
-            setIsVerifying(false); // 完成請求後，解除驗證狀態
-            turnstile.current?.reset();
+            setIsVerifying(false); // 解除鎖定狀態
+            turnstile.current?.reset(); // 重設 CAPTCHA
         }
     };
     return (
@@ -107,12 +128,12 @@ export default function Login() {
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
 
-                    <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         登入
                     </h1>
                 </div>
                 <div className="card bg-base-100 shadow-xl w-full sm:w-96 p-6 mr-4">
-                    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit}>
                             <h2 id="login-form-title" className="sr-only">
                                 登入表單

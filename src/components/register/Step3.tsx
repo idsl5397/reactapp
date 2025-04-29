@@ -1,5 +1,5 @@
 import React from "react";
-import { useStepContext } from "./StepComponse";
+import { useStepContext } from "../StepComponse";
 import {BaseUserInfo} from "@/components/Auth/Register";
 
 

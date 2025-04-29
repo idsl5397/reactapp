@@ -19,16 +19,6 @@ export default function Report(){
         nextDeadline: "2025-05-15"
     };
 
-    // Calculate if upload is within the period
-    const isWithinPeriod = () => {
-        const today = new Date();
-        const lastUpload = new Date(userData.lastUploadDate);
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(today.getMonth() - 6);
-
-        return lastUpload >= sixMonthsAgo;
-    };
-
     const getStatusDetails = () => {
         switch(userData.status) {
             case "completed":
@@ -89,7 +79,7 @@ export default function Report(){
                     <div className="mt-8 card bg-base-100 shadow-xl p-6">
                         <h2 className="text-xl font-bold mb-4 text-center">執行操作</h2>
                         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
-                            <Link href="/kpi/newKpi" tabIndex={0}>
+                            <Link href="/reportEntry/newKpiValue" tabIndex={0}>
                                 <motion.button
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}

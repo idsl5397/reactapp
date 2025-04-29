@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { useStepContext } from "./StepComponse";
+import { useStepContext } from "../StepComponse";
 
 
 // 用於全域暫存選擇的最底層組織節點，提供給外部呼叫
@@ -17,24 +17,6 @@ interface OrgNode {
     children: OrgNode[];
 }
 
-// 將樹狀資料依照階層攤平成 Record<level, nodes[]>，方便依層渲染選單
-function flattenByLevel(tree: OrgNode): Record<number, OrgNode[]> {
-    const result: Record<number, OrgNode[]> = {};
-
-    function traverse(node: OrgNode, level: number) {
-        if (!result[level]) {
-            result[level] = [];
-        }
-        result[level].push(node);
-
-        for (const child of node.children) {
-            traverse(child, level + 1);
-        }
-    }
-
-    traverse(tree, 1); // 第 1 層為 root（例如企業）
-    return result;
-}
 
 export default function Step2() {
     const { stepData, updateStepData } = useStepContext();

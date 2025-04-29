@@ -52,7 +52,7 @@ export default function AddKPI() {
             </div>
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         新增委員建議
                     </h1>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
@@ -69,22 +69,22 @@ export default function AddKPI() {
                             </button>
                         </div>
                     </div>
-                    <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
-                        <div className="space-y-8 w-full mx-auto">
-                            <p>檢視檔案</p>
-                            <div className="mt-6 px-4 lg:px-6">
-                            <Aggrid rowData={rowData} columnDefs={columnDefs} />
-                            </div>
-                            <div className="flex justify-end gap-x-8">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
-                                >
-                                    送出
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    {/*<div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">*/}
+                    {/*    <div className="space-y-8 w-full mx-auto">*/}
+                    {/*        <p>檢視檔案</p>*/}
+                    {/*        <div className="mt-6 px-4 lg:px-6">*/}
+                    {/*        <Aggrid rowData={rowData} columnDefs={columnDefs} />*/}
+                    {/*        </div>*/}
+                    {/*        <div className="flex justify-end gap-x-8">*/}
+                    {/*            <button*/}
+                    {/*                type="button"*/}
+                    {/*                className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
+                    {/*            >*/}
+                    {/*                送出*/}
+                    {/*            </button>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         </>
