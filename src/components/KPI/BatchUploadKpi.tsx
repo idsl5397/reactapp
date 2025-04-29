@@ -68,14 +68,49 @@ export default function BatchUploadKpi() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <label className="block text-sm font-medium text-gray-900">上傳 Excel 檔案</label>
-                <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-900">
+                    下載 Excel 範本
+                </label>
+                <a
+                    href="/templates/kpi-template.xlsx"
+                    download
+                    className="btn btn-outline btn-sm text-primary border-primary hover:bg-primary hover:text-white mb-2"
+                >
+                    下載檔案
+                </a>
+                <label className="block text-sm font-medium text-gray-900">
+                    上傳 Excel 檔案
+                </label>
+
+                {/* 隱藏 input，不讓它鋪滿 */}
+                <input
+                    id="uploadFile"
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
+
+                {/* 只讓按鈕可以點 */}
+                <button
+                    type="button"
+                    onClick={() => document.getElementById('uploadFile')?.click()}
+                    className="btn btn-outline btn-primary text-sm px-4 py-2 rounded-md"
+                >
+                    選擇檔案
+                </button>
+
+                {file && (
+                    <p className="text-xs text-gray-500 mt-1">
+                        已選擇檔案：{file.name}
+                    </p>
+                )}
             </div>
 
             {isLoading ? (
                 <div className="flex justify-center items-center p-8">
-                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900"></div>
                     <span className="ml-4 text-gray-700">資料處理中，請稍後...</span>
                 </div>
             ) : (previewData.length > 0 && (
