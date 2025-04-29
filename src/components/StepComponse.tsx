@@ -437,7 +437,7 @@ function StepNavigationWrapper({
     disabledCondition?: (stepData: FormDataType) => boolean;
   }
 }): ReactElement {
-  const { stepData, updateStepData, goToStep, nextStep, prevStep, currentStep, totalSteps } = useStepContext();
+  const { stepData, updateStepData, goToStep, nextStep, prevStep, currentStep } = useStepContext();
 
   // 計算按鈕是否應該被禁用
   const isCustomButtonDisabled = () => {
