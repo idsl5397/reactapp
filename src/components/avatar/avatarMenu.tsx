@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import getAuthtoken, {clearAuthCookies} from "@/services/serverAuthService";
+import {getAccessToken, clearAuthCookies} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import {useMenuStore} from "@/Stores/menuStore";
 
@@ -31,7 +31,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     // 檢查 cookies 中是否有 JWT
     useEffect(() => {
 
-        getAuthtoken().then((token)=>{
+        getAccessToken().then((token)=>{
             setIsLoggedIn(!!token); // 如果有 token，設置 isLoggedIn 為 true
         });
     }, []);

@@ -40,6 +40,7 @@ export interface KpiReportInput {
     kpiDataId: number;
     value: number | null;
     isSkipped: boolean;
+    remark: string;
 }
 
 //步驟介面 ex: 步驟一 EmailVerificationForm?: EmailVerificationFormData;
@@ -82,6 +83,7 @@ export default function Register() {
             kpiDataId: report.kpiDataId,
             value: report.isSkipped ? null : report.value,
             isSkipped: report.isSkipped,
+            remark: report.remark,
         }));
 
         console.log("送出資料：", payload);
@@ -195,15 +197,29 @@ export default function Register() {
                                         const missing = kpiList.find((kpi) => {
                                             const isSkipped = reportMap[`skip_${kpi.kpiDataId}`];
                                             const value = reportMap[kpi.kpiDataId];
-                                            return !isSkipped && (value === undefined || value === "");
+                                            const skipNote = reportMap[`skip_note_${kpi.kpiDataId}`];
+
+                                            if (!isSkipped && (value === undefined || value === "")) {
+                                                return true;
+                                            }
+
+                                            if (isSkipped && (!skipNote || skipNote.trim() === "")) {
+                                                return true;
+                                            }
+
+                                            return false;
                                         });
 
                                         if (missing) {
                                             toast.error(`請填寫所有 KPI 執行情況（缺少：「${missing.indicatorName} - ${missing.detailItemName}」）`);
 
-                                            // 🔁 focus 到對應輸入框
                                             if ((stepData as any)._focusMissingInput) {
-                                                (stepData as any)._focusMissingInput(missing.kpiDataId);
+                                                const isSkipped = reportMap[`skip_${missing.kpiDataId}`];
+                                                const value = reportMap[missing.kpiDataId];
+                                                const skipNote = reportMap[`skip_note_${missing.kpiDataId}`];
+                                                const isNote = isSkipped && (!skipNote || skipNote.trim() === "");
+
+                                                (stepData as any)._focusMissingInput(missing.kpiDataId, isNote);
                                             }
 
                                             return false;
@@ -213,11 +229,13 @@ export default function Register() {
                                         const reports = kpiList.map((kpi) => {
                                             const isSkipped = Boolean(reportMap[`skip_${kpi.kpiDataId}`]);
                                             const value = isSkipped ? null : Number(reportMap[kpi.kpiDataId]);
+                                            const remark = reportMap[`skip_note_${kpi.kpiDataId}`] || null;
 
                                             return {
                                                 kpiDataId: kpi.kpiDataId,
                                                 value,
                                                 isSkipped,
+                                                remark,
                                             };
                                         });
 

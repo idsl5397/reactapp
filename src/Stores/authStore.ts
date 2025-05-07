@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
 import {isAuthenticated} from "@/services/clientAuthService";
 import {authService} from "@/services/authService";
-import getAuthtoken, {clearAuthCookies} from "@/services/serverAuthService";
+import {getAccessToken, clearAuthCookies} from "@/services/serverAuthService";
 
 interface JWTPayload {
     sub: string;
@@ -44,7 +44,7 @@ export const useauthStore = create<GlobalState>()(
             // ✅ 伺服器端檢查登入狀態，並解析 Token 取得 userId
             checkAuthStatus: async () => {
                 try {
-                    const token = await getAuthtoken();
+                    const token = await getAccessToken();
                     if (!token) {
                         set({ isLoggedIn: false, userName: null });
                         return;

@@ -22,8 +22,8 @@ const categories = [
 ];
 
 const columnTitleMap: Record<string, string> = {
-    company: "公司名稱",
-    productionSite: "工廠/製程廠",
+    company: "工廠名稱",
+    productionSite: "工場/製程區",
     category: "指標類型",
     field: "所屬類型",
     indicatorNumber: "指標編號",

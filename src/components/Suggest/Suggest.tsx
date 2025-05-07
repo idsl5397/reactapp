@@ -5,6 +5,7 @@ import Aggrid from "@/components/aggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise from "@/components/select/selectEnterprise";
 import Link from 'next/link';
+import GridComponent from "@/components/aggrid";
 
 
 const rowData = [
@@ -116,15 +117,15 @@ export default function Suggest() {
                             </button>
                         </Link>
                     </div>
-                    {/*<div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">*/}
-                    {/*    <div className="w-full mx-auto">*/}
+                    <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
+                        <div className="w-full mx-auto">
 
-                    {/*        /!* AgGrid 表格 *!/*/}
-                    {/*        <div className="mt-6 px-4 lg:px-6">*/}
-                    {/*            <Aggrid rowData={rowData} columnDefs={columnDefs}/>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                            {/* AgGrid 表格 */}
+                            <div className="mt-6 px-4 lg:px-6">
+                                {/*<Aggrid rowData={rowData} columnDefs={columnDefs}/>*/}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

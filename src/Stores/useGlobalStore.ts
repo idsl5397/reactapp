@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { isAuthenticated } from '@/services/clientAuthService';
-import getAuthToken, { clearAuthCookies } from '@/services/serverAuthService';
+import { getAccessToken, clearAuthCookies } from '@/services/serverAuthService';
 import { authService } from "@/services/authService";
 import { jwtDecode } from 'jwt-decode';
 
@@ -48,7 +48,7 @@ export const useGlobalStore = create<GlobalState>()(
             // ✅ 伺服器端檢查登入狀態，並解析 Token 取得 `userId`
             checkAuthStatus: async () => {
                 try {
-                    const token = await getAuthToken();
+                    const token = await getAccessToken();
                     if (!token) {
                         set({ isLoggedIn: false, userId: null, userName: null });
                         return;

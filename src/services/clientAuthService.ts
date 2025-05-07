@@ -1,8 +1,9 @@
-// services/Auth/clientAuthService.ts
-import axios from 'axios';
-import getAuthtoken, {
+import axios from "axios";
+import {
+  getAccessToken,
   clearAuthCookies,
-  isAuthenticated as serverIsAuthenticated, storeAuthTokens,
+  isAuthenticated as serverIsAuthenticated,
+  storeAuthTokens
 } from './serverAuthService';
 
 
@@ -25,7 +26,7 @@ const api = axios.create({
   baseURL: '/proxy'
 });
 
-
+api.defaults.headers.post["Content-Type"] = "application/json";
 
 // 請求攔截器
 api.interceptors.request.use(async (config) => {
@@ -42,15 +43,40 @@ api.interceptors.request.use(async (config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      await clearAuthCookies();
-
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401) {
+        try {
+          const refreshResult = await tryRefreshToken();
+          if (refreshResult.success) {
+            console.debug('🔄 Refresh Token 成功，重送請求');
+            return api.request(error.config); // 重新送出原本的 request
+          } else {
+            console.warn('🔒 無法使用 Refresh Token，自動登出');
+            await logout();
+          }
+        } catch (refreshError) {
+          console.error('🔒 Refresh Token 流程錯誤:', refreshError);
+          await logout();
+        }
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
 );
+
+// ✨ 自動 Refresh Token
+async function tryRefreshToken(): Promise<{ success: boolean }> {
+  try {
+    const response = await api.post('/Auth/RefreshToken');
+    if (response.status === 200 && response.data.accessToken) {
+      await storeAuthTokens(response.data.accessToken);
+      return { success: true };
+    }
+  } catch (error) {
+    console.error("Refresh Token 錯誤:", error);
+  }
+  return { success: false };
+}
 
 export async function isAuthenticated(): Promise<boolean> {
   // 客戶端檢查
@@ -69,92 +95,9 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 
-
-
-export async function SendVerificationEmail(email: string): Promise<{ success: boolean; message: string ;errors?: string[] }> {
-  try {
-    const response = await api.post('/Auth/SendVerificationEmail', {Email: email},{
-            headers: { 'Content-Type': 'application/json' }
-    });
-    console.debug(response);
-    if (response.status === 200) {
-      return { success: true, message: response.data.Message };
-    }
-    else {
-      return { success: false, message: response.data.Message };
-    }
-  }catch(error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {success: false, message: "錯誤" ,errors: error.response?.data?.errors};
-    }
-    return { success: false, message: "未知錯誤" };
-  }
-}
-
-export async function VerifyEmailCode(email: string,code:string): Promise<{ success: boolean; message: string ; }> {
-  try {
-    const response = await api.post('/Auth/VerifyEmailCode', {Email: email,Code:code},{
-            headers: { 'Content-Type': 'application/json' }
-    });
-    console.debug(response);
-    if (response.status === 200 && response.data.success) {
-      return { success: true, message: response.data.Message };
-    }
-    else {
-      return { success: false, message: response.data.Message };
-    }
-  }catch(error) {
-    console.debug(error);
-    return { success: false, message: "功能錯誤" };
-  }
-}
-export async function SignUp(username: string,nickname:string,password:string,email:string): Promise<{ success: boolean; message: string ; }> {
-  try {
-    const response = await api.post('/Auth/SignUp', {userName:username,password:password,nickName:nickname,email:email},{
-            headers: { 'Content-Type': 'application/json' }
-    });
-    console.debug(response);
-    if (response.status === 200 && response.data.success) {
-      return { success: true, message: response.data.Message };
-    }
-    else {
-      return { success: false, message: response.data.Message };
-    }
-  }catch(error) {
-    console.debug(error);
-    return { success: false, message: "功能錯誤" };
-  }
-}
-
-
-export async function DomainQuery(email: string): Promise<{ success: boolean; message: string ;data?:{org: string; type: string[] } }> {
-  try {
-    const response = await axios.post('/proxy/Auth/DomainQuery', { Email: email }, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (response.status === 200 && response.data.success) {
-      return { success: true, message: "此郵件域名已通過組織驗證", data: response.data };
-    }
-    return { success: false, message: response.data.message ?? "查詢失敗，請稍後再試" };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      console.error("❌ API 錯誤回應:", error.response.data);
-
-      if (error.response.status === 403) {
-        return { success: false, message: "此郵件域名尚未通過組織驗證" };
-      }
-    }
-    return { success: false, message: "無法驗證電子郵件域名，請稍後再試" };
-  }
-}
-
-
-
-
 export async function validateToken(): Promise<{isValid:boolean}> {
   try {
-    const token = await getAuthtoken();
+    const token = await getAccessToken();
     // 如果沒有 token，直接返回未驗證
     if (!token) {
       return {

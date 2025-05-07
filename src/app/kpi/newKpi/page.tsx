@@ -10,7 +10,7 @@
 //     )
 // }
 
-import AddKpiPage from "@/components/KPI/AddKpiPage";
+import AddKpiPage from "@/components/KPI/AddKPI";
 
 export default function page() {
     return <AddKpiPage />;

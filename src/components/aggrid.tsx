@@ -1,9 +1,17 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, {useMemo, useState, useRef, useEffect} from "react";
 import {ColDef, ModuleRegistry} from "ag-grid-community";
 import { AllEnterpriseModule } from "ag-grid-enterprise";
 import { AgGridReact, AgGridReact as AgGridReactType } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@ag-grid-community/locale";
-
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    ReferenceLine,
+} from "recharts";
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
 
@@ -36,6 +44,31 @@ const GridComponent: React.FC<GridComponentProps> = ({
     const [selectedDetail, setSelectedDetail] = useState<IRow | null>(null);
     const gridRef = useRef<AgGridReactType<IRow>>(null);
 
+    //載入詳細資料圖片
+    const [filterRange, setFilterRange] = useState("all");
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [isChartLoading, setIsChartLoading] = useState(false);
+
+    useEffect(() => {
+        if (!selectedDetail?.reports) return;
+
+        setIsChartLoading(true);
+        const timer = setTimeout(() => {
+            const sorted = [...selectedDetail.reports].sort((a, b) =>
+                `${a.year}_${a.period}`.localeCompare(`${b.year}_${b.period}`)
+            );
+
+            const mapped = sorted.map((r: any) => ({
+                name: `${r.year}_${r.period}`,
+                value: parseFloat(r.kpiReportValue),
+            }));
+
+            setChartData(filterRange === "last4" ? mapped.slice(-4) : mapped);
+            setIsChartLoading(false);
+        }, 300); // 模擬延遲，可根據實際狀況調整
+
+        return () => clearTimeout(timer);
+    }, [selectedDetail, filterRange]);
 
     //匯出excel與CSV
     const exportToExcel = () => {
@@ -187,7 +220,76 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-xl relative">
                         <h2 className="text-xl font-semibold mb-4">指標詳情</h2>
-                        <ul className="space-y-2 text-sm max-h-[400px] overflow-y-auto">
+                        <p className="text-sm font-semibold mb-2">歷史執行情況：</p>
+
+                        <div className="mb-2 flex justify-between items-center">
+                            <span className="text-sm text-gray-500">KPI 趨勢圖</span>
+                            <select
+                                className="select select-sm select-bordered"
+                                value={filterRange}
+                                onChange={(e) => setFilterRange(e.target.value)}
+                            >
+                                <option value="all">全部</option>
+                                <option value="last4">最近四期</option>
+                            </select>
+                        </div>
+
+                        <div className="h-64 mb-4 border rounded flex items-center justify-center bg-gray-50">
+                            {isChartLoading ? (
+                                <span className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
+                            ) : chartData.length === 0 ? (
+                                <div className="text-gray-400 text-sm">尚無執行資料</div>
+                            ) : (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <XAxis dataKey="name" />
+                                        <YAxis
+                                            label={{
+                                                value: selectedDetail.unit || "單位",
+                                                position: "insideLeft",
+                                            }}
+                                        />
+                                        <Tooltip
+                                            content={({ active, payload, label }) => {
+                                                if (active && payload && payload.length) {
+                                                    return (
+                                                        <div className="bg-white border p-2 rounded shadow text-xs">
+                                                            <p>{label}</p>
+                                                            <p>
+                                                                執行值：{payload[0].value} {selectedDetail.unit || ""}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="#8884d8"
+                                            strokeWidth={2}
+                                            dot={{ r: 4 }}
+                                            activeDot={{ r: 6 }}
+                                        />
+                                        {selectedDetail.targetValue && (
+                                            <ReferenceLine
+                                                y={selectedDetail.targetValue}
+                                                stroke="gray"
+                                                strokeDasharray="4 2"
+                                                label={{
+                                                    value: `目標值 ${selectedDetail.targetValue}`,
+                                                    position: "right",
+                                                    fontSize: 10,
+                                                }}
+                                            />
+                                        )}
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+
+                        <ul className="space-y-2 text-sm max-h-[300px] overflow-y-auto">
                             {Object.entries(selectedDetail).map(([key, value]) => (
                                 <li key={key}>
                                     <strong>{columnTitleMap[key] || key}：</strong>
@@ -205,6 +307,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                 </li>
                             ))}
                         </ul>
+
                         <button
                             onClick={() => setSelectedDetail(null)}
                             className="absolute top-2 right-2 btn btn-sm btn-circle btn-outline"

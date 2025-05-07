@@ -39,6 +39,7 @@ export default function AddKpiValueStep3() {
                                     <th>輸入值</th>
                                     <th>單位</th>
                                     <th>適用</th>
+                                    <th>備註</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -59,6 +60,7 @@ export default function AddKpiValueStep3() {
                                                 <td>{report?.value ?? "-"}</td>
                                                 <td>{kpi.unit}</td>
                                                 <td>{report?.isSkipped ? "不適用" : "適用"}</td>
+                                                <td>{report?.remark}</td>
                                             </tr>
                                         );
                                     });

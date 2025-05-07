@@ -71,7 +71,7 @@ export default function Report(){
             </div>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         建立報告
                     </h1>
 

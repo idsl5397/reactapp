@@ -38,6 +38,21 @@ a:focus-visible {
   outline-offset: 2px !important
 }
 
+.textarea:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 2px !important
+}
+
+.select:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 0 !important
+}
+
+.tab:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 0 !important
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

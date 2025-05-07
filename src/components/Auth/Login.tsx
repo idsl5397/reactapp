@@ -5,11 +5,12 @@ import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {userService} from "@/services/userServices";
 import {Turnstile} from "@marsidev/react-turnstile";
-import {getCookie, storeAuthTokens} from "@/services/serverAuthService";
+import {getAccessToken, storeAuthTokens} from "@/services/serverAuthService";
 import {UserData} from "@/types/UserType";
 import {useauthStore} from "@/Stores/authStore";
 import { useRouter } from 'next/navigation'
 import { useMenuStore } from "@/Stores/menuStore";
+import {startSilentRefresh} from "@/utils/SilentRefresh";
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -84,15 +85,21 @@ export default function Login() {
 
                 // 儲存登入 Token
                 await storeAuthTokens(response.token);
-                const mycookie = await getCookie();
-                console.log(mycookie);
+                const token = await getAccessToken();
+                console.log(token);
                 setErrorMessage("");
+
+                //怪怪的
+                // // ✅ ⬇️ 這裡加上 SilentRefresh 啟動
+                // if (token?.value) {
+                //     startSilentRefresh(token.value);
+                // }
 
                 // 🔥 嘗試獲取選單資料
                 try {
                     const res = await api.get('/Menu/GetMenus', {
                         headers: {
-                            Authorization: mycookie ? `Bearer ${mycookie.value}` : '',
+                            Authorization: token ? `Bearer ${token.value}` : '',
                         },
                     });
                     useMenuStore.getState().setMenu(res.data); // ✅ 寫入全域 store

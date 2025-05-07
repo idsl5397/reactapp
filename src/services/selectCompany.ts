@@ -1,6 +1,6 @@
 // services/enterpriseService.ts
 import axios from "axios";
-import { getCookie } from "@/services/serverAuthService";
+import { getAccessToken } from "@/services/serverAuthService";
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -9,7 +9,7 @@ const api = axios.create({
 export const oldenterpriseService = {
     fetchData: async () => {
         try {
-            const token = await getCookie(); // 取得 Cookie
+            const token = await getAccessToken(); // 取得 Cookie
             if (token) {
                 const response = await api.get("/Enterprise/GetEnterprise", {
                     headers: {

@@ -21,7 +21,7 @@ export default function AddKpiValueStep2() {
     const kpiList = (stepData.kpiDataInput as { kpiList?: Kpi[] })?.kpiList || [];
     const kpiValues = (stepData.kpiReportInput || {}) as Record<string, string>;
     // 🔸建立一個 ref map
-    const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+    const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
 
     const groupedKpis: Record<string, Record<string, Record<string, Kpi[]>>> = kpiList.reduce((acc, kpi) => {
         const category = kpi.kpiCategoryName;
@@ -48,8 +48,9 @@ export default function AddKpiValueStep2() {
     };
 
     // ✅ 提供讓外部可以使用 ref 的方式
-    (stepData as any)._focusMissingInput = (missingId: number) => {
-        const el = inputRefs.current[missingId];
+    (stepData as any)._focusMissingInput = (missingId: number, isNote = false) => {
+        const key = isNote ? `skip_note_${missingId}` : missingId;
+        const el = inputRefs.current[key];
         if (el) el.focus();
     };
 
@@ -101,7 +102,9 @@ export default function AddKpiValueStep2() {
                                                         <input
                                                             type="number"
                                                             placeholder="請輸入執行情況"
-                                                            className="input input-bordered w-full"
+                                                            className={`input input-bordered w-full ${
+                                                                kpiValues[`skip_${kpi.kpiDataId}`] ? "bg-gray-100 text-gray-500" : "bg-white"
+                                                            }`}
                                                             name={`reportValue_${kpi.kpiDataId}`}
                                                             value={kpiValues[kpi.kpiDataId] || ""}
                                                             onChange={(e) =>
@@ -128,6 +131,19 @@ export default function AddKpiValueStep2() {
                                                             />
                                                             本期不適用
                                                         </label>
+                                                        {Boolean(kpiValues[`skip_${kpi.kpiDataId}`]) && (
+                                                            <textarea
+                                                                className="textarea textarea-bordered mt-2 w-full text-sm bg-white"
+                                                                placeholder="請填寫本期不適用的原因"
+                                                                value={kpiValues[`skip_note_${kpi.kpiDataId}`] || ""}
+                                                                onChange={(e) =>
+                                                                    handleInputChange(`skip_note_${kpi.kpiDataId}`, e.target.value)
+                                                                }
+                                                                ref={(el) => {
+                                                                    inputRefs.current[`skip_note_${kpi.kpiDataId}`] = el;
+                                                                }}
+                                                            />
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))}
