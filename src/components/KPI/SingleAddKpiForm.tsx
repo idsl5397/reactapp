@@ -21,11 +21,13 @@ export default function SingleAddKpiForm() {
                 IndicatorName: formData.indicatorName,
                 DetailItemName: formData.detailItemName,
                 Unit: formData.unit,
+                ComparisonOperator: formData.comparisonOperator,
                 IsApplied: true,
                 BaselineYear: `${formData.baselineYear}年`,
                 BaselineValue: formData.baselineValue,
                 TargetValue: formData.targetValue,
                 Remarks: formData.remarks || '',
+                KpiCycleId:formData.kpiCycleId,
             };
 
             try {

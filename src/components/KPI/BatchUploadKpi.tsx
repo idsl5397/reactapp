@@ -129,7 +129,8 @@ export default function BatchUploadKpi() {
                             <th className="border px-2 py-1">單位</th>
                             <th className="border px-2 py-1">是否應用</th>
                             <th className="border px-2 py-1">基線值數據年限</th>
-                            <th className="border px-2 py-1">基礎值</th>
+                            <th className="border px-2 py-1">基線值</th>
+                            <th className="border px-2 py-1">公式</th>
                             <th className="border px-2 py-1">目標值</th>
                             <th className="border px-2 py-1">備註</th>
                         </tr>
@@ -150,6 +151,7 @@ export default function BatchUploadKpi() {
                                 </td>
                                 <td className="border px-2 py-1">{item.baselineYear}</td>
                                 <td className="border px-2 py-1">{item.baselineValue}</td>
+                                <td className="border px-2 py-1">{item.comparisonOperator}</td>
                                 <td className="border px-2 py-1">{item.targetValue}</td>
                                 <td className="border px-2 py-1">{item.remarks}</td>
                             </tr>

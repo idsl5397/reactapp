@@ -1,5 +1,6 @@
 import React, {useMemo, useState, useRef, useEffect} from "react";
 import {ColDef, ModuleRegistry} from "ag-grid-community";
+import type { CellClassParams, CellStyle } from "ag-grid-community"; // ⚠️ 確保你已經有 import
 import { AllEnterpriseModule } from "ag-grid-enterprise";
 import { AgGridReact, AgGridReact as AgGridReactType } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@ag-grid-community/locale";
@@ -29,6 +30,7 @@ interface GridComponentProps {
     activeCategory: string;
     activeType: string;
     columnTitleMap: Record<string, string>;
+    isLoading?: boolean; // ✅ 新增
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -37,7 +39,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                          defaultColDef,
                                                          activeCategory,
                                                          activeType,
-                                                         columnTitleMap
+                                                         columnTitleMap,
+                                                         isLoading,
                                                      }) => {
     const [isEditable, setIsEditable] = useState(false);
     const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
@@ -83,7 +86,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
     };
 
     const filteredRowData = useMemo(() => {
-        return rowData.filter((row) => {
+        const result = rowData.filter((row) => {
             const matchCategory =
                 activeCategory === "tab_all" || row.field === activeCategory;
             const matchType =
@@ -91,6 +94,29 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 (activeType === "basic" && row.category === "基礎型") ||
                 (activeType === "custom" && row.category === "客製型");
             return matchCategory && matchType;
+        });
+
+        // 🔸 依是否符合目標值排序，未達標放前面
+        return result.sort((a, b) => {
+            const compare = (item: IRow): boolean => {
+                const actual = item.latestReportValue;
+                const target = item.targetValue;
+                const operator = item.comparisonOperator;
+
+                if (typeof actual !== "number" || typeof target !== "number") return true; // 排後面
+
+                switch (operator) {
+                    case ">=": return actual >= target;
+                    case "<=": return actual <= target;
+                    case ">":  return actual > target;
+                    case "<":  return actual < target;
+                    case "=":
+                    case "==": return actual === target;
+                    default:   return true; // 未知邏輯視為合格
+                }
+            };
+
+            return Number(compare(a)) - Number(compare(b)); // false (不合格=0) 排在前
         });
     }, [rowData, activeCategory, activeType]);
 
@@ -175,7 +201,11 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         : "客製型"}
             </p>
 
-            {filteredRowData.length === 0 ? (
+            {isLoading ? (
+                <div className="w-full h-[700px] flex items-center justify-center">
+                    <span className="loading loading-spinner loading-lg text-primary">資料載入中…</span>
+                </div>
+            ) : filteredRowData.length === 0 ? (
                 <div className="text-center text-gray-500 mt-6">
                     查無符合條件的資料
                 </div>
@@ -192,11 +222,88 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         sideBar
                         columnDefs={[
                             ...(isEditable ? [checkboxSelectionCol] : []),
-                            ...columnDefs.map((col) => ({
-                                ...col,
-                                editable: isEditable,
-                            })),
-                            actionColumn
+                            ...columnDefs.map((col) => {
+                                if (col.field === "latestReportValue") {
+                                    return {
+                                        ...col,
+                                        editable: isEditable,
+                                        cellStyle: (params: CellClassParams<IRow>): CellStyle => {
+                                            const actual = params.value;
+                                            const data = params.data;
+
+                                            if (!data || actual === null || actual === undefined) {
+                                                return { textAlign: "left" };
+                                            }
+
+                                            const target = data.targetValue;
+                                            const operator = data.comparisonOperator;
+
+                                            let meets = true;
+                                            if (typeof actual === "number" && typeof target === "number") {
+                                                switch (operator) {
+                                                    case ">=": meets = actual >= target; break;
+                                                    case "<=": meets = actual <= target; break;
+                                                    case ">":  meets = actual > target;  break;
+                                                    case "<":  meets = actual < target;  break;
+                                                    case "=":
+                                                    case "==": meets = actual === target; break;
+                                                    default:   meets = true;
+                                                }
+                                            }
+
+                                            return meets
+                                                ? { textAlign: "left" }
+                                                : {
+                                                    textAlign: "left",
+                                                    backgroundColor: "#fdecea",
+                                                    color: "#d32f2f",
+                                                    fontWeight: "bold"
+                                                };
+                                        },
+                                        cellRenderer: (params: CellClassParams<IRow>) => {
+                                            const actual = params.value;
+                                            const data = params.data;
+
+                                            if (!data || actual === null || actual === undefined) return actual;
+
+                                            const target = data.targetValue;
+                                            const operator = data.comparisonOperator;
+
+                                            let meets = true;
+                                            if (typeof actual === "number" && typeof target === "number") {
+                                                switch (operator) {
+                                                    case ">=":
+                                                        meets = actual >= target;
+                                                        break;
+                                                    case "<=":
+                                                        meets = actual <= target;
+                                                        break;
+                                                    case ">":
+                                                        meets = actual > target;
+                                                        break;
+                                                    case "<":
+                                                        meets = actual < target;
+                                                        break;
+                                                    case "=":
+                                                    case "==":
+                                                        meets = actual === target;
+                                                        break;
+                                                    default:
+                                                        meets = true;
+                                                }
+                                            }
+
+                                            return meets ? actual : `⚠️ ${actual}`;
+                                        }
+                                    };
+                                }
+
+                                return {
+                                    ...col,
+                                    editable: isEditable,
+                                };
+                            }),
+                            actionColumn,
                         ]}
                         defaultColDef={{
                             flex: 1,

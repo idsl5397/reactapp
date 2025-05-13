@@ -1,6 +1,11 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import { useStepContext} from "../StepComponse";
+import {Checkdata, KpiReportInput, SelectCompany} from "@/components/KPI/AddKPIvalue";
+import axios from "axios";
 
+const api = axios.create({
+    baseURL: '/proxy'
+});
 export interface Kpi {
     kpiDataId: number;
     kpiCategoryName: string;
@@ -15,8 +20,11 @@ export interface Kpi {
     baselineValue: number;
     targetValue: number;
 }
+interface Step2Props {
+    onSaveDraft?: (checkdata: Checkdata) => void;
+}
 
-export default function AddKpiValueStep2() {
+export default function AddKpiValueStep2({ onSaveDraft }: Step2Props) {
     const { stepData, updateStepData } = useStepContext();
     const kpiList = (stepData.kpiDataInput as { kpiList?: Kpi[] })?.kpiList || [];
     const kpiValues = (stepData.kpiReportInput || {}) as Record<string, string>;
@@ -38,6 +46,31 @@ export default function AddKpiValueStep2() {
     }, {} as Record<string, Record<string,Record<string, Kpi[]>>>);
 
 
+    // 🧩 將填寫資料組成 KpiReportInput[]
+    const generateReportInput = (): KpiReportInput[] => {
+        return kpiList.map((kpi) => {
+            const isSkipped = Boolean(kpiValues[`skip_${kpi.kpiDataId}`]);
+            const valueRaw = kpiValues[kpi.kpiDataId];
+            const parsedValue = valueRaw === "" ? null : Number(valueRaw);
+            // ✅ 只有在 parsedValue 是 number 時才呼叫 isNaN
+            let value: number | null = null;
+            if (!isSkipped) {
+                if (parsedValue !== null && !isNaN(parsedValue)) {
+                    value = parsedValue;
+                }
+            }
+            const remark = kpiValues[`skip_note_${kpi.kpiDataId}`] || "";
+
+            return {
+                kpiDataId: kpi.kpiDataId,
+                value,
+                isSkipped,
+                remark,
+            };
+        });
+    };
+
+
     const handleInputChange = (id: string | number, value: string | boolean) => {
         updateStepData({
             kpiReportInput: {
@@ -54,6 +87,56 @@ export default function AddKpiValueStep2() {
         if (el) el.focus();
     };
 
+    useEffect(() => {
+        const fetchDrafts = async () => {
+            const company = stepData.SelectCompany as SelectCompany;
+            if (!company || !company.organizationId || !company.year || !company.quarter) return;
+
+            try {
+                const response = await api.get("/Kpi/load-kpi-draft", {
+                    params: {
+                        organizationId: company.organizationId,
+                        year: company.year,
+                        quarter: company.quarter,
+                    },
+                });
+
+                const reports = response.data.data as KpiReportInput[];
+
+                if (!reports || reports.length === 0) return;
+
+                const restoredMap: Record<string, string> = {};
+                for (const report of reports) {
+                    if (report.isSkipped) {
+                        restoredMap[`skip_${report.kpiDataId}`] = "true";
+                        if (report.remark) {
+                            restoredMap[`skip_note_${report.kpiDataId}`] = report.remark;
+                        }
+                    } else if (report.value !== null) {
+                        restoredMap[report.kpiDataId] = report.value.toString();
+                    }
+                }
+
+                updateStepData({
+                    kpiReportInput: restoredMap,
+                    Checkdata: {
+                        organizationId: company.organizationId,
+                        organizationName: company.organizationName,
+                        year: company.year,
+                        quarter: company.quarter,
+                        reports,
+                    },
+                });
+
+                console.log("✅ 成功載入草稿：", reports);
+            } catch (error) {
+                console.error("讀取草稿失敗", error);
+            }
+        };
+
+        // 當元件 mount 或切換公司時執行
+        fetchDrafts();
+    }, []);
 
     return (
         <div className="space-y-4">
@@ -90,7 +173,7 @@ export default function AddKpiValueStep2() {
                                                         {kpi.indicatorName} - {kpi.detailItemName}
                                                     </div>
                                                     <div className="text-sm text-gray-600 mt-1">
-                                                        公司：{kpi.company} ｜ 工廠/製程廠：{kpi.productionSite || "無"}
+                                                        公司：{kpi.company} ｜ 工場/製程區：{kpi.productionSite || "無"}
                                                     </div>
                                                     <div className="text-sm text-gray-600 mt-1">
                                                         單位：{kpi.unit} ｜ 基線年：{kpi.baselineYear}
@@ -150,8 +233,41 @@ export default function AddKpiValueStep2() {
                                         </div>
                                     </div>
                                 ))}
+                                <div className="flex justify-end mt-10">
+                                    <button
+                                        className="btn btn-outline btn-primary px-6 py-2 text-sm font-semibold"
+                                        onClick={() => {
+                                            if (onSaveDraft) {
+                                                const currentReports = generateReportInput();
+                                                const company = stepData.SelectCompany as SelectCompany;
+
+                                                onSaveDraft({
+                                                    organizationId: company.organizationId,
+                                                    organizationName: company.organizationName,
+                                                    year: company.year,
+                                                    quarter: company.quarter,
+                                                    reports: currentReports,
+                                                });
+
+                                                updateStepData({
+                                                    Checkdata: {
+                                                        organizationId: company.organizationId,
+                                                        organizationName: company.organizationName,
+                                                        year: company.year,
+                                                        quarter: company.quarter,
+                                                        reports: currentReports,
+                                                    }
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        暫存填寫內容
+                                    </button>
+                                </div>
                             </div>
+
                         );
+
                     })}
                 </div>
             ))}

@@ -31,6 +31,7 @@ export interface KpiDataInput {
 
 // 第三步驟
 export interface Checkdata{
+    organizationId: number;
     organizationName: string;
     year: number;
     quarter: string;
@@ -43,7 +44,7 @@ export interface KpiReportInput {
     remark: string;
 }
 
-//步驟介面 ex: 步驟一 EmailVerificationForm?: EmailVerificationFormData;
+//步驟介面 ex: 步驟一 SelectCompany?: SelectCompany;
 interface ExtendedFormData extends FormDataType {
     SelectCompany?: SelectCompany;
     KpiDataInput?: KpiDataInput;
@@ -63,8 +64,7 @@ const api = axios.create({
     baseURL: '/proxy',
 });
 
-export default function Register() {
-
+export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "建立報告" , href: "/reportEntry" },
@@ -103,6 +103,48 @@ export default function Register() {
         } catch (error: any) {
             console.error("提交錯誤", error);
             toast.error("提交失敗，請稍後再試");
+        }
+    };
+
+    const handleSaveDraft = async (checkdata: Checkdata) => {
+        // 先檢查：有沒有 skip = true 但 remark 為空的
+        const missingRemark = checkdata.reports.find(report =>
+            report.isSkipped && (!report.remark || report.remark.trim() === "")
+        );
+
+        if (missingRemark) {
+            toast.error(`有勾選不適用請填寫不適用原因（備註）。`);
+            return;
+        }
+
+        // 過濾有效資料並補上 year、quarter
+        const filteredReports = checkdata.reports
+            .filter(report => report.isSkipped || report.value !== null)
+            .map(report => ({
+                ...report,
+                year: checkdata.year,
+                quarter: checkdata.quarter,
+            }));
+
+        if (filteredReports.length === 0) {
+            toast.error("沒有有效的報告內容可儲存，請填寫後再暫存。");
+            return;
+        }
+
+        console.log("送出草稿：", filteredReports);
+
+        try {
+            const response = await api.post("/Kpi/save-kpi-report", filteredReports);
+            const res = response.data;
+
+            if (res.success) {
+                toast.success("暫存成功！");
+            } else {
+                toast.error(`暫存失敗：${res.message}`);
+            }
+        } catch (error) {
+            console.error("暫存錯誤", error);
+            toast.error("暫存失敗，請稍後再試");
         }
     };
 
@@ -185,7 +227,7 @@ export default function Register() {
                         {/* 步驟 2: 填寫資料 */}
                         <StepContent step={1}>
                             <StepCard title="填寫資料">
-                                <Step2/>
+                                <Step2 onSaveDraft={handleSaveDraft} />
                                 <StepNavigationWrapper
                                     prevLabel="返回"
                                     nextLabel="確認並繼續"

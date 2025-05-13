@@ -36,7 +36,11 @@ const columnTitleMap: Record<string, string> = {
     targetValue: "目標值",
     remarks: "備註",
     reports: "歷史所有執行狀況",
-    latestReportDisplay: "最新執行狀況"
+    comparisonOperator: "公式",
+    latestReportYear: "最新年份",
+    latestReportPeriod: "最新季度",
+    latestReportYear_Period: "最新執行年份季度",
+    latestReportValue: "最新執行狀況"
 };
 
 export default function KPI() {
@@ -52,24 +56,6 @@ export default function KPI() {
 
     const [selection, setSelection] = useState<SelectionPayload>({ orgId: "" });
 
-    const simplifyReports = (data: any[]) => {
-        return data.map((item) => {
-            const simplified = { ...item };
-            if (item.reports?.length > 0) {
-                const sorted = [...item.reports].sort((a, b) => {
-                    if (a.year !== b.year) return b.year - a.year;
-                    const order: Record<string, number> = { Q1: 1, Q2: 2, Q3: 3, Q4: 4, Y: 5 };
-                    return (order[b.period] || 0) - (order[a.period] || 0);
-                });
-                const latest = sorted[0];
-                simplified["latestReportDisplay"] = `${latest.year}_${latest.period}：${latest.kpiReportValue}`;
-            } else {
-                simplified["latestReportDisplay"] = "-";
-            }
-            // delete simplified.reports;
-            return simplified;
-        });
-    };
 
     const handleQuery = async () => {
         setIsLoading(true);
@@ -84,13 +70,12 @@ export default function KPI() {
 
             if (response.data?.success) {
                 const raw = response.data.data;
-                const simplified = simplifyReports(raw);
-                setRowData(simplified);
+                setRowData(raw);
                 console.log(raw);
-                toast.success(`查詢成功，回傳 ${simplified.length} 筆資料`);
+                toast.success(`查詢成功，回傳 ${raw.length} 筆資料`);
 
-                if (simplified.length > 0) {
-                    const keys = Object.keys(simplified[0]).filter(k => k !== 'reports');
+                if (raw.length > 0) {
+                    const keys = Object.keys(raw[0]).filter(k => k !== 'reports');
                     const columns = keys.map((key) => ({
                         field: key,
                         headerName: columnTitleMap[key] || key,
@@ -186,6 +171,7 @@ export default function KPI() {
                                     activeCategory={activeTab}
                                     activeType={activeType}
                                     columnTitleMap={columnTitleMap}
+                                    isLoading={isLoading}
                                 />
                             </div>
                         </div>
