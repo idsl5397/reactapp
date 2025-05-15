@@ -192,7 +192,10 @@ export default function AddKPIvalue() {
 
                                         try {
                                             const response = await api.get("/Kpi/kpidata-for-report", {
-                                                params: { organizationId: orgId },
+                                                params: {
+                                                    organizationId: orgId,
+                                                    year: year,
+                                                },
                                             });
                                             const res = response.data;
                                             if (!res.success) {

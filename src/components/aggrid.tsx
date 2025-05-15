@@ -15,6 +15,15 @@ import {
 } from "recharts";
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
+interface KpiReport {
+    year: number;
+    period: string;
+    kpiReportValue: number;
+}
+
+interface KpiDataCycle {
+    reports?: KpiReport[];
+}
 
 interface IRow {
     id: number;
@@ -53,22 +62,30 @@ const GridComponent: React.FC<GridComponentProps> = ({
     const [isChartLoading, setIsChartLoading] = useState(false);
 
     useEffect(() => {
-        if (!selectedDetail?.reports) return;
+        const allReports = selectedDetail?.kpiDatas?.flatMap((kpiData: KpiDataCycle) =>
+            (kpiData.reports || []).map((report) => ({
+                year: report.year,
+                period: report.period,
+                kpiReportValue: report.kpiReportValue,
+            }))
+        );
+
+        if (!allReports || allReports.length === 0) return;
 
         setIsChartLoading(true);
         const timer = setTimeout(() => {
-            const sorted = [...selectedDetail.reports].sort((a, b) =>
+            const sorted = [...allReports].sort((a, b) =>
                 `${a.year}_${a.period}`.localeCompare(`${b.year}_${b.period}`)
             );
 
-            const mapped = sorted.map((r: any) => ({
+            const mapped = sorted.map((r) => ({
                 name: `${r.year}_${r.period}`,
                 value: parseFloat(r.kpiReportValue),
             }));
 
             setChartData(filterRange === "last4" ? mapped.slice(-4) : mapped);
             setIsChartLoading(false);
-        }, 300); // 模擬延遲，可根據實際狀況調整
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [selectedDetail, filterRange]);
@@ -99,9 +116,9 @@ const GridComponent: React.FC<GridComponentProps> = ({
         // 🔸 依是否符合目標值排序，未達標放前面
         return result.sort((a, b) => {
             const compare = (item: IRow): boolean => {
-                const actual = item.latestReportValue;
-                const target = item.targetValue;
-                const operator = item.comparisonOperator;
+                const actual = item.lastReportValue;
+                const target = item.lastTargetValue;
+                const operator = item.lastComparisonOperator;
 
                 if (typeof actual !== "number" || typeof target !== "number") return true; // 排後面
 
@@ -223,7 +240,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         columnDefs={[
                             ...(isEditable ? [checkboxSelectionCol] : []),
                             ...columnDefs.map((col) => {
-                                if (col.field === "latestReportValue") {
+                                if (col.field === "lastReportValue") {
                                     return {
                                         ...col,
                                         editable: isEditable,
@@ -235,8 +252,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 return { textAlign: "left" };
                                             }
 
-                                            const target = data.targetValue;
-                                            const operator = data.comparisonOperator;
+                                            const target = data.lastTargetValue;
+                                            const operator = data.lastComparisonOperator;
 
                                             let meets = true;
                                             if (typeof actual === "number" && typeof target === "number") {
@@ -266,8 +283,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
                                             if (!data || actual === null || actual === undefined) return actual;
 
-                                            const target = data.targetValue;
-                                            const operator = data.comparisonOperator;
+                                            const target = data.lastTargetValue;
+                                            const operator = data.lastComparisonOperator;
 
                                             let meets = true;
                                             if (typeof actual === "number" && typeof target === "number") {
@@ -397,22 +414,47 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         </div>
 
                         <ul className="space-y-2 text-sm max-h-[300px] overflow-y-auto">
-                            {Object.entries(selectedDetail).map(([key, value]) => (
-                                <li key={key}>
-                                    <strong>{columnTitleMap[key] || key}：</strong>
-                                    {key === "reports" && Array.isArray(value) ? (
-                                        <ul className="list-disc list-inside ml-4 space-y-1">
-                                            {value.map((report: any, idx: number) => (
-                                                <li key={idx}>
-                                                    {report.year}_{report.period}：{report.kpiReportValue}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
+                            {Object.entries(selectedDetail).map(([key, value]) => {
+                                if (key === "kpiDatas" && Array.isArray(value)) {
+                                    return (
+                                        <li key={key}>
+                                            <strong>KPI 循環資料：</strong>
+                                            <ul className="list-disc list-inside ml-4 space-y-2">
+                                                {value.map((kpiData: any, idx: number) => (
+                                                    <li key={idx}>
+                                                        <div className="mb-1 font-semibold">
+                                                            循環名稱：{kpiData.kpiCycleName || "-"}
+                                                        </div>
+                                                        <div className="ml-2">
+                                                            <p>基線年：{kpiData.baselineYear}</p>
+                                                            <p>基線值：{kpiData.baselineValue}</p>
+                                                            <p>目標值：{kpiData.targetValue}</p>
+                                                            <p>備註：{kpiData.remarks || "-"}</p>
+                                                            {Array.isArray(kpiData.reports) && (
+                                                                <ul className="list-disc list-inside ml-4 mt-1">
+                                                                    {kpiData.reports.map((report: any, rIdx: number) => (
+                                                                        <li key={rIdx}>
+                                                                            {report.year}_{report.period}：{report.kpiReportValue}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </li>
+                                    );
+                                }
+
+                                // 其他欄位照原本方式顯示
+                                return (
+                                    <li key={key}>
+                                        <strong>{columnTitleMap[key] || key}：</strong>
                                         <span> {String(value ?? "-")}</span>
-                                    )}
-                                </li>
-                            ))}
+                                    </li>
+                                );
+                            })}
                         </ul>
 
                         <button

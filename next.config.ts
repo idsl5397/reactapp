@@ -7,71 +7,105 @@ const API_URL = process.env.API || "http://127.0.0.1:5013";
 // const Mydomain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
 const RAG_API = process.env.RAG_API || "http://127.0.0.1:5013";
 
+const securityHeaders = [
+    {
+        key: "Strict-Transport-Security",
+        value: "max-age=31536000; includeSubDomains; preload"
+    },
+    {
+        key: "X-Content-Type-Options",
+        value: "nosniff"
+    },
+    {
+        key: "X-Frame-Options",
+        value: "SAMEORIGIN"
+    },
+    {
+        key: "Referrer-Policy",
+        value: "strict-origin-when-cross-origin"
+    },
+    {
+        key: "Permissions-Policy",
+        value: "geolocation=(), camera=(), microphone=()"
+    },
+    // {
+    //     key: "Content-Security-Policy",
+    //     value: `
+    //   default-src 'self';
+    //   script-src 'self' 'unsafe-inline';
+    //   style-src 'self' 'unsafe-inline';
+    //   img-src 'self' data:;
+    //   font-src 'self';
+    //   connect-src 'self' https:;
+    //   frame-ancestors 'none';
+    // `.replace(/\s{2,}/g, ' ').trim()
+    // },
+    {
+        key: 'X-Powered-By',
+        value: '' // 再保險移除
+    }
+];
+
 const nextConfig: NextConfig = {
-    poweredByHeader: false, // 禁用 X-Powered-By 標頭
+    poweredByHeader: false,
 
     async headers() {
         return [
             {
-                source: '/(.*)', // 應用於所有路徑
-                headers: [
-                    {
-                        key: 'X-Powered-By',
-                        value: '', // 雙重保險移除標頭
-                    }
-                ],
-            },
+                source: "/(.*)",
+                headers: securityHeaders
+            }
         ];
     },
 
     async rewrites() {
         return [
             {
-                source: "/proxy/:path*",  // 匹配 /proxy/ 後的所有路徑
-                destination: `${API_URL}/:path*`,  // 將路徑轉發到 API_URL
-                basePath: false,  // 停用 basePath 處理
-                locale: false,    // 停用 locale 處理
+                source: "/proxy/:path*",
+                destination: `${API_URL}/:path*`,
+                basePath: false,
+                locale: false
             },
             {
                 source: "/app/:path*",
                 destination: `${RAG_API}/:path*`,
                 basePath: false,
-                locale: false,
-            },
+                locale: false
+            }
         ];
-    },
+    }
 };
 
 
 
 export default withSentryConfig(nextConfig, {
-// For all available options, see:
-// https://www.npmjs.com/package/@sentry/webpack-plugin#options
+    // For all available options, see:
+    // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-org: "3d43ab6c3620",
-project: "kpi-nextjs",
+    org: "3d43ab6c3620",
+    project: "kpi-nextjs",
 
-// Only print logs for uploading source maps in CI
-silent: !process.env.CI,
+    // Only print logs for uploading source maps in CI
+    silent: !process.env.CI,
 
-// For all available options, see:
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-// Upload a larger set of source maps for prettier stack traces (increases build time)
-widenClientFileUpload: true,
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
 
-// Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-// This can increase your server load as well as your hosting bill.
-// Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-// side errors will fail.
-// tunnelRoute: "/monitoring",
+    // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+    // This can increase your server load as well as your hosting bill.
+    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+    // side errors will fail.
+    // tunnelRoute: "/monitoring",
 
-// Automatically tree-shake Sentry logger statements to reduce bundle size
-disableLogger: true,
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    disableLogger: true,
 
-// Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-// See the following for more information:
-// https://docs.sentry.io/product/crons/
-// https://vercel.com/docs/cron-jobs
-automaticVercelMonitors: true,
+    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+    // See the following for more information:
+    // https://docs.sentry.io/product/crons/
+    // https://vercel.com/docs/cron-jobs
+    automaticVercelMonitors: true,
 });

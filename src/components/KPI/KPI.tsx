@@ -37,10 +37,19 @@ const columnTitleMap: Record<string, string> = {
     remarks: "備註",
     reports: "歷史所有執行狀況",
     comparisonOperator: "公式",
-    latestReportYear: "最新年份",
-    latestReportPeriod: "最新季度",
+    lastBaselineYear: "最新基線年",
+    lastBaselineValue: "最新基線值",
+    lastTargetValue: "最新目標值",
+    lastKpiCycleName: "最新循環",
+    lastComparisonOperator: "公式",
+    lastRemarks: "備註",
+    lastReportYear: "最新年份",
+    lastReportPeriod: "最新季度",
     latestReportYear_Period: "最新執行年份季度",
-    latestReportValue: "最新執行狀況"
+    lastReportValue: "最新執行狀況",
+    kpiCycleName: "循環名稱",
+    kpiCycleStartYear: "循環開始年份",
+    kpiCycleEndYear: "循環結束年份",
 };
 
 export default function KPI() {
@@ -75,13 +84,13 @@ export default function KPI() {
                 toast.success(`查詢成功，回傳 ${raw.length} 筆資料`);
 
                 if (raw.length > 0) {
-                    const keys = Object.keys(raw[0]).filter(k => k !== 'reports');
+                    const keys = Object.keys(raw[0]).filter(k => k !== 'kpiDatas');
                     const columns = keys.map((key) => ({
                         field: key,
                         headerName: columnTitleMap[key] || key,
                         valueFormatter: (p: any) => p.value ?? "-",
                         cellStyle: { textAlign: "left" },
-                        hide: key === 'id'
+                        hide: key === 'id' || key === 'detailItemId',
                     }));
                     setColumnDefs(columns);
                 }
