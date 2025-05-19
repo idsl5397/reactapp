@@ -70,7 +70,10 @@ const GridComponent: React.FC<GridComponentProps> = ({
             }))
         );
 
-        if (!allReports || allReports.length === 0) return;
+        if (!allReports || allReports.length === 0) {
+            setChartData([]); // ✅ 清空圖表
+            return;
+        }
 
         setIsChartLoading(true);
         const timer = setTimeout(() => {
