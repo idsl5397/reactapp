@@ -29,7 +29,7 @@ export default function SingleAddKpiForm() {
                 Remarks: formData.remarks || '',
                 KpiCycleId:formData.kpiCycleId,
             };
-
+            console.log("送出的 payload：", payload);
             try {
                 const res = await api.post('/Kpi/import-single', payload);
                 toast.success(res.data.message);

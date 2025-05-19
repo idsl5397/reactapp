@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import GridComponent from "@/components/KpiAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
+import SelectKpiEntriesByDate, { SelectionPayload } from "@/components/select/selectKpiEntriesByDate";
 import Link from 'next/link';
 import axios from "axios";
 import { ColDef } from "ag-grid-community";
@@ -25,7 +25,7 @@ const columnTitleMap: Record<string, string> = {
     company: "工廠名稱",
     productionSite: "工場/製程區",
     category: "指標類型",
-    field: "所屬類型",
+    field: "指標領域",
     indicatorNumber: "指標編號",
     indicatorName: "指標名稱",
     detailItemName: "指標細項名稱",
@@ -37,16 +37,16 @@ const columnTitleMap: Record<string, string> = {
     remarks: "備註",
     reports: "歷史所有執行狀況",
     comparisonOperator: "公式",
-    lastBaselineYear: "最新基線年",
-    lastBaselineValue: "最新基線值",
-    lastTargetValue: "最新目標值",
+    lastBaselineYear: "基線年",
+    lastBaselineValue: "基線值",
+    lastTargetValue: "目標值",
     lastKpiCycleName: "最新循環",
     lastComparisonOperator: "公式",
     lastRemarks: "備註",
     lastReportYear: "最新年份",
     lastReportPeriod: "最新季度",
     latestReportYear_Period: "最新執行年份季度",
-    lastReportValue: "最新執行狀況",
+    lastReportValue: "執行現況",
     kpiCycleName: "循環名稱",
     kpiCycleStartYear: "循環開始年份",
     kpiCycleEndYear: "循環結束年份",
@@ -90,7 +90,15 @@ export default function KPI() {
                         headerName: columnTitleMap[key] || key,
                         valueFormatter: (p: any) => p.value ?? "-",
                         cellStyle: { textAlign: "left" },
-                        hide: key === 'id' || key === 'detailItemId',
+                        hide: ['id', 'detailItemId', 'productionSite', 'indicatorNumber', 'category', 'lastKpiCycleName', 'lastRemarks', 'lastReportYear', 'lastReportPeriod', 'detailItemName', 'lastComparisonOperator'].includes(key),
+                        width:
+                            key === 'company' ? 180 :
+                            key === 'field' ? 160 :
+                            key === 'indicatorName' ? 220 :
+                            key === 'lastReportValue' ? 140 :
+                            key === 'targetValue' ? 140 :
+                            key === 'remarks' ? 200 :
+                            120,
                     }));
                     setColumnDefs(columns);
                 }
@@ -127,7 +135,7 @@ export default function KPI() {
                     </div>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                            <SelectEnterprise onSelectionChange={(s) => setSelection(s)}/>
+                            <SelectKpiEntriesByDate onSelectionChange={(s) => setSelection(s)}/>
                         </div>
                     </div>
                     <div className="flex justify-end gap-x-8">

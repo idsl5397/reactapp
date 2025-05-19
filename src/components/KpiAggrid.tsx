@@ -178,6 +178,20 @@ const GridComponent: React.FC<GridComponentProps> = ({
         )
     };
 
+    const onGridReady = (params: any) => {
+        try {
+            const allColumnIds: string[] = [];
+            const columns = params?.columnApi?.getAllColumns?.();
+            if (columns && Array.isArray(columns)) {
+                columns.forEach((col: any) => {
+                    allColumnIds.push(col.getId());
+                });
+                params.columnApi.autoSizeColumns(allColumnIds, false);
+            }
+        } catch (err) {
+            console.error("AutoSize column failed:", err);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -238,8 +252,19 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         key={`${activeCategory}-${activeType}`}
                         ref={gridRef}
                         localeText={AG_GRID_LOCALE_TW}
+                        onGridReady={onGridReady}
                         rowData={filteredRowData}
-                        sideBar
+                        sideBar={{
+                            toolPanels: [
+                                {
+                                    id: 'columns',
+                                    labelDefault: '欄位',
+                                    labelKey: 'columns',
+                                    iconKey: 'columns',
+                                    toolPanel: 'agColumnsToolPanel',
+                                }
+                            ],
+                        }}
                         columnDefs={[
                             ...(isEditable ? [checkboxSelectionCol] : []),
                             ...columnDefs.map((col) => {
@@ -326,7 +351,6 @@ const GridComponent: React.FC<GridComponentProps> = ({
                             actionColumn,
                         ]}
                         defaultColDef={{
-                            flex: 1,
                             sortable: true,
                             filter: true,
                             resizable: true,
