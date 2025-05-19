@@ -195,6 +195,7 @@ export default function AddKPIvalue() {
                                                 params: {
                                                     organizationId: orgId,
                                                     year: year,
+                                                    quarter: quarter
                                                 },
                                             });
                                             const res = response.data;
@@ -208,6 +209,7 @@ export default function AddKPIvalue() {
                                                 return false;
                                             }
                                             toast.success(`抓到 ${kpiDataList.length} 筆 KPI 指標，可建立報告`);
+                                            console.log("抓到的 KPI 資料：",response.data);
                                             console.log("抓到的 KPI 資料：", kpiDataList);
                                             // ✅ 將資料暫存在 stepData 供 Step2 使用
                                             updateStepData({

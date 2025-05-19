@@ -18,9 +18,11 @@ export default function AddKpiPage() {
 
     return (
         <>
-            <Toaster position="top-right" reverseOrder={false} />
-            <Breadcrumbs items={breadcrumbItems} />
-
+            <Toaster position="top-right" reverseOrder={false}/>
+            <Breadcrumbs items={breadcrumbItems}/>
+            <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
+                新增績效指標
+            </h1>
             <div className="mt-8 flex border-b border-gray-200 space-x-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
                 <button
                     onClick={() => setMode('single')}
@@ -55,9 +57,9 @@ export default function AddKpiPage() {
             </div>
 
             <div className="mt-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-10">
-                {mode === 'single' && <SingleAddKpiForm />}
-                {mode === 'batch' && <BatchUploadKpi />}
-                {mode === 'all' && <FullImportKpi />} {/* ⬅️ 渲染新元件 */}
+                {mode === 'single' && <SingleAddKpiForm/>}
+                {mode === 'batch' && <BatchUploadKpi/>}
+                {mode === 'all' && <FullImportKpi/>} {/* ⬅️ 渲染新元件 */}
             </div>
         </>
     );

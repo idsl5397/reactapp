@@ -1,74 +1,61 @@
 'use client';
 
-import React from 'react';
-import Aggrid from "@/components/aggrid";
+import React, { useState } from 'react';
+import Aggrid from "@/components/SuggestAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise from "@/components/select/selectEnterprise";
-import Link from 'next/link';
-import GridComponent from "@/components/aggrid";
+import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
+import axios from 'axios';
+import Link from "next/link";
 
-
-const rowData = [
-    {
-        id: 1,
-        year: 2024,
-        date: "03-18",
-        event: "書面審查會議",
-        vendor: "中油公司",
-        category: "PSM",
-        committee: "張委員",
-        suggestion: "加強設備巡檢",
-        suggestionType: "預防措施",
-        department: "設備部",
-        adoption: "是",
-        improvement: "已增加每月巡檢頻率"
-    },
-    {
-        id: 2,
-        year: 2024,
-        date: "03-10",
-        event: "書面審查會議",
-        vendor: "中油公司",
-        category: "ECO",
-        committee: "王委員",
-        suggestion: "降低廢氣排放",
-        suggestionType: "改善建議",
-        department: "環保部",
-        adoption: "否",
-        improvement: "評估成本影響中"
-    },
-    {
-        id: 3,
-        year: 2023,
-        date: "12-25",
-        event: "書面審查會議",
-        vendor: "電子科技公司",
-        category: "FR",
-        committee: "李委員",
-        suggestion: "增加消防演練",
-        suggestionType: "應變措施",
-        department: "安全部",
-        adoption: "是",
-        improvement: "已納入年度訓練計畫"
-    }
-];
-
+const api = axios.create({
+    baseURL: "/proxy",
+});
 const columnDefs = [
-    { field: "id", headerName: "編號" },
-    { field: "year", headerName: "年" },
-    { field: "date", headerName: "月日" },
-    { field: "event", headerName: "會議/活動" },
-    { field: "vendor", headerName: "廠商" },
-    { field: "category", headerName: "類別" },
-    { field: "committee", headerName: "委員" },
-    { field: "suggestion", headerName: "建議" },
-    { field: "suggestionType", headerName: "建議類別" },
-    { field: "department", headerName: "負責部門" },
-    { field: "adoption", headerName: "是否參採" },
-    { field: "improvement", headerName: "改善對策/辦理情形" }
+    { field: "doneYear", headerName: "年" },
+    { field: "doneMonth", headerName: "月" },
+    { field: "suggestEventTypeName", headerName: "會議/活動" },
+    { field: "organizationName", headerName: "廠商" },
+    { field: "kpiFieldName", headerName: "類別" },
+    { field: "userName", headerName: "委員" },
+    { field: "suggestionContent", headerName: "建議" },
+    { field: "suggestionTypeName", headerName: "建議類別" },
+    { field: "respDept", headerName: "負責部門" },
+    { field: "isAdopted", headerName: "是否參採" },
+    { field: "improveDetails", headerName: "改善對策/辦理情形" }
 ];
 
 export default function Suggest() {
+    const [rowData, setRowData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selection, setSelection] = useState<SelectionPayload>({
+        orgId: '',
+        startYear: '',
+        endYear: ''
+    });
+
+    const handleQuery = async () => {
+        setIsLoading(true);
+
+        try {
+            const res = await api.get('/Suggest/GetAllSuggest');
+            const all = res.data;
+
+            // ✅ 若 selection 為空則顯示全部
+            const filtered = all.filter((item: any) => {
+                const matchesOrg = !selection.orgId || item.organizationName?.includes(selection.orgId);
+                const matchesYear =
+                    (!selection.startYear || item.doneYear >= parseInt(selection.startYear)) &&
+                    (!selection.endYear || item.doneYear <= parseInt(selection.endYear));
+                return matchesOrg && matchesYear;
+            });
+
+            setRowData(filtered);
+        } catch (err) {
+            console.error("取得建議失敗", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
@@ -81,10 +68,8 @@ export default function Suggest() {
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
-                <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
-                        委員回覆及改善建議
-                    </h1>
+                <div className="relative space-y-8 w-full mx-auto">
+                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">委員回覆及改善建議</h1>
                     <div className="mt-6 flex justify-center">
                         <input
                             type="text"
@@ -93,7 +78,7 @@ export default function Suggest() {
                         />
                     </div>
                     <div className="flex justify-end gap-x-8">
-                        <Link href="/suggest/newSuggest">
+                        <Link href="/suggest/newSuggest" tabIndex={-1}>
                             <button
                                 type="button"
                                 className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
@@ -104,31 +89,29 @@ export default function Suggest() {
                     </div>
                     <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                            <SelectEnterprise/>
+                            <SelectEnterprise onSelectionChange={(s) => setSelection(s)}/>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-x-8">
-                        <Link href=" ">
-                            <button
-                                type="button"
-                                className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
-                            >
-                                查詢
-                            </button>
-                        </Link>
-                    </div>
-                    <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
-                        <div className="w-full mx-auto">
 
-                            {/* AgGrid 表格 */}
-                            <div className="mt-6 px-4 lg:px-6">
-                                {/*<Aggrid rowData={rowData} columnDefs={columnDefs}/>*/}
-                            </div>
-                        </div>
+                    <div className="flex justify-end gap-x-8">
+                        <button
+                            type="button"
+                            className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
+                            onClick={handleQuery}
+                        >
+                            {isLoading ? '查詢中...' : '查詢'}
+                        </button>
+                    </div>
+
+                    <div className="card bg-base-100 shadow-xl p-6 mt-6">
+                        {isLoading ? (
+                            <div className="text-center text-gray-500">資料載入中…</div>
+                        ) : (
+                            <Aggrid rowData={rowData} columnDefs={columnDefs}/>
+                        )}
                     </div>
                 </div>
             </div>
-
         </>
     );
-};
+}

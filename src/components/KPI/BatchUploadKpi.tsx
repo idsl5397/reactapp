@@ -119,15 +119,16 @@ export default function BatchUploadKpi() {
                     <table className="w-full text-sm text-left">
                         <thead>
                         <tr>
-                            <th className="border px-2 py-1">公司ID</th>
-                            <th className="border px-2 py-1">公司</th>
-                            <th className="border px-2 py-1">製程廠</th>
+                            <th className="border px-2 py-1">工廠ID</th>
+                            <th className="border px-2 py-1">工廠</th>
+                            <th className="border px-2 py-1">工場/製程區</th>
                             <th className="border px-2 py-1">指標類別</th>
                             <th className="border px-2 py-1">領域</th>
                             <th className="border px-2 py-1">指標項目</th>
                             <th className="border px-2 py-1">指標細項</th>
                             <th className="border px-2 py-1">單位</th>
                             <th className="border px-2 py-1">是否應用</th>
+                            <th className="border px-2 py-1">循環</th>
                             <th className="border px-2 py-1">基線值數據年限</th>
                             <th className="border px-2 py-1">基線值</th>
                             <th className="border px-2 py-1">公式</th>
@@ -149,6 +150,7 @@ export default function BatchUploadKpi() {
                                 <td className="border px-2 py-1">
                                     {item.isApplied ? '是' : '否'}
                                 </td>
+                                <td className="border px-2 py-1">{item.kpiCycleName}</td>
                                 <td className="border px-2 py-1">{item.baselineYear}</td>
                                 <td className="border px-2 py-1">{item.baselineValue}</td>
                                 <td className="border px-2 py-1">{item.comparisonOperator}</td>

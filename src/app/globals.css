@@ -12,10 +12,10 @@
 /*  outline-offset: 2px !important;*/
 /*  animation: outlineGrow 0.1s ease-out forwards !important;*/
 /*}*/
-/*a:focus-visible {*/
-/*  outline: 4px dashed #ff1493 !important;*/
-/*  outline-offset: 2px !important;*/
-/*}*/
+.outline-dashed-pink:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 2px !important;
+}
 
 .btn:focus-visible {
   outline: 4px dashed #ff1493 !important;

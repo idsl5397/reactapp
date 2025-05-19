@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import GridComponent from "@/components/aggrid";
+import GridComponent from "@/components/KpiAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
 import Link from 'next/link';
@@ -173,15 +173,19 @@ export default function KPI() {
                                     客製型指標
                                 </button>
                             </div>
-                            <div className="card bg-base-100 shadow-md p-6 mt-4">
-                                <GridComponent
-                                    rowData={rowData}
-                                    columnDefs={columnDefs}
-                                    activeCategory={activeTab}
-                                    activeType={activeType}
-                                    columnTitleMap={columnTitleMap}
-                                    isLoading={isLoading}
-                                />
+                            <div className="card bg-base-100 shadow-xl p-6 mt-6">
+                                {isLoading ? (
+                                    <div className="text-center text-gray-500">資料載入中…</div>
+                                ) : (
+                                    <GridComponent
+                                        rowData={rowData}
+                                        columnDefs={columnDefs}
+                                        activeCategory={activeTab}
+                                        activeType={activeType}
+                                        columnTitleMap={columnTitleMap}
+                                        isLoading={isLoading}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
