@@ -97,11 +97,61 @@ const GridComponent: React.FC<GridComponentProps> = ({
     const exportToExcel = () => {
         gridRef.current?.api.exportDataAsExcel({
             fileName: `指標資料_${new Date().toISOString().slice(0, 10)}.xlsx`,
+            processCellCallback: (params) => {
+                if (params.column.getColId() === 'lastReportValue') {
+                    const actual = params.value;
+                    const row = params.node?.data;
+                    const target = row.lastTargetValue;
+                    const operator = row.lastComparisonOperator;
+
+                    let meets = true;
+                    if (typeof actual === "number" && typeof target === "number") {
+                        switch (operator) {
+                            case ">=": meets = actual >= target; break;
+                            case "<=": meets = actual <= target; break;
+                            case ">":  meets = actual > target;  break;
+                            case "<":  meets = actual < target;  break;
+                            case "=":
+                            case "==": meets = actual === target; break;
+                            default:   meets = true;
+                        }
+                    }
+
+                    return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
+                }
+
+                return params.value ?? "-";
+            },
         });
     };
     const exportToCsv = () => {
         gridRef.current?.api.exportDataAsCsv({
             fileName: `指標資料_${new Date().toISOString().slice(0, 10)}.csv`,
+            processCellCallback: (params) => {
+                if (params.column.getColId() === 'lastReportValue') {
+                    const actual = params.value;
+                    const row = params.node?.data;
+                    const target = row.lastTargetValue;
+                    const operator = row.lastComparisonOperator;
+
+                    let meets = true;
+                    if (typeof actual === "number" && typeof target === "number") {
+                        switch (operator) {
+                            case ">=": meets = actual >= target; break;
+                            case "<=": meets = actual <= target; break;
+                            case ">":  meets = actual > target;  break;
+                            case "<":  meets = actual < target;  break;
+                            case "=":
+                            case "==": meets = actual === target; break;
+                            default:   meets = true;
+                        }
+                    }
+
+                    return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
+                }
+
+                return params.value ?? "-";
+            },
         });
     };
 
@@ -196,20 +246,20 @@ const GridComponent: React.FC<GridComponentProps> = ({
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row gap-2">
-            <button
-                    onClick={toggleEditMode}
-                    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"
-                >
-                    {isEditable ? "鎖定" : "修改"}
-                </button>
-                {isEditable && (
-                    <button
-                        onClick={deleteSelectedRows}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                    >
-                        刪除選擇
-                    </button>
-                )}
+                {/*<button*/}
+                {/*    onClick={toggleEditMode}*/}
+                {/*    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
+                {/*>*/}
+                {/*    {isEditable ? "鎖定" : "修改"}*/}
+                {/*</button>*/}
+                {/*{isEditable && (*/}
+                {/*    <button*/}
+                {/*        onClick={deleteSelectedRows}*/}
+                {/*        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"*/}
+                {/*    >*/}
+                {/*        刪除選擇*/}
+                {/*    </button>*/}
+                {/*)}*/}
 
                 <button
                     onClick={exportToExcel}

@@ -92,14 +92,14 @@ export default function KPI() {
                         valueFormatter: (p: any) => p.value ?? "-",
                         cellStyle: { textAlign: "left" },
                         hide: ['id', 'detailItemId', 'productionSite', 'indicatorNumber', 'category', 'lastKpiCycleName', 'lastRemarks', 'lastReportYear', 'lastReportPeriod', 'detailItemName', 'lastComparisonOperator'].includes(key),
-                        width:
-                            key === 'company' ? 180 :
-                            key === 'field' ? 160 :
-                            key === 'indicatorName' ? 220 :
-                            key === 'lastReportValue' ? 140 :
-                            key === 'targetValue' ? 140 :
-                            key === 'remarks' ? 200 :
-                            120,
+                        // width:
+                        //     key === 'company' ? 180 :
+                        //     key === 'field' ? 160 :
+                        //     key === 'indicatorName' ? 220 :
+                        //     key === 'lastReportValue' ? 140 :
+                        //     key === 'targetValue' ? 140 :
+                        //     key === 'remarks' ? 200 :
+                        //     120,
                     }));
                     setColumnDefs(columns);
                 }
