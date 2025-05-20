@@ -414,6 +414,35 @@ const GridComponent: React.FC<GridComponentProps> = ({
                         paginationPageSize={20}
                         singleClickEdit={true}
                         stopEditingWhenCellsLoseFocus={true}
+                        getRowStyle={(params) => {
+                            const row = params.data;
+                            const actual = row.lastReportValue;
+                            const target = row.lastTargetValue;
+                            const operator = row.lastComparisonOperator;
+
+                            if (typeof actual === "number" && typeof target === "number") {
+                                let meets = true;
+                                switch (operator) {
+                                    case ">=": meets = actual >= target; break;
+                                    case "<=": meets = actual <= target; break;
+                                    case ">":  meets = actual > target; break;
+                                    case "<":  meets = actual < target; break;
+                                    case "=":
+                                    case "==": meets = actual === target; break;
+                                    default:   meets = true;
+                                }
+
+                                if (!meets) {
+                                    return {
+                                        backgroundColor: "#fdecea", // 淺紅色
+                                        color: "#d32f2f",
+                                        fontWeight: "bold"
+                                    };
+                                }
+                            }
+
+                            return  undefined; // 默認樣式
+                        }}
                     />
                 </div>
             )}
