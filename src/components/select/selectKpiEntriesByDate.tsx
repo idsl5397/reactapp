@@ -81,12 +81,14 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
     const handleStartYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const year = e.target.value;
         setStartYear(year);
+        setStartQuarter("");
         emitSelection(selectedOrgId, year, endYear);
     };
 
     const handleEndYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const year = e.target.value;
         setEndYear(year);
+        setEndQuarter("");
         emitSelection(selectedOrgId, startYear, year);
     };
 
@@ -232,6 +234,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 value={startQuarter}
                                 onChange={handleStartQuarterChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                disabled={!startYear.length}
                             >
                                 <option value="">請選擇季度</option>
                                 <option value="Q1">Q1</option>
@@ -278,6 +281,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 value={endQuarter}
                                 onChange={handleEndQuarterChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                disabled={!endYear.length}
                             >
                                 <option value="">請選擇季度</option>
                                 <option value="Q1">Q1</option>

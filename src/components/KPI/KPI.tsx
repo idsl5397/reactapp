@@ -72,6 +72,8 @@ export default function KPI() {
             organizationId: selection.orgId || undefined,
             startYear: selection.startYear || undefined,
             endYear: selection.endYear || undefined,
+            startQuarter: selection.startQuarter || undefined,
+            endQuarter: selection.endQuarter || undefined,
         };
 
         try {
@@ -80,7 +82,6 @@ export default function KPI() {
             if (response.data?.success) {
                 const raw = response.data.data;
                 setRowData(raw);
-                console.log(raw);
                 toast.success(`查詢成功，回傳 ${raw.length} 筆資料`);
 
                 if (raw.length > 0) {
