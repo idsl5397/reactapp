@@ -28,8 +28,9 @@ export default function Step1() {
             <div className="card-header p-4 border-b font-medium text-lg">請輸入電子信箱</div>
             <div className="card-body p-6">
                 <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">電子郵件</label>
+                    <label htmlFor="email" className="block text-sm font-medium mb-2">電子郵件</label>
                     <input
+                        id="email"
                         name="email"
                         type="email"
                         value={((stepData.EmailVerificationForm as EmailVerificationFormData)?.email) || ''}
