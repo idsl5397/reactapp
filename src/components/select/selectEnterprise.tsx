@@ -5,6 +5,7 @@ import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
 
 export interface SelectionPayload {
     orgId: string;
+    orgName?: string; // 新增這個
     startYear?: string;
     endYear?: string;
 }
@@ -87,8 +88,11 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
     };
 
     const emitSelection = (orgId: string, start: string, end: string) => {
+        const allNodes = [...data, ...companies, ...factories];
+        const selected = allNodes.find(x => x.id === orgId);
         onSelectionChange?.({
             orgId,
+            orgName: selected?.name || "所有公司",
             startYear: start,
             endYear: end,
         });

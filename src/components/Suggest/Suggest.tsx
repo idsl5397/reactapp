@@ -6,21 +6,21 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
 import axios from 'axios';
 import Link from "next/link";
+import {toast} from "react-hot-toast";
 
 const api = axios.create({
     baseURL: "/proxy",
 });
 const columnDefs = [
-    { field: "doneYear", headerName: "年" },
-    { field: "doneMonth", headerName: "月" },
-    { field: "suggestEventTypeName", headerName: "會議/活動" },
     { field: "organizationName", headerName: "廠商" },
+    { field: "date", headerName: "日期" },
+    { field: "suggestEventTypeName", headerName: "會議/活動" },
     { field: "kpiFieldName", headerName: "類別" },
     { field: "userName", headerName: "委員" },
-    { field: "suggestionContent", headerName: "建議" },
     { field: "suggestionTypeName", headerName: "建議類別" },
     { field: "respDept", headerName: "負責部門" },
     { field: "isAdopted", headerName: "是否參採" },
+    { field: "completed", headerName: "是否完成改善辦理" },
     { field: "improveDetails", headerName: "改善對策/辦理情形" }
 ];
 
@@ -35,23 +35,27 @@ export default function Suggest() {
 
     const handleQuery = async () => {
         setIsLoading(true);
+        const params: any = {};
+        if (selection.orgId != null) params.organizationId = selection.orgId;
+        if (selection.startYear != null) params.startYear = selection.startYear;
+        if (selection.endYear != null) params.endYear = selection.endYear;
 
         try {
-            const res = await api.get('/Suggest/GetAllSuggest');
-            const all = res.data;
-
-            // ✅ 若 selection 為空則顯示全部
-            const filtered = all.filter((item: any) => {
-                const matchesOrg = !selection.orgId || item.organizationName?.includes(selection.orgId);
-                const matchesYear =
-                    (!selection.startYear || item.doneYear >= parseInt(selection.startYear)) &&
-                    (!selection.endYear || item.doneYear <= parseInt(selection.endYear));
-                return matchesOrg && matchesYear;
-            });
-
-            setRowData(filtered);
+            const response = await api.get('/Suggest/GetAllSuggest', { params });
+            console.log(response.data);
+            if (response.data) {
+                const raw = response.data;
+                console.log("1");
+                setRowData(raw);
+                if (raw.length === 0) {
+                    toast.success("查詢成功，但沒有符合條件的資料");
+                } else {
+                    toast.success(`查詢成功，共 ${raw.length} 筆資料`);
+                }
+            }
         } catch (err) {
             console.error("取得建議失敗", err);
+            toast.error("查詢失敗，請稍後再試");
         } finally {
             setIsLoading(false);
         }

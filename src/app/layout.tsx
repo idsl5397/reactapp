@@ -41,10 +41,11 @@ const geistMono = Geist_Mono({
  * @property {string} title 應用的標題
  * @property {string} description 應用的描述
  */
-// const appMetadata = {
-//     title: '績效指標平台',
-//     description: '這是一個績效指標平台'
-// };
+const appMetadata = {
+    title: '績效指標平台',
+    description: '本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管的數位化工具。\n' +
+        '透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。'
+};
 
 
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
@@ -76,10 +77,10 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
 
     return (
         <html lang="zh-TW" data-theme="fantasy">
-        {/*<head>*/}
-        {/*    <title>{appMetadata.title}</title>*/}
-        {/*    <meta name="description" content={appMetadata.description}/>*/}
-        {/*</head>*/}
+        <head>
+            <title>{appMetadata.title}</title>
+            <meta name="description" content={appMetadata.description}/>
+        </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div ref={headerRef}
             className="fixed top-0 left-0 w-full z-50">

@@ -7,9 +7,9 @@ import { AgChartOptions } from "ag-charts-community";
 function getSuggestionData() {
     return [
         { category: "製成安全管理(PSM)", count: 50 },
-        { category: "能源管理(EP)", count: 30 },
+        { category: "環保管理(EP)", count: 30 },
         { category: "消防管理(FR)", count: 15 },
-        { category: "環保管理(ECO)", count: 5 },
+        { category: "能源管理(ECO)", count: 5 },
     ];
 }
 

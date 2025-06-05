@@ -26,7 +26,7 @@ export default function Direction(){
                     <div className="card-body">
                             <h2 className="card-title">平台簡介</h2>
                             <p className="text-gray-700">
-                                本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管與工安審查管理的數位化工具。
+                                本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管的數位化工具。
                                 透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。
                             </p>
 

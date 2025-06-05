@@ -16,9 +16,9 @@ const api = axios.create({
 const categories = [
     { id: "tab_all", name: "全部類別" },
     { id: "製程安全管理", name: "製程安全管理(PSM)" },
-    { id: "能源管理", name: "能源管理(EP)" },
+    { id: "環保管理", name: "環保管理(EP)" },
     { id: "消防管理", name: "消防管理(FR)" },
-    { id: "環保管理", name: "環保管理(ECO)" }
+    { id: "能源管理", name: "能源管理(ECO)" }
 ];
 
 const columnTitleMap: Record<string, string> = {
@@ -92,14 +92,6 @@ export default function KPI() {
                         valueFormatter: (p: any) => p.value ?? "-",
                         cellStyle: { textAlign: "left" },
                         hide: ['id', 'detailItemId', 'productionSite', 'indicatorNumber', 'category', 'lastKpiCycleName', 'lastRemarks', 'lastReportYear', 'lastReportPeriod', 'detailItemName', 'lastComparisonOperator'].includes(key),
-                        // width:
-                        //     key === 'company' ? 180 :
-                        //     key === 'field' ? 160 :
-                        //     key === 'indicatorName' ? 220 :
-                        //     key === 'lastReportValue' ? 140 :
-                        //     key === 'targetValue' ? 140 :
-                        //     key === 'remarks' ? 200 :
-                        //     120,
                     }));
                     setColumnDefs(columns);
                 }

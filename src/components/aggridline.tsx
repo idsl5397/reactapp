@@ -42,10 +42,10 @@ export default function LineExample() {
         data: filteredData,
         title: { text: "公司達成率趨勢圖" },
         series: [
-            { type: "line", xKey: "period", yKey: "EP", stroke: "#FF5733", marker: { enabled: true }, yName: "能源管理(EP)" },
             { type: "line", xKey: "period", yKey: "PSM", stroke: "#3398FF", marker: { enabled: true }, yName: "製成安全管理(PSM)" },
+            { type: "line", xKey: "period", yKey: "EP", stroke: "#FF5733", marker: { enabled: true }, yName: "環保管理(EP)" },
             { type: "line", xKey: "period", yKey: "FR", stroke: "#33FF57", marker: { enabled: true }, yName: "消防管理(FR)" },
-            { type: "line", xKey: "period", yKey: "ECO", stroke: "#FF33A1", marker: { enabled: true }, yName: "環保管理(ECO)" },
+            { type: "line", xKey: "period", yKey: "ECO", stroke: "#FF33A1", marker: { enabled: true }, yName: "能源管理(ECO)" },
         ],
         axes: [
             { type: "category", position: "bottom", title: { text: "時間 (季度)" } },
@@ -55,7 +55,7 @@ export default function LineExample() {
     }), [filteredData]);
 
     return (
-        <div className="w-[80%] mx-auto">
+        <div className="">
             {/* 篩選選單 */}
             <div className="flex justify-between mb-4">
                 <label>

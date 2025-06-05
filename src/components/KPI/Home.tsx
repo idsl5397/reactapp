@@ -34,7 +34,7 @@ export default function Home(){
                                 <p className="text-xl font-semibold text-primary">75%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">能源管理(EP) 改善完成率</h2>
+                                <h2 className="text-lg font-bold">環保管理(EP) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">50%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
@@ -42,7 +42,7 @@ export default function Home(){
                                 <p className="text-xl font-semibold text-primary">90%</p>
                             </div>
                             <div className="card bg-base-100 shadow-xl p-6">
-                                <h2 className="text-lg font-bold">環保管理(ECO) 改善完成率</h2>
+                                <h2 className="text-lg font-bold">能源管理(ECO) 改善完成率</h2>
                                 <p className="text-xl font-semibold text-primary">65%</p>
                             </div>
                         </div>

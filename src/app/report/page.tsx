@@ -1,4 +1,4 @@
-import Report from "@/components/KPI/Report";
+import Report from "@/components/Report/Report";
 
 
 export default function page(){

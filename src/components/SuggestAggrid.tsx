@@ -20,6 +20,17 @@ const SuggestAggrid: React.FC<AggridProps> = ({ columnDefs, rowData }) => {
                 ref={gridRef}
                 columnDefs={columnDefs}
                 rowData={rowData}
+                sideBar={{
+                    toolPanels: [
+                        {
+                            id: 'columns',
+                            labelDefault: '欄位',
+                            labelKey: 'columns',
+                            iconKey: 'columns',
+                            toolPanel: 'agColumnsToolPanel',
+                        }
+                    ],
+                }}
                 pagination={true}
                 paginationPageSize={20}
                 defaultColDef={{

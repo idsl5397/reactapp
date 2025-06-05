@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import SingleAddKpiForm from './SingleAddSuggest';
-// import BatchUploadKpi from './BatchUploadKpi';
+import SingleAddSuggest from './SingleAddSuggest';
+import BatchUploadSuggest from './BatchUploadSuggest';
 import { Toaster } from 'react-hot-toast';
 
 export default function AddSuggestPage() {
@@ -56,8 +56,8 @@ export default function AddSuggestPage() {
             </div>
 
             <div className="mt-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-10">
-                {mode === 'single' && <SingleAddKpiForm/>}
-                {/*{mode === 'batch' && <BatchUploadKpi />}*/}
+                {mode === 'single' && <SingleAddSuggest/>}
+                {mode === 'batch' && <BatchUploadSuggest />}
             </div>
         </>
     );
