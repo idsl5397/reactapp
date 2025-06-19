@@ -4,6 +4,7 @@ import type { CellClassParams, CellStyle } from "ag-grid-community"; // ⚠️ �
 import { AllEnterpriseModule } from "ag-grid-enterprise";
 import { AgGridReact, AgGridReact as AgGridReactType } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@ag-grid-community/locale";
+import * as XLSX from "xlsx";
 import {
     LineChart,
     Line,
@@ -40,6 +41,7 @@ interface GridComponentProps {
     activeType: string;
     columnTitleMap: Record<string, string>;
     isLoading?: boolean; // ✅ 新增
+    exportMode: "all" | "failed";
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -60,6 +62,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
     const [filterRange, setFilterRange] = useState("all");
     const [chartData, setChartData] = useState<any[]>([]);
     const [isChartLoading, setIsChartLoading] = useState(false);
+
+    const [exportMode, setExportMode] = useState<"all" | "failed">("all");
 
     useEffect(() => {
         const allReports = selectedDetail?.kpiDatas?.flatMap((kpiData: KpiDataCycle) =>
@@ -94,65 +98,107 @@ const GridComponent: React.FC<GridComponentProps> = ({
     }, [selectedDetail, filterRange]);
 
     //匯出excel與CSV
-    const exportToExcel = () => {
-        gridRef.current?.api.exportDataAsExcel({
-            fileName: `指標資料_${new Date().toISOString().slice(0, 10)}.xlsx`,
-            processCellCallback: (params) => {
-                if (params.column.getColId() === 'lastReportValue') {
-                    const actual = params.value;
-                    const row = params.node?.data;
-                    const target = row.lastTargetValue;
-                    const operator = row.lastComparisonOperator;
+    const exportData = (type: "excel" | "csv") => {
+        const api = gridRef.current?.api;
+        if (!api) return;
 
-                    let meets = true;
-                    if (typeof actual === "number" && typeof target === "number") {
-                        switch (operator) {
-                            case ">=": meets = actual >= target; break;
-                            case "<=": meets = actual <= target; break;
-                            case ">":  meets = actual > target;  break;
-                            case "<":  meets = actual < target;  break;
-                            case "=":
-                            case "==": meets = actual === target; break;
-                            default:   meets = true;
+        // 如果要全部匯出就直接交給 AG Grid 處理
+        if (exportMode === "all") {
+            const fileName = `指標資料_${new Date().toISOString().slice(0, 10)}`;
+            const options = {
+                fileName: `${fileName}.${type === "excel" ? "xlsx" : "csv"}`,
+                processHeaderCallback: (params: any) => {
+                    return params.column.getColDef().headerName || params.column.getColDef().field;
+                },
+                processCellCallback: (params: any) => {
+                    if (params.column.getColId() === "lastReportValue") {
+                        const actual = params.value;
+                        const row = params.node?.data;
+                        const target = row.lastTargetValue;
+                        const operator = row.lastComparisonOperator;
+
+                        let meets = true;
+                        if (typeof actual === "number" && typeof target === "number") {
+                            switch (operator) {
+                                case ">=": meets = actual >= target; break;
+                                case "<=": meets = actual <= target; break;
+                                case ">": meets = actual > target; break;
+                                case "<": meets = actual < target; break;
+                                case "=":
+                                case "==": meets = actual === target; break;
+                                default: meets = true;
+                            }
                         }
+
+                        return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
                     }
 
-                    return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
+                    return params.value ?? "-";
                 }
+            };
 
-                return params.value ?? "-";
-            },
-        });
-    };
-    const exportToCsv = () => {
-        gridRef.current?.api.exportDataAsCsv({
-            fileName: `指標資料_${new Date().toISOString().slice(0, 10)}.csv`,
-            processCellCallback: (params) => {
-                if (params.column.getColId() === 'lastReportValue') {
-                    const actual = params.value;
-                    const row = params.node?.data;
-                    const target = row.lastTargetValue;
-                    const operator = row.lastComparisonOperator;
+            type === "excel"
+                ? api.exportDataAsExcel(options)
+                : api.exportDataAsCsv(options);
 
-                    let meets = true;
-                    if (typeof actual === "number" && typeof target === "number") {
-                        switch (operator) {
-                            case ">=": meets = actual >= target; break;
-                            case "<=": meets = actual <= target; break;
-                            case ">":  meets = actual > target;  break;
-                            case "<":  meets = actual < target;  break;
-                            case "=":
-                            case "==": meets = actual === target; break;
-                            default:   meets = true;
-                        }
-                    }
+            return;
+        }
 
-                    return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
+        // 否則：只匯出未達標 → 手動組資料
+        const failedRows: any[] = [];
+        api.forEachNodeAfterFilterAndSort((node) => {
+            const row = node.data;
+            if (!row) return;
+            if (!row.isIndicator) return;
+            const actual = row.lastReportValue;
+            const target = row.lastTargetValue;
+            const operator = row.lastComparisonOperator;
+
+            let meets = true;
+            if (typeof actual === "number" && typeof target === "number") {
+                switch (operator) {
+                    case ">=": meets = actual >= target; break;
+                    case "<=": meets = actual <= target; break;
+                    case ">": meets = actual > target; break;
+                    case "<": meets = actual < target; break;
+                    case "=":
+                    case "==": meets = actual === target; break;
+                    default: meets = true;
                 }
+            }
 
-                return params.value ?? "-";
-            },
+            if (meets) return; // 忽略達標的
+
+            failedRows.push(row); // 原始欄位不做 mapping，匯出畫面看到的欄位
         });
+
+        const failedRowsWithHeader = failedRows.map(row => {
+            const newRow: any = {};
+            Object.keys(row).forEach(key => {
+                const label = columnTitleMap[key] || key;
+                newRow[label] = row[key];
+            });
+            return newRow;
+        });
+
+        const fileName = `未達標資料_${new Date().toISOString().slice(0, 10)}.${type === "excel" ? "xlsx" : "csv"}`;
+        const worksheet = XLSX.utils.json_to_sheet(failedRowsWithHeader);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "未達標");
+
+        if (type === "excel") {
+            XLSX.writeFile(workbook, fileName);
+        } else {
+            const csv = XLSX.utils.sheet_to_csv(worksheet);
+            const bom = "\uFEFF";
+            const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
     const filteredRowData = useMemo(() => {
@@ -169,6 +215,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
         // 🔸 依是否符合目標值排序，未達標放前面
         return result.sort((a, b) => {
             const compare = (item: IRow): boolean => {
+                if (!item.isIndicator) return true;  // 如果不是指標，視為合格，排後面
+
                 const actual = item.lastReportValue;
                 const target = item.lastTargetValue;
                 const operator = item.lastComparisonOperator;
@@ -260,19 +308,16 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 {/*        刪除選擇*/}
                 {/*    </button>*/}
                 {/*)}*/}
-
-                <button
-                    onClick={exportToExcel}
-                    className="btn btn-outline px-4 py-2 text-sm rounded-md"
+                <select
+                    className="select select-bordered"
+                    value={exportMode}
+                    onChange={(e) => setExportMode(e.target.value as any)}
                 >
-                    匯出 Excel
-                </button>
-                <button
-                    onClick={exportToCsv}
-                    className="btn btn-outline px-4 py-2 text-sm rounded-md"
-                >
-                    匯出 CSV
-                </button>
+                    <option value="all">匯出篩選結果</option>
+                    <option value="failed">匯出篩選結果未達標</option>
+                </select>
+                <button className="btn btn-outline" onClick={() => exportData("excel")}>匯出 Excel</button>
+                <button className="btn btn-outline" onClick={() => exportData("csv")}>匯出 CSV</button>
             </div>
 
             <p className="text-sm text-gray-500 px-1">
@@ -330,6 +375,10 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 return { textAlign: "left" };
                                             }
 
+                                            if (!data.isIndicator) {
+                                                return { textAlign: "left" };  // 不是指標，直接不檢查
+                                            }
+
                                             const target = data.lastTargetValue;
                                             const operator = data.lastComparisonOperator;
 
@@ -350,7 +399,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 ? { textAlign: "left" }
                                                 : {
                                                     textAlign: "left",
-                                                    backgroundColor: "#fdecea",
+                                                    // backgroundColor: "#fdecea",
                                                     color: "#d32f2f",
                                                     fontWeight: "bold"
                                                 };
@@ -434,7 +483,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
                                 if (!meets) {
                                     return {
-                                        backgroundColor: "#fdecea", // 淺紅色
+                                        // backgroundColor: "#fdecea", // 淺紅色
                                         color: "#d32f2f",
                                         fontWeight: "bold"
                                     };

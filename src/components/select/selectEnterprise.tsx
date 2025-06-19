@@ -8,6 +8,7 @@ export interface SelectionPayload {
     orgName?: string; // 新增這個
     startYear?: string;
     endYear?: string;
+    keyword?: string;
 }
 
 interface SelectEnterpriseProps {

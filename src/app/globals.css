@@ -12,6 +12,8 @@
 /*  outline-offset: 2px !important;*/
 /*  animation: outlineGrow 0.1s ease-out forwards !important;*/
 /*}*/
+
+
 .outline-dashed-pink:focus-visible {
   outline: 4px dashed #ff1493 !important;
   outline-offset: 2px !important;
@@ -28,6 +30,15 @@ input:focus-visible {
   outline-offset: 2px !important;
 }
 
+.myselect__input:focus-visible {
+  outline: none !important;
+}
+/* 移除預設的 focus 樣式 */
+.myselect__control--is-focused {
+  border-color: #ccc !important;
+  box-shadow: none !important;
+}
+
 a:focus-visible {
   outline: 4px dashed #ff1493 !important;
   outline-offset: 2px !important;
@@ -38,7 +49,7 @@ a:focus-visible {
   outline-offset: 2px !important
 }
 
-.textarea:focus-visible {
+textarea:focus-visible {
   outline: 4px dashed #ff1493 !important;
   outline-offset: 2px !important
 }

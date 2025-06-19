@@ -12,7 +12,6 @@ import {
 import * as Icon from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-import axios from 'axios';
 import { Bars3Icon, XMarkIcon, InformationCircleIcon, MapIcon } from '@heroicons/react/24/outline';
 import Ava from './avatar/avatarMenu';
 import Image from 'next/image';
@@ -46,7 +45,6 @@ const getIcon = (iconName: string | null) => {
     return null;
 };
 
-
 export default function Header() {
     const [avatarMenuState, setAvatarMenuState] = useState<string | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,9 +71,6 @@ export default function Header() {
         }
     }, [isLoggedIn]);
 
-    const api = axios.create({
-        baseURL: '/proxy',
-    });
 
     // useEffect(() => {
     //     const fetchMenuIfLoggedIn = async () => {
@@ -129,27 +124,45 @@ export default function Header() {
                             <React.Fragment key={item.id}>
                                 {item.children && item.children.length > 0 ? (
                                     <Popover className="relative">
-                                        <Popover.Button className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
-                                            {item.label}
-                                            <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
-                                        </Popover.Button>
-                                        <Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-                                            <div className="p-4">
-                                                {item.children.map((child) => (
-                                                    <div key={child.id} className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
-                                                        <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                                            {getIcon(child.icon)}
-                                                        </div>
-                                                        <div className="flex-auto">
-                                                            <Link href={child.link} className="block font-semibold text-gray-900">
-                                                                {child.label}
-                                                                <span className="absolute inset-0" />
-                                                            </Link>
-                                                        </div>
+                                        {({ open, close }) => (
+                                            <div
+                                                onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()} // 避免按鈕焦點黏住
+                                            >
+                                                <Popover.Button
+                                                    onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()}
+                                                    className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
+                                                    {item.label}
+                                                    <ChevronDownIcon aria-hidden="true"
+                                                                     className="size-5 flex-none text-gray-400"/>
+                                                </Popover.Button>
+                                                <Popover.Panel
+                                                    className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+                                                    onMouseLeave={() => close()}
+                                                >
+                                                    <div className="p-4">
+                                                        {item.children?.map((child) => (
+                                                            <div key={child.id}
+                                                                 className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
+                                                                <div
+                                                                    className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                                                    {getIcon(child.icon)}
+                                                                </div>
+                                                                <div className="flex-auto">
+                                                                    <Link
+                                                                        href={child.link}
+                                                                        className="block font-semibold text-gray-900"
+                                                                        onClick={() => close()}
+                                                                    >
+                                                                        {child.label}
+                                                                        <span className="absolute inset-0"/>
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
+                                                </Popover.Panel>
                                             </div>
-                                        </Popover.Panel>
+                                        )}
                                     </Popover>
                                 ) : (
                                     <Link key={item.id} href={item.link} className="text-base font-semibold text-gray-900 btn btn-ghost">

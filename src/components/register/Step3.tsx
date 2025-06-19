@@ -27,6 +27,7 @@ export default function Step3() {
                     <input
                         name="name"
                         type="text"
+                        aria-label="姓名"
                         value={((stepData.BaseUserInfo as BaseUserInfo)?.name) || ''}
                         onChange={handleonChange}
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -38,6 +39,7 @@ export default function Step3() {
                     <input
                         name="phone"
                         type="tel"
+                        aria-label="手機"
                         value={((stepData.BaseUserInfo as BaseUserInfo)?.phone) || ''}
                         onChange={handleonChange}
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -49,6 +51,7 @@ export default function Step3() {
                     <input
                         name="unit"
                         type="text"
+                        aria-label="部門"
                         value={((stepData.BaseUserInfo as BaseUserInfo)?.unit) || ''}
                         onChange={handleonChange}
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -60,6 +63,7 @@ export default function Step3() {
                     <input
                         name="position"
                         type="text"
+                        aria-label="職稱"
                         value={((stepData.BaseUserInfo as BaseUserInfo)?.position) || ''}
                         onChange={handleonChange}
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -72,6 +76,7 @@ export default function Step3() {
                 <input
                     name="password"
                     type="password"
+                    aria-label="設定密碼"
                     value={((stepData.BaseUserInfo as BaseUserInfo)?.password) || ''}
                     onChange={handleonChange}
                     className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -86,6 +91,7 @@ export default function Step3() {
                 <input
                     name="confirmPassword"
                     type="password"
+                    aria-label="再次輸入密碼"
                     value={((stepData.BaseUserInfo as BaseUserInfo)?.confirmPassword) || ''}
                     onChange={handleonChange}
                     className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

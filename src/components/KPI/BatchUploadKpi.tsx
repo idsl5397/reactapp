@@ -33,6 +33,8 @@ export default function BatchUploadKpi() {
             toast.error('檔案解析失敗，請確認格式');
         } finally {
             setIsLoading(false); // ✅ 成功或失敗都要關掉loading
+            // ✅ 這裡重置 input 的值
+            e.target.value = '';
         }
     };
 
@@ -87,6 +89,7 @@ export default function BatchUploadKpi() {
                 <input
                     id="uploadFile"
                     type="file"
+                    aria-label="上傳檔案"
                     accept=".xlsx,.xls"
                     onChange={handleFileChange}
                     className="hidden"
@@ -127,6 +130,7 @@ export default function BatchUploadKpi() {
                             <th className="border px-2 py-1">指標項目</th>
                             <th className="border px-2 py-1">指標細項</th>
                             <th className="border px-2 py-1">單位</th>
+                            <th className="border px-2 py-1">是否是指標(否為計算項目)</th>
                             <th className="border px-2 py-1">是否應用</th>
                             <th className="border px-2 py-1">循環</th>
                             <th className="border px-2 py-1">基線值數據年限</th>
@@ -147,9 +151,8 @@ export default function BatchUploadKpi() {
                                 <td className="border px-2 py-1">{item.indicatorName}</td>
                                 <td className="border px-2 py-1">{item.detailItemName}</td>
                                 <td className="border px-2 py-1">{item.unit}</td>
-                                <td className="border px-2 py-1">
-                                    {item.isApplied ? '是' : '否'}
-                                </td>
+                                <td className="border px-2 py-1">{item.isIndicator ? "是" : "否"}</td>
+                                <td className="border px-2 py-1">{item.isApplied ? "是" : "否"}</td>
                                 <td className="border px-2 py-1">{item.kpiCycleName}</td>
                                 <td className="border px-2 py-1">{item.baselineYear}</td>
                                 <td className="border px-2 py-1">{item.baselineValue}</td>
@@ -162,7 +165,7 @@ export default function BatchUploadKpi() {
                     </table>
 
                     <div className="flex justify-end mt-4">
-                        <button className="btn btn-primary" onClick={handleBatchSubmit}>確認送出</button>
+                    <button className="btn btn-primary" onClick={handleBatchSubmit}>確認送出</button>
                     </div>
                 </div>
             ))}

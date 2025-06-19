@@ -9,6 +9,7 @@ export interface SelectionPayload {
     endYear?: string;
     startQuarter?: string;
     endQuarter?: string;
+    keyword?: string;
 }
 
 interface SelectEnterpriseProps {

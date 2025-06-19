@@ -184,6 +184,7 @@ export default function AddKpiValueStep2({ onSaveDraft }: Step2Props) {
                                                     <div className="mt-3">
                                                         <input
                                                             type="number"
+                                                            aria-label="輸入執行情況"
                                                             placeholder="請輸入執行情況"
                                                             className={`input input-bordered w-full ${
                                                                 kpiValues[`skip_${kpi.kpiDataId}`] ? "bg-gray-100 text-gray-500" : "bg-white"

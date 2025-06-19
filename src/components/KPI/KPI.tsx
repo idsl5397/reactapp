@@ -28,8 +28,10 @@ const columnTitleMap: Record<string, string> = {
     field: "指標領域",
     indicatorNumber: "指標編號",
     indicatorName: "指標名稱",
+    detailItemId: "指標細項編號",
     detailItemName: "指標細項名稱",
     unit: "單位",
+    isIndicator:"是否是指標(否為計算項目)",
     isApplied: "是否應用",
     baselineYear: "基線年",
     baselineValue: "基線值",
@@ -58,6 +60,9 @@ export default function KPI() {
     const [rowData, setRowData] = useState<any[]>([]);
     const [columnDefs, setColumnDefs] = useState<ColDef[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [keyword, setKeyword] = useState("");
+    const [exportMode] = useState<"all" | "failed">("all");
+
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "檢視績效指標" }
@@ -74,6 +79,7 @@ export default function KPI() {
             endYear: selection.endYear || undefined,
             startQuarter: selection.startQuarter || undefined,
             endQuarter: selection.endQuarter || undefined,
+            keyword: keyword || undefined,
         };
 
         try {
@@ -91,7 +97,7 @@ export default function KPI() {
                         headerName: columnTitleMap[key] || key,
                         valueFormatter: (p: any) => p.value ?? "-",
                         cellStyle: { textAlign: "left" },
-                        hide: ['id', 'detailItemId', 'productionSite', 'indicatorNumber', 'category', 'lastKpiCycleName', 'lastRemarks', 'lastReportYear', 'lastReportPeriod', 'detailItemName', 'lastComparisonOperator'].includes(key),
+                        hide: ['id', 'detailItemId', 'isIndicator', 'field', 'productionSite', 'indicatorNumber', 'category', 'lastKpiCycleName', 'lastRemarks', 'lastReportYear', 'lastReportPeriod', 'lastComparisonOperator'].includes(key),
                     }));
                     setColumnDefs(columns);
                 }
@@ -116,6 +122,19 @@ export default function KPI() {
                     <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         績效指標
                     </h1>
+                    <div className="mt-6 flex justify-center">
+                        <input
+                            id="keyword"
+                            name="keyword"
+                            type="text"
+                            aria-label="關鍵字查詢"
+                            placeholder="請輸入關鍵字查詢..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)} // ✅ 讓輸入值同步
+                            className="w-full max-w-[40em] mx-auto px-4 py-3 text-lg text-gray-900 border border-gray-300 rounded-md focus:outline-none"
+                            style={{width: '100%', maxWidth: '80ch'}}
+                        />
+                    </div>
                     <div className="absolute top-0 right-0 z-10 mt-4 mr-4">
                         <Link href="/kpi/newKpi" tabIndex={-1}>
                             <button
@@ -185,6 +204,7 @@ export default function KPI() {
                                         activeType={activeType}
                                         columnTitleMap={columnTitleMap}
                                         isLoading={isLoading}
+                                        exportMode={exportMode}
                                     />
                                 )}
                             </div>

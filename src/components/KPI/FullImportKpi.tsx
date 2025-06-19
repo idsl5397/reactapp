@@ -25,11 +25,14 @@ export default function FullImportKpi() {
         try {
             const res = await api.post('/kpi/full-import-preview', formData); // 新的預覽API
             setPreviewData(res.data);
+            console.log(res.data);
             toast.success('檔案解析成功，請確認預覽');
         } catch (err) {
             toast.error('解析失敗，請確認格式');
         } finally {
             setIsLoading(false);
+            // ✅ 這裡重置 input 的值
+            e.target.value = '';
         }
     };
 
@@ -104,7 +107,8 @@ export default function FullImportKpi() {
                             <th className="border px-2 py-1">指標名稱</th>
                             <th className="border px-2 py-1">指標細項</th>
                             <th className="border px-2 py-1">單位</th>
-                            <th className="border px-2 py-1">使否使用</th>
+                            <th className="border px-2 py-1">是否是指標(否為計算項目)</th>
+                            <th className="border px-2 py-1">是否使用</th>
                             <th className="border px-2 py-1">基線年份</th>
                             <th className="border px-2 py-1">基線值</th>
                             <th className="border px-2 py-1">111執行狀況</th>
@@ -130,7 +134,8 @@ export default function FullImportKpi() {
                                 <td className="border px-2 py-1">{item.indicatorName}</td>
                                 <td className="border px-2 py-1">{item.detailItemName}</td>
                                 <td className="border px-2 py-1">{item.unit}</td>
-                                <td className="border px-2 py-1">{item.isApplied}</td>
+                                <td className="border px-2 py-1">{item.isIndicator ? "是" : "否"}</td>
+                                <td className="border px-2 py-1">{item.isApplied ? "是" : "否"}</td>
                                 <td className="border px-2 py-1">{item.baselineYear}</td>
                                 <td className="border px-2 py-1">{item.baselineValue}</td>
                                 <td className="border px-2 py-1">{item.reports.find((r: {
