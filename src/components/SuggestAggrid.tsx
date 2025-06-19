@@ -32,9 +32,11 @@ const SuggestAggrid: React.FC<AggridProps> = ({ columnDefs, rowData }) => {
                     params.value ?? "-",
             };
 
-            type === "excel"
-                ? api.exportDataAsExcel(options)
-                : api.exportDataAsCsv(options);
+            if (type === "excel") {
+                api.exportDataAsExcel(options);
+            } else {
+                api.exportDataAsCsv(options);
+            }
 
             return;
         }

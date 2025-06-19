@@ -137,9 +137,11 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 }
             };
 
-            type === "excel"
-                ? api.exportDataAsExcel(options)
-                : api.exportDataAsCsv(options);
+            if (type === "excel") {
+                api.exportDataAsExcel(options);
+            } else {
+                api.exportDataAsCsv(options);
+            }
 
             return;
         }
