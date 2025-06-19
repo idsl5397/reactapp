@@ -22,6 +22,7 @@ export default function SingleAddSuggest() {
                 Date: formData.date,
                 SuggestEventType: formData.eventType,
                 Category: formData.category,
+                EnCategory: formData.enCategory,
                 Committee: formData.committee,
                 Suggestion: formData.suggestion,
                 SuggestionType:formData.suggestionType,
@@ -54,9 +55,7 @@ export default function SingleAddSuggest() {
     return (
         <>
             <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                    <SelectAddSuggest ref={formRef} />
-                </div>
+                <SelectAddSuggest ref={formRef} />
             </div>
             <div className="flex justify-end gap-x-8">
                 <button type="button" className="btn btn-secondary" onClick={handleSubmit}>送出</button>
