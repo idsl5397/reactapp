@@ -4,6 +4,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, {SelectionPayload} from "@/components/select/selectEnterprise";
 import SuggestionPieChart from "@/components/Report/ReportAggridchart";
 import Aggridline from "@/components/aggridline";
+import CompletionRanking from "@/components/Report/CompletionRankingAg";
 import axios from "axios";
 import {toast} from "react-hot-toast";
 
@@ -100,7 +101,7 @@ export default function Report(){
                             <Aggridline/>
                         </div>
                     </div>
-
+                    <CompletionRanking/>
                 </div>
             </div>
         </>

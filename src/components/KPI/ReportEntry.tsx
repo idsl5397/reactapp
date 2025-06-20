@@ -2,11 +2,44 @@
 import React from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { motion } from "framer-motion"
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Upload, FileUp } from 'lucide-react';
 import Link from "next/link";
+import { useUploadOptionModalState } from "@/hooks/useUploadOptionModalState";
+import {UploadOptionModal} from "@/hooks/UploadOptionModal";
 
+const kpiitems = [
+    {
+        title: "單筆上傳",
+        content: "適用少量資料，可即時填寫指標後送出。",
+        href: "/reportEntry/newKpiValue",
+        icon: <FileUp className="w-5 h-5 text-indigo-500" />
+    },
+    {
+        title: "批量上傳",
+        content: "下載 Excel 範本填寫，匯入大量資料更快速。",
+        href: "/reportEntry/KpiImport",
+        icon: <Upload className="w-5 h-5 text-emerald-500" />
+    }
+];
+
+const sugitems = [
+    {
+        title: "單筆上傳",
+        content: "適用少量資料，可即時填寫指標後送出。",
+        href: "/reportEntry/newSugValue",
+        icon: <FileUp className="w-5 h-5 text-indigo-500" />
+    },
+    {
+        title: "批量上傳",
+        content: "下載 Excel 範本填寫，匯入大量資料更快速。",
+        href: "/reportEntry/SugImport",
+        icon: <Upload className="w-5 h-5 text-emerald-500" />
+    }
+];
 
 export default function Report(){
+    const kpiModalState = useUploadOptionModalState();
+    const sugModalState = useUploadOptionModalState();
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "建立報告" }
@@ -79,29 +112,47 @@ export default function Report(){
                     <div className="mt-8 card bg-base-100 shadow-xl p-6">
                         <h2 className="text-xl font-bold mb-4 text-center">執行操作</h2>
                         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
-                            <Link href="/reportEntry/newKpiValue" tabIndex={0}>
-                                <motion.button
-                                    whileHover={{scale: 1.05}}
-                                    whileTap={{scale: 0.95}}
-                                    style={{...buttonStyle, backgroundColor: "#4F46E5"}}
-                                    className="shadow-md"
-                                    tabIndex={-1}
-                                >
-                                    更新/上傳指標項目
-                                </motion.button>
-                            </Link>
+                            <motion.button
+                                whileHover={{scale: 1.05}}
+                                whileTap={{scale: 0.95}}
+                                style={{...buttonStyle, backgroundColor: "#4F46E5"}}
+                                onClick={kpiModalState.openModal}
+                                className="shadow-md"
+                                tabIndex={-1}
+                            >
+                                更新/上傳指標項目
+                            </motion.button>
 
-                            <Link href="/suggest/newSuggest" tabIndex={0}>
-                                <motion.div
-                                    whileHover={{scale: 1.05}}
-                                    whileTap={{scale: 0.95}}
-                                    style={{...buttonStyle, backgroundColor: "#10B981"}}
-                                    className="shadow-md"
-                                    tabIndex={-1}
-                                >
-                                    更新/上傳改善建議
-                                </motion.div>
-                            </Link>
+                            <UploadOptionModal
+                                isOpen={kpiModalState.isOpen}
+                                activeIndex={kpiModalState.activeIndex}
+                                toggle={kpiModalState.toggle}
+                                closeModal={kpiModalState.closeModal}
+                                title="請選擇上傳方式"
+                                description="系統提供以下幾種方式供您使用"
+                                items={kpiitems}
+                            />
+
+                            <motion.button
+                                whileHover={{scale: 1.05}}
+                                whileTap={{scale: 0.95}}
+                                style={{...buttonStyle, backgroundColor: "#10B981"}}
+                                onClick={sugModalState .openModal}
+                                className="shadow-md"
+                                tabIndex={-1}
+                            >
+                                更新/上傳改善建議
+                            </motion.button>
+
+                            <UploadOptionModal
+                                isOpen={sugModalState .isOpen}
+                                activeIndex={sugModalState .activeIndex}
+                                toggle={sugModalState .toggle}
+                                closeModal={sugModalState .closeModal}
+                                title="請選擇上傳方式"
+                                description="系統提供以下幾種方式供您使用"
+                                items={sugitems}
+                            />
 
                             <Link href="/improvement" tabIndex={0}>
                                 <motion.div
@@ -124,7 +175,7 @@ export default function Report(){
                                 <h2 className="text-xl font-bold mb-4">半年度追蹤狀態</h2>
 
                                 <div className={`flex items-center p-4 rounded-lg w-full ${status.color}`}>
-                                    <div className="mr-4">
+                                <div className="mr-4">
                                         {status.icon}
                                     </div>
                                     <div className="flex-1">
