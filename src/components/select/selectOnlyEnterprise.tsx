@@ -6,8 +6,6 @@ import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
 export interface SelectionPayload {
     orgId: string;
     orgName?: string; // 新增這個
-    startYear?: string;
-    endYear?: string;
     keyword?: string;
 }
 
@@ -23,8 +21,6 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
     const [selectedFactory, setSelectedFactory] = useState("");
     const [companies, setCompanies] = useState<Company[]>([]); // 當前顯示的公司
     const [factories, setFactories] = useState<Factory[]>([]); // 當前顯示的工廠
-    const [startYear, setStartYear] = useState("");
-    const [endYear, setEndYear] = useState("");
 
     const [selectedOrgId, setSelectedOrgId] = useState("");
 
@@ -50,7 +46,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
 
         const finalId = enterprise?.id || "";
         setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        emitSelection(finalId); // ✅ 回傳
     };
 
     // 當選擇公司時更新工廠列表
@@ -64,7 +60,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
 
         const finalId = company?.id || selectedEnterprise;
         setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        emitSelection(finalId); // ✅ 回傳
     };
 
     const handleFactoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -73,29 +69,15 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
 
         const finalId = factoryId || selectedCompany || selectedEnterprise;
         setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        emitSelection(finalId); // ✅ 回傳
     };
 
-    const handleStartYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const year = e.target.value;
-        setStartYear(year);
-        emitSelection(selectedOrgId, year, endYear);
-    };
-
-    const handleEndYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const year = e.target.value;
-        setEndYear(year);
-        emitSelection(selectedOrgId, startYear, year);
-    };
-
-    const emitSelection = (orgId: string, start: string, end: string) => {
+    const emitSelection = (orgId: string) => {
         const allNodes = [...data, ...companies, ...factories];
         const selected = allNodes.find(x => x.id === orgId);
         onSelectionChange?.({
             orgId,
             orgName: selected?.name || "所有公司",
-            startYear: start,
-            endYear: end,
         });
     };
 
@@ -178,51 +160,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
                     />
                 </div>
             </div>
-            {showYearRange && (
-                <>
-                    <div>
-                        <label htmlFor="startyear" className="block text-sm/6 font-medium text-gray-900">
-                            開始年份
-                        </label>
-                        <div className="mt-2 grid grid-cols-1">
-                            <select
-                                id="startyear"
-                                value={startYear}
-                                onChange={handleStartYearChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                            >
-                                <option value="">請選擇年份</option>
-                                <option value="110">110</option>
-                                <option value="111">111</option>
-                                <option value="112">112</option>
-                                <option value="113">113</option>
-                            </select>
-                            <ChevronDownIcon className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
-                        </div>
-                    </div>
 
-                    <div>
-                        <label htmlFor="endyear" className="block text-sm/6 font-medium text-gray-900">
-                            結束年份
-                        </label>
-                        <div className="mt-2 grid grid-cols-1">
-                            <select
-                                id="endyear"
-                                value={endYear}
-                                onChange={handleEndYearChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                            >
-                                <option value="">請選擇年份</option>
-                                <option value="110">110</option>
-                                <option value="111">111</option>
-                                <option value="112">112</option>
-                                <option value="113">113</option>
-                            </select>
-                            <ChevronDownIcon className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
-                        </div>
-                    </div>
-                </>
-            )}
         </>
     )
 }
