@@ -22,7 +22,7 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
     const [companies, setCompanies] = useState<Company[]>([]); // 當前顯示的公司
     const [factories, setFactories] = useState<Factory[]>([]); // 當前顯示的工廠
 
-    const [setSelectedOrgId] = useState("");
+    const [selectedOrgId, setSelectedOrgId] = useState("");
 
     // 請求 API 獲取企業數據
     useEffect(() => {
