@@ -14,7 +14,7 @@ interface SelectEnterpriseProps {
     showYearRange?: boolean;
 }
 
-export default function SelectEnterprise({ onSelectionChange, showYearRange = true }: SelectEnterpriseProps) {
+export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseProps) {
     const [data, setData] = useState<Enterprise[]>([]); // 保存企業數據
     const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業
     const [selectedCompany, setSelectedCompany] = useState(""); // 選中的公司
@@ -22,7 +22,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
     const [companies, setCompanies] = useState<Company[]>([]); // 當前顯示的公司
     const [factories, setFactories] = useState<Factory[]>([]); // 當前顯示的工廠
 
-    const [selectedOrgId, setSelectedOrgId] = useState("");
+    const [setSelectedOrgId] = useState("");
 
     // 請求 API 獲取企業數據
     useEffect(() => {
