@@ -342,7 +342,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 </div>
             ) : (
                 <div
-                    className="ag-theme-quartz-dark"
+                    className="ag-theme-quartz"
                     style={{width: "100%", height: "700px", marginTop: "20px"}}
                 >
                     <AgGridReact

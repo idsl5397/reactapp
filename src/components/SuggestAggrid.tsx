@@ -15,7 +15,7 @@ const SuggestAggrid = forwardRef<AgGridReact, AggridProps>(({ columnDefs, rowDat
     const gridRef = useRef<AgGridReact>(null);
 
     return (
-        <div className="ag-theme-quartz-dark" style={{height: '600px', width: '100%'}}>
+        <div className="ag-theme-quartz" style={{height: '600px', width: '100%'}}>
             <AgGridReact
                 localeText={AG_GRID_LOCALE_TW}
                 ref={gridRef}
