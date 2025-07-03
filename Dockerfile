@@ -23,9 +23,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # 構建應用
-ARG NEXT_PUBLIC_API_URL=https://api.isafe.org.tw
+ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-ARG API=http://backend:8080
+ARG API
 ENV API=${API}
 RUN yarn build
 
