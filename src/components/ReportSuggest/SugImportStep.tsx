@@ -8,32 +8,20 @@ import { AgGridReact } from "ag-grid-react";
 import { defaultColDef, AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
 
 const api = axios.create({ baseURL: '/proxy' });
-export default function BulkImportPage() {
+export default function SugImportPage() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "建立報告", href: "/reportEntry" },
-        { label: "批次上傳績效指標報告" }
+        { label: "批次上傳委員建議報告" }
     ];
 
     const [file, setFile] = useState<File | null>(null);
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [isValid, setIsValid] = useState(false);
     const [orgId, setOrgId] = useState<string>("");
-    const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear() - 1911);
-    const [selectedQuarter, setSelectedQuarter] = useState<number>(Math.floor(new Date().getMonth() / 3) + 1);
 
-    const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 1911 - i);
-    const quarters = [
-        { label: "Q1", value: 1 },
-        { label: "Q2", value: 2 },
-        { label: "Q3", value: 3 },
-        { label: "Q4", value: 4 }
-    ];
     const toQuarterText = (q: number) => `Q${q}`;   // 1 → "Q1"
-    const handleSelectChange = (type: "year" | "quarter", value: string) => {
-        if (type === "year") setSelectedYear(parseInt(value));
-        else setSelectedQuarter(parseInt(value));
-    };
+
 
     const handleSelectionChange = (payload: SelectionPayload) => {
         console.log("✅ 已選擇公司 ID：", payload.orgId); // ← 加這行
@@ -41,11 +29,9 @@ export default function BulkImportPage() {
     };
 
     const handleDownloadTemplate = async (orgId: string) => {
-        const res = await api.get(`/Kpi/download-template`, {
+        const res = await api.get(`/Suggest/download-template`, {
             params: {
                 organizationId: orgId,
-                year: selectedYear,                 // 可有可無，看後端
-                quarter: toQuarterText(selectedQuarter)
             },
             responseType: 'blob' // 📁 一定要這樣設，才會拿到檔案資料
         });
@@ -54,7 +40,7 @@ export default function BulkImportPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'KPI_Template.xlsx';
+        a.download = 'Sug_Template.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
     };
@@ -69,7 +55,8 @@ export default function BulkImportPage() {
         setIsValid(false);
 
         try {
-            const res = await api.post('/Kpi/fullpreview-for-report', formData);
+            const res = await api.post('/Suggest/fullpreview-for-report', formData);
+            console.log("預覽資料:", res);
             setPreviewData(res.data);
             setIsValid(true);
         } catch (err) {
@@ -84,12 +71,10 @@ export default function BulkImportPage() {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('year', selectedYear.toString());
-        formData.append('quarter', toQuarterText(selectedQuarter));   // 👈 轉成 "Q1"
         formData.append('organizationId', orgId);
 
         try {
-            await api.post('/Kpi/fullsubmit-for-report', formData);
+            await api.post('/Suggest/fullsubmit-for-report', formData);
             alert("✅ 匯入成功");
             setFile(null);
             setPreviewData([]);
@@ -100,10 +85,23 @@ export default function BulkImportPage() {
         }
     };
     const columnDefs = [
-        { headerName: "指標名稱", field: "indicatorName", flex: 1 },
-        { headerName: "細項名稱", field: "detailItemName", flex: 1 },
-        { headerName: "填報值", field: "reportValue", flex: 1 },
-        { headerName: "備註", field: "remarks", flex: 1 },
+        { headerName: "廠商", field: "orgName", flex: 1 },
+        { headerName: "日期", field: "date", flex: 1 },
+        { headerName: "會議/活動", field: "eventType", flex: 1 },
+        { headerName: "類別", field: "suggestType", flex: 1 },
+        { headerName: "委員", field: "userName", flex: 1 },
+        { headerName: "建議內容", field: "content", flex: 2 },
+        { headerName: "負責單位", field: "respDept", flex: 1 },
+        { headerName: "是否參採", field: "isAdopted", flex: 1 },
+        { headerName: "改善對策/辦理情形", field: "improveDetails", flex: 2 },
+        { headerName: "預估人力投入", field: "manpower", flex: 1 },
+        { headerName: "預估經費投入", field: "budget", flex: 1 },
+        { headerName: "是否完成改善/辦理", field: "completed", flex: 1 },
+        { headerName: "預估完成年份", field: "doneYear", flex: 1 },
+        { headerName: "預估完成月份", field: "doneMonth", flex: 1 },
+        { headerName: "平行展開", field: "parallelExec", flex: 1 },
+        { headerName: "展開計畫", field: "execPlan", flex: 2 },
+        { headerName: "備註", field: "remark", flex: 2 },
     ];
 
     const defaultColDef = {
@@ -117,40 +115,12 @@ export default function BulkImportPage() {
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
             <div className="max-w-5xl mx-auto p-6 space-y-8">
-                <h1 className="text-2xl font-bold text-center mb-8 text-base-content">批次上傳績效指標報告</h1>
+                <h1 className="text-2xl font-bold text-center mb-8 text-base-content">批次上傳委員建議報告</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <SelectEnterprise onSelectionChange={handleSelectionChange} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">民國年度</label>
-                            <select
-                                className="select select-bordered w-full"
-                                value={selectedYear}
-                                onChange={(e) => handleSelectChange("year", e.target.value)}
-                            >
-                                {yearOptions.map((year) => (
-                                    <option key={year} value={year}>
-                                        民國 {year} 年
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">季度</label>
-                            <select
-                                className="select select-bordered w-full"
-                                value={selectedQuarter}
-                                onChange={(e) => handleSelectChange("quarter", e.target.value)}
-                            >
-                                {quarters.map((q) => (
-                                    <option key={q.value} value={q.value}>
-                                        {q.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -169,8 +139,9 @@ export default function BulkImportPage() {
                     <h2 className="text-lg font-semibold mb-2">📄 填寫注意事項</h2>
                     <ul className="text-sm list-disc list-inside text-gray-700 space-y-1">
                         <li>請勿更動模板中的欄位名稱與順序</li>
-                        <li>請填寫填報值(僅填寫數值)，若無資料請輸入備註</li>
-                        <li>請確認填寫數據，避免匯入失敗</li>
+                        <li>請直接對欄位進行修改/填寫</li>
+                        <li>僅能修改欄位: 是否參採、改善對策/辦理情形、預估人力投入、預估經費投入、是否完成改善/辦理、預估完成年份、預估完成月份、平行展開、展開計畫、備註</li>
+                        <li>請確認填寫內容後送出，避免匯入失敗</li>
                     </ul>
                 </div>
 

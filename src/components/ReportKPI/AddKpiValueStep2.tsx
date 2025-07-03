@@ -266,9 +266,7 @@ export default function AddKpiValueStep2({ onSaveDraft }: Step2Props) {
                                     </button>
                                 </div>
                             </div>
-
                         );
-
                     })}
                 </div>
             ))}

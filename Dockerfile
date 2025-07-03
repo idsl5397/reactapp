@@ -1,5 +1,5 @@
 # 基礎階段
-FROM node:18-alpine AS base
+FROM node:24-alpine AS base
 
 # 依賴階段
 FROM base AS deps

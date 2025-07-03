@@ -154,7 +154,7 @@ export default function Report(){
                                 items={sugitems}
                             />
 
-                            <Link href="/improvement" tabIndex={0}>
+                            <Link href="/reportEntry/Improvement" tabIndex={0}>
                                 <motion.div
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}

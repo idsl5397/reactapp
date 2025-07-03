@@ -1,4 +1,4 @@
-import AddKPIvalue from "@/components/KPI/AddKPIvalue";
+import SugImportStep from "@/components/ReportSuggest/SugImportStep";
 
 
 export default function page(){
@@ -6,7 +6,7 @@ export default function page(){
 
     return (
         <>
-            <AddKPIvalue/>
+            <SugImportStep/>
         </>
     )
 }
