@@ -25,8 +25,8 @@ COPY . .
 # 構建應用
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-ARG API
-ENV API=${API}
+
+ENV API=http://kpibackend:8080
 RUN yarn build
 
 # 運行階段
