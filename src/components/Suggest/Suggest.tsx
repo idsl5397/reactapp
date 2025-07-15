@@ -9,8 +9,6 @@ import axios from 'axios';
 import Link from "next/link";
 import { toast, Toaster } from "react-hot-toast";
 import { AgGridReact } from "ag-grid-react";
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
 import _ from 'lodash';
 
 interface SuggestDto {
@@ -37,14 +35,13 @@ const Modal = ({ title, children, onClose }: { title: string, children: React.Re
 export default function Suggest() {
     const [rowData, setRowData] = useState<SuggestDto[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [selection, setSelection] = useState<SelectionPayload>({
+    const [selection] = useState<SelectionPayload>({
         orgId: '',
         startYear: '',
         endYear: '',
         keyword: ''
     });
-    const [keyword, setKeyword] = useState("");
-    const [exportMode, setExportMode] = useState<"all" | "failed">("all");
+    const [keyword] = useState("");
     const [selectedOrgData, setSelectedOrgData] = useState<SuggestDto[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
@@ -103,58 +100,6 @@ export default function Suggest() {
         }
     ];
 
-    const exportData = async (type: "excel" | "csv") => {
-        const api = gridRef.current?.api;
-        if (!api) return;
-        const today = new Date().toISOString().slice(0, 10);
-
-        if (exportMode === "all") {
-            const fileName = `委員建議_${today}.${type === "excel" ? "xlsx" : "csv"}`;
-            const options = {
-                fileName,
-                processHeaderCallback: (params: any) => params.column.getColDef().headerName || params.column.getColDef().field,
-                processCellCallback: (params: any) => params.value ?? "-",
-            };
-            type === "excel" ? api.exportDataAsExcel(options) : api.exportDataAsCsv(options);
-            return;
-        }
-
-        const failedRows: any[] = [];
-        api.forEachNodeAfterFilterAndSort((node) => {
-            const row = node.data;
-            if (!row || row.completed === true) return;
-            failedRows.push(row);
-        });
-
-        const failedRowsWithHeader = failedRows.map(row => {
-            const newRow: any = {};
-            Object.keys(row).forEach(key => {
-                const colDef = columnDefs.find(col => col.field === key);
-                newRow[colDef?.headerName || key] = row[key];
-            });
-            return newRow;
-        });
-
-        const workbook = new ExcelJS.Workbook();
-        const sheet = workbook.addWorksheet("未完成改善");
-        if (failedRowsWithHeader.length > 0) {
-            sheet.columns = Object.keys(failedRowsWithHeader[0]).map(key => ({ header: key, key, width: 20 }));
-            failedRowsWithHeader.forEach(row => sheet.addRow(row));
-        }
-        const fileName = `委員建議_未完成_${today}.${type === "excel" ? "xlsx" : "csv"}`;
-        if (type === "excel") {
-            const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), fileName);
-        } else {
-            const csvRows = [sheet.columns!.map(col => col.header).join(',')];
-            failedRowsWithHeader.forEach(row => {
-                const values = sheet.columns!.map(col => row[col.header! as string] ?? '');
-                csvRows.push(values.join(','));
-            });
-            const blob = new Blob(["\uFEFF" + csvRows.join('\n')], { type: "text/csv;charset=utf-8;" });
-            saveAs(blob, fileName);
-        }
-    };
 
     useEffect(() => {
         const delay = setTimeout(() => { handleQuery(); }, 500);
