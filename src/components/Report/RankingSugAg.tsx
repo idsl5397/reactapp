@@ -42,7 +42,7 @@ type SuggestUncompletedDto = {
 
 const api = axios.create({ baseURL: '/proxy' });
 
-export default function CompletionRankingAg() {
+export default function RankingSugAg() {
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -147,7 +147,7 @@ export default function CompletionRankingAg() {
         <div className="max-w-6xl mx-auto p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">改善建議完成率排行</h2>
 
-            <div className="ag-theme-quartz h-[600px] rounded-lg shadow border border-gray-200">
+            <div className="ag-theme-quartz h-[500px] rounded-lg shadow border border-gray-200">
                 <AgGridReact
                     rowData={rowData}
                     columnDefs={columnDefs}

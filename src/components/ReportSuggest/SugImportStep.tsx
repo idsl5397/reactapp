@@ -1,11 +1,12 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Download } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectOnlyEnterprise";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react";
-import { defaultColDef, AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
+import { AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
+import {toast, Toaster} from "react-hot-toast";
 
 const api = axios.create({ baseURL: '/proxy' });
 export default function SugImportPage() {
@@ -62,7 +63,7 @@ export default function SugImportPage() {
         } catch (err) {
             console.error(err);
             setIsValid(false);
-            alert("解析失敗，請確認格式是否正確");
+            toast.error("解析失敗，請確認格式是否正確");
         }
     };
 
@@ -75,13 +76,13 @@ export default function SugImportPage() {
 
         try {
             await api.post('/Suggest/fullsubmit-for-report', formData);
-            alert("✅ 匯入成功");
+            toast.success("✅ 匯入成功");
             setFile(null);
             setPreviewData([]);
             setIsValid(false);
         } catch (err) {
             console.error(err);
-            alert("❌ 匯入失敗");
+            toast.error("❌ 匯入失敗");
         }
     };
     const columnDefs = [
@@ -111,6 +112,7 @@ export default function SugImportPage() {
     };
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems} />
             </div>

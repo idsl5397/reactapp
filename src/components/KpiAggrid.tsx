@@ -4,7 +4,6 @@ import type { CellClassParams, CellStyle } from "ag-grid-community"; // ⚠️ �
 import { AllEnterpriseModule } from "ag-grid-enterprise";
 import { AgGridReact, AgGridReact as AgGridReactType } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@ag-grid-community/locale";
-import * as XLSX from "xlsx";
 import {
     LineChart,
     Line,
@@ -14,6 +13,7 @@ import {
     ResponsiveContainer,
     ReferenceLine,
 } from "recharts";
+import {Toaster,toast} from "react-hot-toast";
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
 interface KpiReport {
@@ -102,56 +102,29 @@ const GridComponent: React.FC<GridComponentProps> = ({
         const api = gridRef.current?.api;
         if (!api) return;
 
-        // 如果要全部匯出就直接交給 AG Grid 處理
+        const fileNamePrefix = exportMode === "failed" ? "未達標資料" : "指標資料";
+        const fileName = `${fileNamePrefix}_${new Date().toISOString().slice(0, 10)}`;
+
         if (exportMode === "all") {
-            const fileName = `指標資料_${new Date().toISOString().slice(0, 10)}`;
-            const options = {
-                fileName: `${fileName}.${type === "excel" ? "xlsx" : "csv"}`,
-                processHeaderCallback: (params: any) => {
-                    return params.column.getColDef().headerName || params.column.getColDef().field;
-                },
-                processCellCallback: (params: any) => {
-                    if (params.column.getColId() === "lastReportValue") {
-                        const actual = params.value;
-                        const row = params.node?.data;
-                        const target = row.lastTargetValue;
-                        const operator = row.lastComparisonOperator;
-
-                        let meets = true;
-                        if (typeof actual === "number" && typeof target === "number") {
-                            switch (operator) {
-                                case ">=": meets = actual >= target; break;
-                                case "<=": meets = actual <= target; break;
-                                case ">": meets = actual > target; break;
-                                case "<": meets = actual < target; break;
-                                case "=":
-                                case "==": meets = actual === target; break;
-                                default: meets = true;
-                            }
-                        }
-
-                        return meets ? `${actual}` : `⚠️ ${actual}（未達標）`;
-                    }
-
-                    return params.value ?? "-";
-                }
-            };
-
             if (type === "excel") {
-                api.exportDataAsExcel(options);
+                api.exportDataAsExcel({
+                    fileName: `${fileName}.xlsx`,
+                });
             } else {
-                api.exportDataAsCsv(options);
+                api.exportDataAsCsv({
+                    fileName: `${fileName}.csv`,
+                    bom: true,
+                } as any);
             }
-
             return;
         }
 
-        // 否則：只匯出未達標 → 手動組資料
-        const failedRows: any[] = [];
+        // 匯出未達標資料（只匯出未達標）
+        const failedNodes: any[] = [];
         api.forEachNodeAfterFilterAndSort((node) => {
             const row = node.data;
-            if (!row) return;
-            if (!row.isIndicator) return;
+            if (!row || !row.isIndicator) return;
+
             const actual = row.lastReportValue;
             const target = row.lastTargetValue;
             const operator = row.lastComparisonOperator;
@@ -169,39 +142,40 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 }
             }
 
-            if (meets) return; // 忽略達標的
-
-            failedRows.push(row); // 原始欄位不做 mapping，匯出畫面看到的欄位
+            if (!meets) {
+                failedNodes.push(node);
+            }
         });
 
-        const failedRowsWithHeader = failedRows.map(row => {
-            const newRow: any = {};
-            Object.keys(row).forEach(key => {
-                const label = columnTitleMap[key] || key;
-                newRow[label] = row[key];
-            });
-            return newRow;
-        });
+        // 使用 AG Grid 內建匯出僅未達標的資料
+        if (failedNodes.length > 0) {
+            // 清除現有選取
+            api.deselectAll();
 
-        const fileName = `未達標資料_${new Date().toISOString().slice(0, 10)}.${type === "excel" ? "xlsx" : "csv"}`;
-        const worksheet = XLSX.utils.json_to_sheet(failedRowsWithHeader);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "未達標");
+            // 勾選未達標資料
+            failedNodes.forEach((node) => node.setSelected(true));
 
-        if (type === "excel") {
-            XLSX.writeFile(workbook, fileName);
-        } else {
-            const csv = XLSX.utils.sheet_to_csv(worksheet);
-            const bom = "\uFEFF";
-            const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (type === "excel") {
+                api.exportDataAsExcel({
+                    fileName: `${fileName}.xlsx`,
+                    onlySelected: true,
+                });
+            } else {
+                const csv = api.getDataAsCsv({ onlySelected: true });
+                const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", `${fileName}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // ⚠️ 可選：匯出後還原選取狀態
+            api.deselectAll();
         }
     };
+
 
     const filteredRowData = useMemo(() => {
         const result = rowData.filter((row) => {
@@ -250,8 +224,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
     };
 
     const deleteSelectedRows = () => {
-        if (selectedRows.length === 0) return alert("請先選擇要刪除的資料！");
-        alert("⚠️ 僅從畫面中刪除，未同步後端");
+        if (selectedRows.length === 0) return toast.error("請先選擇要刪除的資料！");
+        toast.error("⚠️ 僅從畫面中刪除，未同步後端");
         setSelectedRows([]);
     };
 
@@ -294,337 +268,340 @@ const GridComponent: React.FC<GridComponentProps> = ({
     };
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-2">
-                {/*<button*/}
-                {/*    onClick={toggleEditMode}*/}
-                {/*    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
-                {/*>*/}
-                {/*    {isEditable ? "鎖定" : "修改"}*/}
-                {/*</button>*/}
-                {/*{isEditable && (*/}
-                {/*    <button*/}
-                {/*        onClick={deleteSelectedRows}*/}
-                {/*        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"*/}
-                {/*    >*/}
-                {/*        刪除選擇*/}
-                {/*    </button>*/}
-                {/*)}*/}
-                <select
-                    className="select select-bordered"
-                    value={exportMode}
-                    onChange={(e) => setExportMode(e.target.value as any)}
-                >
-                    <option value="all">匯出篩選結果</option>
-                    <option value="failed">匯出篩選結果未達標</option>
-                </select>
-                <button className="btn btn-outline" onClick={() => exportData("excel")}>匯出 Excel</button>
-                <button className="btn btn-outline" onClick={() => exportData("csv")}>匯出 CSV</button>
-            </div>
-
-            <p className="text-sm text-gray-500 px-1">
-                類別：{activeCategory === "tab_all" ? "全部類別" : activeCategory}，
-                指標類型：
-                {activeType === "type_all"
-                    ? "全部"
-                    : activeType === "basic"
-                        ? "基礎型"
-                        : "客製型"}
-            </p>
-
-            {isLoading ? (
-                <div className="w-full h-[700px] flex items-center justify-center">
-                    <span className="loading loading-spinner loading-lg text-primary">資料載入中…</span>
+        <>
+            <Toaster position="top-right" reverseOrder={false} />
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row gap-2">
+                    {/*<button*/}
+                    {/*    onClick={toggleEditMode}*/}
+                    {/*    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
+                    {/*>*/}
+                    {/*    {isEditable ? "鎖定" : "修改"}*/}
+                    {/*</button>*/}
+                    {/*{isEditable && (*/}
+                    {/*    <button*/}
+                    {/*        onClick={deleteSelectedRows}*/}
+                    {/*        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"*/}
+                    {/*    >*/}
+                    {/*        刪除選擇*/}
+                    {/*    </button>*/}
+                    {/*)}*/}
+                    <select
+                        className="select select-sm select-bordered"
+                        value={exportMode}
+                        onChange={(e) => setExportMode(e.target.value as any)}
+                    >
+                        <option value="all">匯出篩選結果</option>
+                        <option value="failed">匯出篩選結果未達標</option>
+                    </select>
+                    <button className="btn btn-outline btn-sm" onClick={() => exportData("excel")}>匯出 Excel</button>
+                    <button className="btn btn-outline btn-sm" onClick={() => exportData("csv")}>匯出 CSV</button>
                 </div>
-            ) : filteredRowData.length === 0 ? (
-                <div className="text-center text-gray-500 mt-6">
-                    查無符合條件的資料
-                </div>
-            ) : (
-                <div
-                    className="ag-theme-quartz"
-                    style={{width: "100%", height: "700px", marginTop: "20px"}}
-                >
-                    <AgGridReact
-                        key={`${activeCategory}-${activeType}`}
-                        ref={gridRef}
-                        localeText={AG_GRID_LOCALE_TW}
-                        onGridReady={onGridReady}
-                        rowData={filteredRowData}
-                        sideBar={{
-                            toolPanels: [
-                                {
-                                    id: 'columns',
-                                    labelDefault: '欄位',
-                                    labelKey: 'columns',
-                                    iconKey: 'columns',
-                                    toolPanel: 'agColumnsToolPanel',
-                                }
-                            ],
-                        }}
-                        columnDefs={[
-                            ...(isEditable ? [checkboxSelectionCol] : []),
-                            ...columnDefs.map((col) => {
-                                if (col.field === "lastReportValue") {
+
+                <p className="text-sm text-gray-500 px-1">
+                    類別：{activeCategory === "tab_all" ? "全部類別" : activeCategory}，
+                    指標類型：
+                    {activeType === "type_all"
+                        ? "全部"
+                        : activeType === "basic"
+                            ? "基礎型"
+                            : "客製型"}
+                </p>
+
+                {isLoading ? (
+                    <div className="w-full h-[700px] flex items-center justify-center">
+                        <span className="loading loading-spinner loading-lg text-primary">資料載入中…</span>
+                    </div>
+                ) : filteredRowData.length === 0 ? (
+                    <div className="text-center text-gray-500 mt-6">
+                        查無符合條件的資料
+                    </div>
+                ) : (
+                    <div
+                        className="ag-theme-quartz"
+                        style={{width: "100%", height: "700px", marginTop: "20px"}}
+                    >
+                        <AgGridReact
+                            key={`${activeCategory}-${activeType}`}
+                            ref={gridRef}
+                            localeText={AG_GRID_LOCALE_TW}
+                            onGridReady={onGridReady}
+                            rowData={filteredRowData}
+                            sideBar={{
+                                toolPanels: [
+                                    {
+                                        id: 'columns',
+                                        labelDefault: '欄位',
+                                        labelKey: 'columns',
+                                        iconKey: 'columns',
+                                        toolPanel: 'agColumnsToolPanel',
+                                    }
+                                ],
+                            }}
+                            columnDefs={[
+                                ...(isEditable ? [checkboxSelectionCol] : []),
+                                ...columnDefs.map((col) => {
+                                    if (col.field === "lastReportValue") {
+                                        return {
+                                            ...col,
+                                            editable: isEditable,
+                                            cellStyle: (params: CellClassParams<IRow>): CellStyle => {
+                                                const actual = params.value;
+                                                const data = params.data;
+
+                                                if (!data || actual === null || actual === undefined) {
+                                                    return { textAlign: "left" };
+                                                }
+
+                                                if (!data.isIndicator) {
+                                                    return { textAlign: "left" };  // 不是指標，直接不檢查
+                                                }
+
+                                                const target = data.lastTargetValue;
+                                                const operator = data.lastComparisonOperator;
+
+                                                let meets = true;
+                                                if (typeof actual === "number" && typeof target === "number") {
+                                                    switch (operator) {
+                                                        case ">=": meets = actual >= target; break;
+                                                        case "<=": meets = actual <= target; break;
+                                                        case ">":  meets = actual > target;  break;
+                                                        case "<":  meets = actual < target;  break;
+                                                        case "=":
+                                                        case "==": meets = actual === target; break;
+                                                        default:   meets = true;
+                                                    }
+                                                }
+
+                                                return meets
+                                                    ? { textAlign: "left" }
+                                                    : {
+                                                        textAlign: "left",
+                                                        // backgroundColor: "#fdecea",
+                                                        color: "#d32f2f",
+                                                        fontWeight: "bold"
+                                                    };
+                                            },
+                                            cellRenderer: (params: CellClassParams<IRow>) => {
+                                                const actual = params.value;
+                                                const data = params.data;
+
+                                                if (!data || actual === null || actual === undefined) return actual;
+
+                                                const target = data.lastTargetValue;
+                                                const operator = data.lastComparisonOperator;
+
+                                                let meets = true;
+                                                if (typeof actual === "number" && typeof target === "number") {
+                                                    switch (operator) {
+                                                        case ">=":
+                                                            meets = actual >= target;
+                                                            break;
+                                                        case "<=":
+                                                            meets = actual <= target;
+                                                            break;
+                                                        case ">":
+                                                            meets = actual > target;
+                                                            break;
+                                                        case "<":
+                                                            meets = actual < target;
+                                                            break;
+                                                        case "=":
+                                                        case "==":
+                                                            meets = actual === target;
+                                                            break;
+                                                        default:
+                                                            meets = true;
+                                                    }
+                                                }
+
+                                                return meets ? actual : `⚠️ ${actual}`;
+                                            }
+                                        };
+                                    }
+
                                     return {
                                         ...col,
                                         editable: isEditable,
-                                        cellStyle: (params: CellClassParams<IRow>): CellStyle => {
-                                            const actual = params.value;
-                                            const data = params.data;
-
-                                            if (!data || actual === null || actual === undefined) {
-                                                return { textAlign: "left" };
-                                            }
-
-                                            if (!data.isIndicator) {
-                                                return { textAlign: "left" };  // 不是指標，直接不檢查
-                                            }
-
-                                            const target = data.lastTargetValue;
-                                            const operator = data.lastComparisonOperator;
-
-                                            let meets = true;
-                                            if (typeof actual === "number" && typeof target === "number") {
-                                                switch (operator) {
-                                                    case ">=": meets = actual >= target; break;
-                                                    case "<=": meets = actual <= target; break;
-                                                    case ">":  meets = actual > target;  break;
-                                                    case "<":  meets = actual < target;  break;
-                                                    case "=":
-                                                    case "==": meets = actual === target; break;
-                                                    default:   meets = true;
-                                                }
-                                            }
-
-                                            return meets
-                                                ? { textAlign: "left" }
-                                                : {
-                                                    textAlign: "left",
-                                                    // backgroundColor: "#fdecea",
-                                                    color: "#d32f2f",
-                                                    fontWeight: "bold"
-                                                };
-                                        },
-                                        cellRenderer: (params: CellClassParams<IRow>) => {
-                                            const actual = params.value;
-                                            const data = params.data;
-
-                                            if (!data || actual === null || actual === undefined) return actual;
-
-                                            const target = data.lastTargetValue;
-                                            const operator = data.lastComparisonOperator;
-
-                                            let meets = true;
-                                            if (typeof actual === "number" && typeof target === "number") {
-                                                switch (operator) {
-                                                    case ">=":
-                                                        meets = actual >= target;
-                                                        break;
-                                                    case "<=":
-                                                        meets = actual <= target;
-                                                        break;
-                                                    case ">":
-                                                        meets = actual > target;
-                                                        break;
-                                                    case "<":
-                                                        meets = actual < target;
-                                                        break;
-                                                    case "=":
-                                                    case "==":
-                                                        meets = actual === target;
-                                                        break;
-                                                    default:
-                                                        meets = true;
-                                                }
-                                            }
-
-                                            return meets ? actual : `⚠️ ${actual}`;
-                                        }
                                     };
+                                }),
+                                actionColumn,
+                            ]}
+                            defaultColDef={{
+                                sortable: true,
+                                filter: true,
+                                resizable: true,
+                                editable: isEditable,
+                                ...defaultColDef,
+                            }}
+                            rowSelection="multiple"
+                            onSelectionChanged={onSelectionChanged}
+                            animateRows={true}
+                            pagination={true}
+                            paginationPageSize={20}
+                            singleClickEdit={true}
+                            stopEditingWhenCellsLoseFocus={true}
+                            getRowStyle={(params) => {
+                                const row = params.data;
+                                const actual = row.lastReportValue;
+                                const target = row.lastTargetValue;
+                                const operator = row.lastComparisonOperator;
+
+                                if (typeof actual === "number" && typeof target === "number") {
+                                    let meets = true;
+                                    switch (operator) {
+                                        case ">=": meets = actual >= target; break;
+                                        case "<=": meets = actual <= target; break;
+                                        case ">":  meets = actual > target; break;
+                                        case "<":  meets = actual < target; break;
+                                        case "=":
+                                        case "==": meets = actual === target; break;
+                                        default:   meets = true;
+                                    }
+
+                                    if (!meets) {
+                                        return {
+                                            // backgroundColor: "#fdecea", // 淺紅色
+                                            color: "#d32f2f",
+                                            fontWeight: "bold"
+                                        };
+                                    }
                                 }
 
-                                return {
-                                    ...col,
-                                    editable: isEditable,
-                                };
-                            }),
-                            actionColumn,
-                        ]}
-                        defaultColDef={{
-                            sortable: true,
-                            filter: true,
-                            resizable: true,
-                            editable: isEditable,
-                            ...defaultColDef,
-                        }}
-                        rowSelection="multiple"
-                        onSelectionChanged={onSelectionChanged}
-                        animateRows={true}
-                        pagination={true}
-                        paginationPageSize={20}
-                        singleClickEdit={true}
-                        stopEditingWhenCellsLoseFocus={true}
-                        getRowStyle={(params) => {
-                            const row = params.data;
-                            const actual = row.lastReportValue;
-                            const target = row.lastTargetValue;
-                            const operator = row.lastComparisonOperator;
+                                return  undefined; // 默認樣式
+                            }}
+                        />
+                    </div>
+                )}
+                {selectedDetail && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-xl relative">
+                            <h2 className="text-xl font-semibold mb-4">指標詳情</h2>
+                            <p className="text-sm font-semibold mb-2">歷史執行情況：</p>
 
-                            if (typeof actual === "number" && typeof target === "number") {
-                                let meets = true;
-                                switch (operator) {
-                                    case ">=": meets = actual >= target; break;
-                                    case "<=": meets = actual <= target; break;
-                                    case ">":  meets = actual > target; break;
-                                    case "<":  meets = actual < target; break;
-                                    case "=":
-                                    case "==": meets = actual === target; break;
-                                    default:   meets = true;
-                                }
+                            <div className="mb-2 flex justify-between items-center">
+                                <span className="text-sm text-gray-500">KPI 趨勢圖</span>
+                                <select
+                                    className="select select-sm select-bordered"
+                                    value={filterRange}
+                                    onChange={(e) => setFilterRange(e.target.value)}
+                                >
+                                    <option value="all">全部</option>
+                                    <option value="last4">最近四期</option>
+                                </select>
+                            </div>
 
-                                if (!meets) {
-                                    return {
-                                        // backgroundColor: "#fdecea", // 淺紅色
-                                        color: "#d32f2f",
-                                        fontWeight: "bold"
-                                    };
-                                }
-                            }
-
-                            return  undefined; // 默認樣式
-                        }}
-                    />
-                </div>
-            )}
-            {selectedDetail && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-xl relative">
-                        <h2 className="text-xl font-semibold mb-4">指標詳情</h2>
-                        <p className="text-sm font-semibold mb-2">歷史執行情況：</p>
-
-                        <div className="mb-2 flex justify-between items-center">
-                            <span className="text-sm text-gray-500">KPI 趨勢圖</span>
-                            <select
-                                className="select select-sm select-bordered"
-                                value={filterRange}
-                                onChange={(e) => setFilterRange(e.target.value)}
-                            >
-                                <option value="all">全部</option>
-                                <option value="last4">最近四期</option>
-                            </select>
-                        </div>
-
-                        <div className="h-64 mb-4 border rounded flex items-center justify-center bg-gray-50">
-                            {isChartLoading ? (
-                                <span className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
-                            ) : chartData.length === 0 ? (
-                                <div className="text-gray-400 text-sm">尚無執行資料</div>
-                            ) : (
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={chartData}>
-                                        <XAxis dataKey="name" />
-                                        <YAxis
-                                            label={{
-                                                value: selectedDetail.unit || "單位",
-                                                position: "insideLeft",
-                                            }}
-                                        />
-                                        <Tooltip
-                                            content={({ active, payload, label }) => {
-                                                if (active && payload && payload.length) {
-                                                    return (
-                                                        <div className="bg-white border p-2 rounded shadow text-xs">
-                                                            <p>{label}</p>
-                                                            <p>
-                                                                執行值：{payload[0].value} {selectedDetail.unit || ""}
-                                                            </p>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="value"
-                                            stroke="#8884d8"
-                                            strokeWidth={2}
-                                            dot={{ r: 4 }}
-                                            activeDot={{ r: 6 }}
-                                        />
-                                        {selectedDetail.targetValue && (
-                                            <ReferenceLine
-                                                y={selectedDetail.targetValue}
-                                                stroke="gray"
-                                                strokeDasharray="4 2"
+                            <div className="h-64 mb-4 border rounded flex items-center justify-center bg-gray-50">
+                                {isChartLoading ? (
+                                    <span className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
+                                ) : chartData.length === 0 ? (
+                                    <div className="text-gray-400 text-sm">尚無執行資料</div>
+                                ) : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={chartData}>
+                                            <XAxis dataKey="name" />
+                                            <YAxis
                                                 label={{
-                                                    value: `目標值 ${selectedDetail.targetValue}`,
-                                                    position: "right",
-                                                    fontSize: 10,
+                                                    value: selectedDetail.unit || "單位",
+                                                    position: "insideLeft",
                                                 }}
                                             />
-                                        )}
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            )}
-                        </div>
+                                            <Tooltip
+                                                content={({ active, payload, label }) => {
+                                                    if (active && payload && payload.length) {
+                                                        return (
+                                                            <div className="bg-white border p-2 rounded shadow text-xs">
+                                                                <p>{label}</p>
+                                                                <p>
+                                                                    執行值：{payload[0].value} {selectedDetail.unit || ""}
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                }}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="value"
+                                                stroke="#8884d8"
+                                                strokeWidth={2}
+                                                dot={{ r: 4 }}
+                                                activeDot={{ r: 6 }}
+                                            />
+                                            {selectedDetail.targetValue && (
+                                                <ReferenceLine
+                                                    y={selectedDetail.targetValue}
+                                                    stroke="gray"
+                                                    strokeDasharray="4 2"
+                                                    label={{
+                                                        value: `目標值 ${selectedDetail.targetValue}`,
+                                                        position: "right",
+                                                        fontSize: 10,
+                                                    }}
+                                                />
+                                            )}
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                )}
+                            </div>
 
-                        <ul className="space-y-2 text-sm max-h-[300px] overflow-y-auto">
-                            {Object.entries(selectedDetail).map(([key, value]) => {
-                                if (key === "kpiDatas" && Array.isArray(value)) {
+                            <ul className="space-y-2 text-sm max-h-[300px] overflow-y-auto">
+                                {Object.entries(selectedDetail).map(([key, value]) => {
+                                    if (key === "kpiDatas" && Array.isArray(value)) {
+                                        return (
+                                            <li key={key}>
+                                                <strong>KPI 循環資料：</strong>
+                                                <ul className="list-disc list-inside ml-4 space-y-2">
+                                                    {value.map((kpiData: any, idx: number) => (
+                                                        <li key={idx}>
+                                                            <div className="mb-1 font-semibold">
+                                                                循環名稱：{kpiData.kpiCycleName || "-"}
+                                                            </div>
+                                                            <div className="ml-2">
+                                                                <p>基線年：{kpiData.baselineYear}</p>
+                                                                <p>基線值：{kpiData.baselineValue}</p>
+                                                                <p>目標值：{kpiData.targetValue}</p>
+                                                                <p>備註：{kpiData.remarks || "-"}</p>
+                                                                {Array.isArray(kpiData.reports) && (
+                                                                    <ul className="list-disc list-inside ml-4 mt-1">
+                                                                        {kpiData.reports.map((report: any, rIdx: number) => (
+                                                                            <li key={rIdx}>
+                                                                                {report.year}_{report.period}：{report.kpiReportValue}
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
+                                                            </div>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </li>
+                                        );
+                                    }
+
+                                    // 其他欄位照原本方式顯示
                                     return (
                                         <li key={key}>
-                                            <strong>KPI 循環資料：</strong>
-                                            <ul className="list-disc list-inside ml-4 space-y-2">
-                                                {value.map((kpiData: any, idx: number) => (
-                                                    <li key={idx}>
-                                                        <div className="mb-1 font-semibold">
-                                                            循環名稱：{kpiData.kpiCycleName || "-"}
-                                                        </div>
-                                                        <div className="ml-2">
-                                                            <p>基線年：{kpiData.baselineYear}</p>
-                                                            <p>基線值：{kpiData.baselineValue}</p>
-                                                            <p>目標值：{kpiData.targetValue}</p>
-                                                            <p>備註：{kpiData.remarks || "-"}</p>
-                                                            {Array.isArray(kpiData.reports) && (
-                                                                <ul className="list-disc list-inside ml-4 mt-1">
-                                                                    {kpiData.reports.map((report: any, rIdx: number) => (
-                                                                        <li key={rIdx}>
-                                                                            {report.year}_{report.period}：{report.kpiReportValue}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            )}
-                                                        </div>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                            <strong>{columnTitleMap[key] || key}：</strong>
+                                            <span> {String(value ?? "-")}</span>
                                         </li>
                                     );
-                                }
+                                })}
+                            </ul>
 
-                                // 其他欄位照原本方式顯示
-                                return (
-                                    <li key={key}>
-                                        <strong>{columnTitleMap[key] || key}：</strong>
-                                        <span> {String(value ?? "-")}</span>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-
-                        <button
-                            onClick={() => setSelectedDetail(null)}
-                            className="absolute top-2 right-2 btn btn-sm btn-circle btn-outline"
-                            title="關閉"
-                        >
-                            ✕
-                        </button>
+                            <button
+                                onClick={() => setSelectedDetail(null)}
+                                className="absolute top-2 right-2 btn btn-sm btn-circle btn-outline"
+                                title="關閉"
+                            >
+                                ✕
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </>
     );
 };
 

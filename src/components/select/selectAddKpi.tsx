@@ -3,6 +3,7 @@ import React, { useEffect, useImperativeHandle, useState, forwardRef } from "rea
 import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import { enterpriseService } from "@/services/selectCompany";
 import axios from "axios";
+import {toast, Toaster} from "react-hot-toast";
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -75,7 +76,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
     useImperativeHandle(ref, () => ({
         getFormData: (): AddKpiFormData | null => {
             if (!selectedOrgId || !formData.indicatorName || !formData.detailItemName|| !formData.isIndicator || !formData.category || !formData.field || !formData.unit || formData.baselineYear == null) {
-                alert("請填寫所有必填欄位");
+                toast.error("請填寫所有必填欄位");
                 return null;
             }
             return {
@@ -120,6 +121,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
 
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false} />
             <fieldset className="mb-6 border rounded-md p-4">
                 <legend className="text-base font-semibold text-gray-700">📌 基本資料</legend>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

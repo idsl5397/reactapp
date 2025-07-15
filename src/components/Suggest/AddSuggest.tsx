@@ -11,7 +11,7 @@ export default function AddSuggestPage() {
 
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "委員建議" , href: "/suggest" },
+        { label: "委員回覆及改善建議" , href: "/suggest" },
         { label: "新增委員建議"}
     ];
 

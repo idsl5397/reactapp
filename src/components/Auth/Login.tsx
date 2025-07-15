@@ -11,6 +11,7 @@ import {useauthStore} from "@/Stores/authStore";
 import { useRouter } from 'next/navigation'
 import { useMenuStore } from "@/Stores/menuStore";
 import {startSilentRefresh} from "@/utils/SilentRefresh";
+import {toast, Toaster} from "react-hot-toast";
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -76,6 +77,28 @@ export default function Login() {
             const response = await userService.Login(usermail, password);
 
             if (response.success && response.nickname && response.email && response.token) {
+                if (response.message?.includes("密碼將於")) {
+                    toast.custom((t) => (
+                        <div className="bg-white shadow-md rounded px-4 py-3 text-gray-800 max-w-md w-full">
+                            <div className="flex justify-between items-start">
+                                <div className="text-sm">{response.message}</div>
+                                <button
+                                    onClick={() => toast.dismiss(t.id)}
+                                    className="ml-4 text-indigo-600 underline text-sm"
+                                >
+                                    知道了
+                                </button>
+                            </div>
+                        </div>
+                    ), {
+                        duration: Infinity, // 👈 無限時間直到使用者手動關閉
+                        position: "top-center"
+                    });
+                }
+                if (response.warningMessage) {
+                    localStorage.setItem("login-warning", response.warningMessage);
+                    console.log("warningMessage:", response.warningMessage);
+                }
                 // 儲存使用者資料
                 setUserData({
                     nickname: response.nickname,
@@ -129,6 +152,7 @@ export default function Login() {
     };
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>

@@ -25,7 +25,7 @@ export type SuggestUncompletedDto = {
 const api = axios.create({
     baseURL: '/proxy',
 });
-const CompletionRanking: React.FC = () => {
+const RankingSug: React.FC = () => {
     const [data, setData] = useState<CompanyCompletionRankingDto[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<CompanyCompletionRankingDto | null>(null);
     const [uncompletedList, setUncompletedList] = useState<SuggestUncompletedDto[]>([]);
@@ -178,4 +178,4 @@ const CompletionRanking: React.FC = () => {
     );
 };
 
-export default CompletionRanking;
+export default RankingSug;

@@ -15,6 +15,7 @@ import Step4 from '@/components/register/Step4';
 
 import axios from "axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import {toast, Toaster} from "react-hot-toast";
 
 //步驟一 驗證email
 export interface EmailVerificationFormData {
@@ -99,16 +100,17 @@ export default function Register() {
                 throw new Error("送出失敗");
             }
 
-            alert("註冊成功！");
+            toast.success("註冊成功！");
             window.location.href = "/login";
         } catch (err) {
-            alert((err as Error).message);
+            toast.error((err as Error).message);
         }
     };
 
 
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>

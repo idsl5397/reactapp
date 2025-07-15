@@ -9,6 +9,7 @@ const api = axios.create({
 interface LoginResponse {
     success: boolean;
     message: string;
+    warningMessage?: string; // 👈 加這個
     token?: string;
     nickname?: string;
     email?: string;
@@ -27,6 +28,7 @@ export const userService = {
                 return {
                     success: response.data.success,
                     message: response.data.message,
+                    warningMessage: response.data.warningMessage,
                     token: response.data.token,
                     nickname: response.data.nickname,
                     email: response.data.email,

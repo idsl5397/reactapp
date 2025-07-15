@@ -1,4 +1,3 @@
-
 import React, { useImperativeHandle, forwardRef, useState, useEffect } from "react";
 import { IMaskInput } from 'react-imask';
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
 import {enterpriseService} from "@/services/selectCompany";
+import {toast, Toaster} from "react-hot-toast";
 
 const CreatableSelect = dynamic(() => import('react-select/creatable'), {
     ssr: false,
@@ -168,7 +168,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
             if (!formData.suggestionType) missingFields.push("建議類別");
 
             if (missingFields.length > 0) {
-                alert("請填寫以下必填欄位：\n" + missingFields.join("、"));
+                toast.error("請填寫以下必填欄位：\n" + missingFields.join("、"));
                 return null;
             }
             return {
@@ -195,6 +195,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
     };
     return (
         <>      {/* 區塊 1：基本資料 */}
+            <Toaster position="top-right" reverseOrder={false} />
             <fieldset className="mb-6 border rounded-md p-4">
                 <legend className="text-base font-semibold text-gray-700">📌 基本資料</legend>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

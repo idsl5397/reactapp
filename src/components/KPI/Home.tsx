@@ -1,19 +1,44 @@
 'use client';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise from "@/components/select/selectEnterprise";
 import Aggridchart from "@/components/aggridchart";
 import Aggridline from "@/components/aggridline";
+import {toast, Toaster} from "react-hot-toast";
 
 
 export default function Home(){
     const breadcrumbItems = [
         { label: "首頁"},
     ];
-
+    useEffect(() => {
+        const warning = localStorage.getItem("login-warning");
+        console.log(warning);
+        if (warning) {
+            toast.custom((t) => (
+                <div className="bg-white shadow rounded px-4 py-3">
+                    <div className="flex justify-between items-start">
+                        <span className="text-sm">{warning}</span>
+                        <button
+                            onClick={() => {
+                                toast.dismiss(t.id);
+                                localStorage.removeItem("login-warning");
+                            }}
+                            className="ml-4 text-sm underline text-indigo-600"
+                        >
+                            知道了
+                        </button>
+                    </div>
+                </div>
+            ), {
+                duration: Infinity,
+            });
+        }
+    }, []);
 
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
