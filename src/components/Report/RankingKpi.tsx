@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import {
@@ -84,7 +84,7 @@ const RankingKpiAg: React.FC = () => {
         }
     };
 
-    const fetchUnmet = async (org: CompanyKpiRateDto) => {
+    const fetchUnmet = useCallback(async (org: CompanyKpiRateDto) => {
         try {
             const res = await api.get('/Report/unmet-kpi', {
                 params: {
@@ -96,14 +96,13 @@ const RankingKpiAg: React.FC = () => {
                     endQuarter: quarterFilter || undefined,
                 }
             });
-
             setSelectedOrg(org);
             setUnmetList(res.data);
             setModalOpen(true);
         } catch (err) {
             console.error('查詢未達標失敗', err);
         }
-    };
+    }, [fieldFilter, yearFilter, quarterFilter])
 
     // ✅ 初次載入，載入 field 選項 + 預設資料
     useEffect(() => {
@@ -117,7 +116,13 @@ const RankingKpiAg: React.FC = () => {
         fetchRanking();
     }, [fieldFilter, yearFilter, quarterFilter]);
 
-    const fields = useMemo(() => Array.from(new Set(rowData.map(r => r.field).filter(Boolean))), [rowData]);
+    useEffect(() => {
+        if (modalOpen && selectedOrg) {
+            fetchUnmet(selectedOrg);
+        }
+    }, [fieldFilter, yearFilter, quarterFilter, modalOpen, selectedOrg, fetchUnmet]);
+
+
     const years = useMemo(() => Array.from(new Set(rowData.map(r => r.year).filter(Boolean))).sort(), [rowData]);
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
 
