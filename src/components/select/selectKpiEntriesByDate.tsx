@@ -40,7 +40,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
 
             // 如果是 company 角色，自動選取對應組織
             if (userRole === 'company' && userOrgId) {
-                let orgId = userOrgId.toString();
+                const orgId = userOrgId.toString();
 
                 // 尋找 enterprise/company/factory 結構
                 for (const enterprise of enterprises) {
