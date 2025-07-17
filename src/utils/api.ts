@@ -49,4 +49,17 @@ function getAccessTokenFromCookie(): string | null {
     return match ? decodeURIComponent(match[1]) : null;
 }
 
+export function getPermissionsFromAccessToken(): string[] {
+    const token = getAccessTokenFromCookie();
+    if (!token) return [];
+
+    try {
+        const decoded = jwtDecode<{ permission?: string[] }>(token);
+        return decoded.permission || [];
+    } catch (err) {
+        console.warn("JWT decode failed", err);
+        return [];
+    }
+}
+
 export default api;

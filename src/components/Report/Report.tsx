@@ -8,6 +8,7 @@ import RankingSugAg from "@/components/Report/RankingSugAg";
 import RankingKpi from "@/components/Report/RankingKpi";
 import axios from "axios";
 import {toast} from "react-hot-toast";
+import { useauthStore } from "@/Stores/authStore";
 
 const api = axios.create({
     baseURL: '/proxy',
@@ -32,6 +33,9 @@ export default function Report(){
         { label: "首頁", href: "/" },
         { label: "報表" }
     ];
+
+    const permissions = useauthStore(state => state.permissions);
+    const canViewRanking = permissions.includes("view-ranking");
 
     const fetchRates = async () => {
         try {
@@ -102,8 +106,8 @@ export default function Report(){
                             <Aggridline/>
                         </div>
                     </div>
-                    <RankingSugAg/>
-                    <RankingKpi/>
+                    {canViewRanking && <RankingSugAg />}
+                    {canViewRanking && <RankingKpi />}
                 </div>
             </div>
         </>

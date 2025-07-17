@@ -1,7 +1,8 @@
-import {ChevronDownIcon} from "@heroicons/react/16/solid";
-import React, {useEffect, useState} from "react";
-import {enterpriseService} from "@/services/selectCompany";
-import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import React, { useEffect, useState } from "react";
+import { enterpriseService } from "@/services/selectCompany";
+import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
+import { useauthStore } from "@/Stores/authStore";
 
 export interface SelectionPayload {
     orgId: string;
@@ -18,65 +19,90 @@ interface SelectEnterpriseProps {
 }
 
 export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRange = true }: SelectEnterpriseProps) {
-    const [data, setData] = useState<Enterprise[]>([]); // 保存企業數據
-    const [selectedEnterprise, setSelectedEnterprise] = useState(""); // 選中的企業
-    const [selectedCompany, setSelectedCompany] = useState(""); // 選中的公司
+    const [data, setData] = useState<Enterprise[]>([]);
+    const [selectedEnterprise, setSelectedEnterprise] = useState("");
+    const [selectedCompany, setSelectedCompany] = useState("");
     const [selectedFactory, setSelectedFactory] = useState("");
-    const [companies, setCompanies] = useState<Company[]>([]); // 當前顯示的公司
-    const [factories, setFactories] = useState<Factory[]>([]); // 當前顯示的工廠
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [factories, setFactories] = useState<Factory[]>([]);
     const [startYear, setStartYear] = useState("");
     const [endYear, setEndYear] = useState("");
     const [startQuarter, setStartQuarter] = useState("");
     const [endQuarter, setEndQuarter] = useState("");
-
     const [selectedOrgId, setSelectedOrgId] = useState("");
 
-    // 請求 API 獲取企業數據
+    const { userRole, userOrgId } = useauthStore();
+
     useEffect(() => {
         const fetchData = async () => {
-            const x = await enterpriseService.fetchData();
-            setData(x);
-        };
-        fetchData(); // 調用內部異步函式
-    }, []);
+            const enterprises = await enterpriseService.fetchData();
+            setData(enterprises);
 
-    // 當選擇企業時更新公司列表
+            // 如果是 company 角色，自動選取對應組織
+            if (userRole === 'company' && userOrgId) {
+                let orgId = userOrgId.toString();
+
+                // 尋找 enterprise/company/factory 結構
+                for (const enterprise of enterprises) {
+                    if (enterprise.id === orgId) {
+                        setSelectedEnterprise(orgId);
+                        setCompanies(enterprise.children || []);
+                        break;
+                    }
+                    for (const company of enterprise.children || []) {
+                        if (company.id === orgId) {
+                            setSelectedEnterprise(enterprise.id);
+                            setSelectedCompany(orgId);
+                            setCompanies(enterprise.children || []);
+                            setFactories(company.children || []);
+                            break;
+                        }
+                        for (const factory of company.children || []) {
+                            if (factory.id === orgId) {
+                                setSelectedEnterprise(enterprise.id);
+                                setSelectedCompany(company.id);
+                                setSelectedFactory(factory.id);
+                                setCompanies(enterprise.children || []);
+                                setFactories(company.children || []);
+                                break;
+                            }
+                        }
+                    }
+                }
+                setSelectedOrgId(orgId);
+                emitSelection(orgId, startYear, endYear);
+            }
+        };
+        fetchData();
+    }, [userRole, userOrgId]);
+
     const handleEnterpriseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const enterpriseId = e.target.value;
         setSelectedEnterprise(enterpriseId);
-        // 根據選中的企業查找公司
         const enterprise = data.find((ent) => ent.id === enterpriseId);
         setCompanies(enterprise ? enterprise.children : []);
-        setFactories([]); // 重置工廠
-        setSelectedCompany(""); // 重置選中的公司
+        setFactories([]);
+        setSelectedCompany("");
         setSelectedFactory("");
-
-        const finalId = enterprise?.id || "";
-        setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        setSelectedOrgId(enterprise?.id || "");
+        emitSelection(enterprise?.id || "", startYear, endYear);
     };
 
-    // 當選擇公司時更新工廠列表
     const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const companyId = e.target.value;
         setSelectedCompany(companyId);
-
-        // 根據選中的公司查找工廠
         const company = companies.find((comp) => comp.id === companyId);
         setFactories(company ? company.children : []);
-
-        const finalId = company?.id || selectedEnterprise;
-        setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        setSelectedOrgId(company?.id || selectedEnterprise);
+        emitSelection(company?.id || selectedEnterprise, startYear, endYear);
     };
 
     const handleFactoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const factoryId = e.target.value;
         setSelectedFactory(factoryId);
-
         const finalId = factoryId || selectedCompany || selectedEnterprise;
         setSelectedOrgId(finalId);
-        emitSelection(finalId, startYear, endYear); // ✅ 回傳
+        emitSelection(finalId, startYear, endYear);
     };
 
     const handleStartYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -121,8 +147,11 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
         emitSelection(selectedOrgId, startYear, endYear, startQuarter, val);
     };
 
+    const isCompany = userRole === 'company';
+
     return (
         <>
+            {/* 第一層選單：企業 */}
             <div>
                 <label htmlFor="enterprise" className="block text-sm/6 font-medium text-gray-900">
                     階層1（企業/公司）
@@ -130,24 +159,21 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="enterprise"
-                        name="enterprise"
                         value={selectedEnterprise}
                         onChange={handleEnterpriseChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                        disabled={isCompany}
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
                         <option value="">請選擇階層1</option>
                         {data.map((enterprise) => (
-                            <option key={enterprise.id} value={enterprise.id}>
-                                {enterprise.name}
-                            </option>
+                            <option key={enterprise.id} value={enterprise.id}>{enterprise.name}</option>
                         ))}
                     </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+                    <ChevronDownIcon className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
                 </div>
             </div>
+
+            {/* 第二層選單：公司 */}
             <div>
                 <label htmlFor="company" className="block text-sm/6 font-medium text-gray-900">
                     階層2（公司/工廠）
@@ -155,25 +181,21 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="company"
-                        name="company"
                         value={selectedCompany}
                         onChange={handleCompanyChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!companies.length} // 如果沒有公司數據則禁用
+                        disabled={isCompany || !companies.length}
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
                         <option value="">請選擇階層2</option>
                         {companies.map((company) => (
-                            <option key={company.id} value={company.id}>
-                                {company.name}
-                            </option>
+                            <option key={company.id} value={company.id}>{company.name}</option>
                         ))}
                     </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+                    <ChevronDownIcon className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
                 </div>
             </div>
+
+            {/* 第三層選單：工廠 */}
             <div>
                 <label htmlFor="factory" className="block text-sm/6 font-medium text-gray-900">
                     階層3（工廠）
@@ -181,23 +203,17 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="factory"
-                        name="factory"
                         value={selectedFactory}
                         onChange={handleFactoryChange}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!factories.length} // 如果沒有工廠數據則禁用
+                        disabled={isCompany || !factories.length}
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
                         <option value="">請選擇階層3</option>
                         {factories.map((factory) => (
-                            <option key={factory.id} value={factory.id}>
-                                {factory.name}
-                            </option>
+                            <option key={factory.id} value={factory.id}>{factory.name}</option>
                         ))}
                     </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                    />
+                    <ChevronDownIcon className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" />
                 </div>
             </div>
             {showYearRange && (

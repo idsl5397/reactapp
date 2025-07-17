@@ -15,9 +15,10 @@ import Link from 'next/link';
 import { Bars3Icon, XMarkIcon, InformationCircleIcon, MapIcon } from '@heroicons/react/24/outline';
 import Ava from './avatar/avatarMenu';
 import Image from 'next/image';
-import {getUserInfo} from "@/services/serverAuthService";
+import {getAccessToken, getUserInfo} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
+import {jwtDecode} from "jwt-decode";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -61,12 +62,36 @@ export default function Header() {
 
 
     useEffect(() => {
-        if (isLoggedIn) {  // 只有當 isLoggedIn 變為 true 時才執行
-            getUserInfo().then(cookieName => {
-                if (cookieName) {
-                    setName(cookieName?.NickName);
+        if (isLoggedIn) {
+            getUserInfo().then(cookieInfo => {
+                if (cookieInfo) {
+                    setName(cookieInfo?.NickName);
                 }
-                console.log("用戶名稱:", cookieName?.NickName);
+                console.log("✅ 用戶名稱:", cookieInfo?.NickName);
+            }).catch(err => {
+                console.error("❌ 獲取用戶資訊失敗:", err);
+            });
+
+            // 解析權限
+            getAccessToken().then(token => {
+                if (token?.value) {
+                    try {
+                        const decoded = jwtDecode<any>(token.value);
+                        const rawPerms = decoded.permission ?? [];
+                        const permissions = Array.isArray(rawPerms) ? rawPerms : [rawPerms];
+                        console.log("🛡️ 使用者權限:", permissions);
+
+                        useauthStore.getState().setPermissions(permissions);
+                    } catch (error) {
+                        console.error("❌ JWT 解析失敗:", error);
+                        useauthStore.getState().setPermissions([]);
+                    }
+                } else {
+                    console.warn("⚠️ 無法取得 access token");
+                    useauthStore.getState().setPermissions([]);
+                }
+            }).catch(err => {
+                console.error("❌ 獲取 token 失敗:", err);
             });
         }
     }, [isLoggedIn]);

@@ -1,23 +1,40 @@
-// store/useGlobalStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { jwtDecode } from 'jwt-decode';
-import {isAuthenticated} from "@/services/clientAuthService";
-import {authService} from "@/services/authService";
-import {getAccessToken, clearAuthCookies} from "@/services/serverAuthService";
+import { isAuthenticated } from "@/services/clientAuthService";
+import { authService } from "@/services/authService";
+import { getAccessToken, clearAuthCookies } from "@/services/serverAuthService";
+import axios from 'axios';
 
+// 🔐 JWT 權限與識別結構
 interface JWTPayload {
     sub: string;
     exp: number;
+    permission?: string[];
     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
 }
 
+// 👤 角色定義
+type Role = 'admin' | 'company' | null;
+
+const api = axios.create({ baseURL: "/proxy" });
+
+// 🧠 全域狀態結構
 interface GlobalState {
+    permissions: string[];
     isLoggedIn: boolean;
     userName: string | null;
+    userOrgId: number | null;
+    userOrgTypeId: number | null;
+    userRole: Role;
+
+    setPermissions: (perms: string[]) => void;
     setIsLoggedIn: (status: boolean) => void;
     setUserName: (name: string | null) => void;
-    theme: boolean;
+    setUserOrgId: (id: number | null) => void;
+    setUserOrgTypeId: (typeId: number | null) => void;
+    setUserRole: (role: Role) => void;
+
     checkIsLoggedIn: () => Promise<void>;
     checkAuthStatus: () => Promise<void>;
     logout: () => Promise<void>;
@@ -25,55 +42,84 @@ interface GlobalState {
 
 export const useauthStore = create<GlobalState>()(
     persist(
-        (set, get) => ({
+        (set) => ({
             isLoggedIn: false,
             userName: null,
-            theme: false,
+            userOrgId: null,
+            userOrgTypeId: null,
+            userRole: null,
+            permissions: [],
 
-            // ✅ 客戶端檢查登入狀態
+            // ⬇️ setter
+            setPermissions: (perms) => set({ permissions: perms }),
+            setIsLoggedIn: (status) => set({ isLoggedIn: status }),
+            setUserName: (name) => set({ userName: name }),
+            setUserOrgId: (id) => set({ userOrgId: id }),
+            setUserOrgTypeId: (typeId) => set({ userOrgTypeId: typeId }),
+            setUserRole: (role) => set({ userRole: role }),
+
+            // ✅ 僅檢查 token 是否有效（用於 CSR）
             checkIsLoggedIn: async () => {
                 try {
                     const authStatus = await isAuthenticated();
                     set({ isLoggedIn: authStatus });
                 } catch (error) {
-                    console.error('Authentication check failed:', error);
+                    console.error('🔒 checkIsLoggedIn 失敗:', error);
                     set({ isLoggedIn: false, userName: null });
                 }
             },
 
-            // ✅ 伺服器端檢查登入狀態，並解析 Token 取得 userId
+            // ✅ 完整解析登入資訊（從 token 與 /auth/me 同步角色與組織資訊）
             checkAuthStatus: async () => {
                 try {
                     const token = await getAccessToken();
-                    if (!token) {
-                        set({ isLoggedIn: false, userName: null });
-                        return;
-                    }
+                    if (!token) throw new Error("沒有 token");
 
                     const decoded = jwtDecode<JWTPayload>(token.value);
+                    const meRes = await api.get('/auth/me', {
+                        headers: { Authorization: `Bearer ${token.value}` }
+                    });
+
+                    const { organizationId, organizationTypeId } = meRes.data;
+                    const role: Role = organizationTypeId === 1 ? 'admin' : 'company';
+
                     set({
                         isLoggedIn: true,
-                        userName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+                        userName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+                        permissions: decoded.permission || [],
+                        userOrgId: organizationId,
+                        userOrgTypeId: organizationTypeId,
+                        userRole: role,
                     });
                 } catch (error) {
-                    console.error('Server-side auth check failed:', error);
-                    set({ isLoggedIn: false, userName: null });
+                    console.error('🔒 checkAuthStatus 失敗:', error);
+                    set({
+                        isLoggedIn: false,
+                        userName: null,
+                        permissions: [],
+                        userOrgId: null,
+                        userOrgTypeId: null,
+                        userRole: null,
+                    });
                 }
             },
 
-            setIsLoggedIn: (status) => set({ isLoggedIn: status }),
-            setUserName: (name) => set({ userName: name }),
-
-            // ✅ 登出時清除 auth_token 並重置 userId
+            // 🔓 登出，清除所有狀態與 Cookie
             logout: async () => {
                 await authService.logout();
                 await clearAuthCookies();
-                set({ isLoggedIn: false, userName: null });
+                set({
+                    isLoggedIn: false,
+                    userName: null,
+                    permissions: [],
+                    userOrgId: null,
+                    userOrgTypeId: null,
+                    userRole: null,
+                });
             },
-
         }),
         {
-            name: 'global-storage',
+            name: 'global-storage', // 💾 本地快取 Key
         }
     )
 );

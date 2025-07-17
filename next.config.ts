@@ -48,7 +48,7 @@ const securityHeaders = [
       script-src ${scriptSrc.join(" ")};
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https:;
-      font-src 'self' https:;
+      font-src 'self' https: data:;
       connect-src 'self' https:;
       frame-src https://challenges.cloudflare.com;
       worker-src 'self' blob:;
@@ -60,8 +60,9 @@ const securityHeaders = [
         value: '' // 再保險移除
     }
 ];
-
+const basePath = process.env.BASE_PATH || "";
 const nextConfig: NextConfig = {
+    basePath,
     poweredByHeader: false,
 
     async headers() {

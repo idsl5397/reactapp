@@ -10,6 +10,8 @@ import Link from "next/link";
 import { toast, Toaster } from "react-hot-toast";
 import { AgGridReact } from "ag-grid-react";
 import _ from 'lodash';
+import { useauthStore } from "@/Stores/authStore";
+import {getAccessToken} from "@/services/serverAuthService";
 
 interface SuggestDto {
     id: number;
@@ -49,18 +51,30 @@ export default function Suggest() {
     const gridRef = useRef<AgGridReact>(null);
     const router = useRouter();
 
+    const { userRole, userOrgId } = useauthStore();
+
     const handleQuery = async () => {
         setIsLoading(true);
         const params: any = {};
         const fullSelection = { ...selection, keyword };
 
-        if (fullSelection.orgId != null) params.organizationId = fullSelection.orgId;
+        // 如果是公司層級，就強制覆蓋為自己的組織 ID
+        if (userRole === 'company' && userOrgId) {
+            params.organizationId = userOrgId;
+        } else if (fullSelection.orgId && fullSelection.orgId.trim() !== '') {
+            params.organizationId = fullSelection.orgId;
+        }
+
         if (fullSelection.startYear != null) params.startYear = fullSelection.startYear;
         if (fullSelection.endYear != null) params.endYear = fullSelection.endYear;
         if (fullSelection.keyword?.trim()) params.keyword = fullSelection.keyword.trim();
 
         try {
-            const response = await api.get('/Suggest/GetAllSuggestData', { params });
+            const token = await getAccessToken();
+            const response = await api.get('/Suggest/GetAllSuggestData', {
+                headers: {
+                    Authorization: `Bearer ${token?.value}`
+                },params });
             const raw = response.data;
             setRowData(raw);
             if (raw.length === 0) toast.success("查詢成功，但沒有符合條件的資料");

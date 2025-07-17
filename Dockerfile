@@ -22,6 +22,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# 加入 BASE_PATH 環境變數（如 /iskpi）
+ARG BASE_PATH
+ENV BASE_PATH=${BASE_PATH}
+
 # 構建應用
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}

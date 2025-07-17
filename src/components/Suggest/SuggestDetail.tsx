@@ -218,53 +218,53 @@ export default function SuggestDetailPage() {
                         </div>
 
                         <div className="card bg-base-100 shadow-xl p-6 mt-6">
-                            <div className="flex flex-col gap-4">
-                                {loading ? (
-                                    <div className="skeleton w-full h-[600px] rounded-md" />
-                                ) : filteredReports.length === 0 ? (
-                                    <div className="text-gray-500">查無符合條件的建議</div>
-                                ) : (
-                                    <div className="ag-theme-alpine" style={{ width: '100%', height: '600px' }}>
-                                        <AgGridReact
-                                            ref={gridRef}
-                                            localeText={AG_GRID_LOCALE_TW}
-                                            rowData={filteredReports}
-                                            columnDefs={columnDefs}
-                                            rowSelection="multiple"
-                                            sideBar={{
-                                                toolPanels: [
-                                                    {
-                                                        id: 'columns',
-                                                        labelDefault: '欄位',
-                                                        labelKey: 'columns',
-                                                        iconKey: 'columns',
-                                                        toolPanel: 'agColumnsToolPanel',
-                                                    },
-                                                    {
-                                                        id: 'filters',
-                                                        labelDefault: '篩選',
-                                                        labelKey: 'filters',
-                                                        iconKey: 'filter',
-                                                        toolPanel: 'agFiltersToolPanel',
-                                                    },
-                                                ],
-                                                defaultToolPanel: '',
-                                            }}
-                                            defaultColDef={{
-                                                sortable: true,
-                                                filter: true,
-                                                resizable: true,
-                                                flex: 1,
-                                                wrapText: true,
-                                                autoHeight: true,
-                                                cellStyle: { whiteSpace: 'normal', lineHeight: '1.4em' },
-                                            }}
-                                            pagination={true}
-                                            paginationPageSize={10}
-                                        />
-                                    </div>
-                                )}
-                            </div>
+                            {loading ? (
+                                <div className="flex flex-col gap-4">
+                                    <div className="skeleton h-[600px] rounded-md" />
+                                </div>
+                            ) : filteredReports.length === 0 ? (
+                                <div className="text-gray-500">查無符合條件的建議</div>
+                            ) : (
+                                <div className="ag-theme-quartz h-[600px] mb-6 border">
+                                    <AgGridReact
+                                        ref={gridRef}
+                                        localeText={AG_GRID_LOCALE_TW}
+                                        rowData={filteredReports}
+                                        columnDefs={columnDefs}
+                                        rowSelection="multiple"
+                                        sideBar={{
+                                            toolPanels: [
+                                                {
+                                                    id: 'columns',
+                                                    labelDefault: '欄位',
+                                                    labelKey: 'columns',
+                                                    iconKey: 'columns',
+                                                    toolPanel: 'agColumnsToolPanel',
+                                                },
+                                                {
+                                                    id: 'filters',
+                                                    labelDefault: '篩選',
+                                                    labelKey: 'filters',
+                                                    iconKey: 'filter',
+                                                    toolPanel: 'agFiltersToolPanel',
+                                                },
+                                            ],
+                                            defaultToolPanel: '',
+                                        }}
+                                        defaultColDef={{
+                                            sortable: true,
+                                            filter: true,
+                                            resizable: true,
+                                            flex: 1,
+                                            wrapText: true,
+                                            autoHeight: true,
+                                            cellStyle: {whiteSpace: 'normal', lineHeight: '1.4em'},
+                                        }}
+                                        pagination={true}
+                                        paginationPageSize={10}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
