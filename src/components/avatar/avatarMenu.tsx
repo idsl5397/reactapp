@@ -15,8 +15,8 @@ interface AvatarMenuProps {
 
 export default function AvatarMenu(props: AvatarMenuProps) {
     const { name, image, state, setState } = props;
-
-    const avatarImage = image || "/user.svg";
+    const basePath = process.env.BASE_PATH || '';
+    const avatarImage = image || basePath+"/user.svg";
 
     const [isLoading] = useState(false);
     const {isLoggedIn, setIsLoggedIn} = useauthStore(); // 登入狀態

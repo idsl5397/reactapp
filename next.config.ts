@@ -43,16 +43,16 @@ const securityHeaders = [
     {
         key: "Content-Security-Policy",
         value: `
-      default-src 'self';
-      script-src ${scriptSrc.join(" ")};
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: https:;
-      font-src 'self' https: data:;
-      connect-src 'self' https:;
-      frame-src https://challenges.cloudflare.com;
-      worker-src 'self' blob:;
-      frame-ancestors 'none';
-    `.replace(/\s{2,}/g, " ").trim()
+        default-src 'self';
+        script-src ${scriptSrc.join(" ")};
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https:;
+        font-src 'self' https: data:;
+        connect-src 'self' https://kpi.isafe.org.tw https://security.bip.gov.tw;
+        frame-src https://challenges.cloudflare.com;
+        worker-src 'self' blob:;
+        frame-ancestors https://security.bip.gov.tw;
+      `.replace(/\s{2,}/g, " ").trim()
     },
     {
         key: 'X-Powered-By',

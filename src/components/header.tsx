@@ -19,6 +19,7 @@ import {getAccessToken, getUserInfo} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
 import {jwtDecode} from "jwt-decode";
+import BaseImage from '@/components/BaseImage';
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -54,6 +55,8 @@ export default function Header() {
     const { checkIsLoggedIn,isLoggedIn } = useauthStore();
     const menu = useMenuStore((state) => state.menu); // ✅ 從 store 直接取
     const hasMenu = useMenuStore((state) => state.hasMenu);
+
+    const basePath = process.env.BASE_PATH || '';
 
     //先檢查登入狀態
     useEffect(() => {
@@ -134,7 +137,7 @@ export default function Header() {
                         <span className="sr-only">首頁</span>
                         <Image
                             alt="Logo"
-                            src="/logo.svg"
+                            src={`${basePath}/logo.svg`}
                             className="h-8 w-auto sm:h-11 md:h-9 lg:h-11"
                             width={100}
                             height={40}

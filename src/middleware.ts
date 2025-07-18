@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
-const PUBLIC_PATHS = ['/login', '/api/auth', '/_next', '/favicon.ico'];
 const basePath = process.env.BASE_PATH || "";
+const PUBLIC_PATHS =
+    ['/login',
+    '/api/auth',
+    '/_next',
+    '/favicon.ico',
+
+    ];
+
 /**
  * 中介軟體（Middleware）
  *
@@ -16,6 +22,8 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get('token');
     const isPublicPath = PUBLIC_PATHS.some(path =>
         req.nextUrl.pathname.startsWith(path)
+
+        || req.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|webp|ico|woff2|xlsx|txt|xml?)$/)
     );
 
     // 防止 token 為 undefined
