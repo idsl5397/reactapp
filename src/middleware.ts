@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 
 const PUBLIC_PATHS = ['/login', '/api/auth', '/_next', '/favicon.ico'];
-
+const basePath = process.env.BASE_PATH || "";
 /**
  * 中介軟體（Middleware）
  *
@@ -28,7 +28,7 @@ export function middleware(req: NextRequest) {
 
     // Token 格式验证（示例：JWT 格式）
     if (tokenValue && !/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(tokenValue)) {
-        const response = NextResponse.redirect(new URL("/login", req.url));
+        const response = NextResponse.redirect(new URL(basePath+"/login", req.url));
         response.cookies.delete("token");
         return response;
     }
@@ -41,13 +41,13 @@ export function middleware(req: NextRequest) {
             const now = Math.floor(Date.now() / 1000);
 
             if (expiry && now > expiry) {
-                const response = NextResponse.redirect(new URL("/login", req.url));
+                const response = NextResponse.redirect(new URL(basePath+"/login", req.url));
                 response.cookies.delete("token");
                 return response;
             }
         } catch (e) {
             // 解析失敗視為無效 token
-            const response = NextResponse.redirect(new URL("/login", req.url));
+            const response = NextResponse.redirect(new URL(basePath+"/login", req.url));
             response.cookies.delete("token");
             return response;
         }
@@ -55,7 +55,7 @@ export function middleware(req: NextRequest) {
 
     // 未登入且訪問非公開頁面，導向 login
     if (!tokenValue && !isPublicPath) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL(basePath+"/login", req.url));
     }
 
     const headers = new Headers(req.headers);
@@ -79,7 +79,13 @@ export function middleware(req: NextRequest) {
  * 設定要攔截的路由。
  * 僅適用於指定的路由，確保這些頁面需要登入驗證。
  */
+const MATCH_ROUTES = [
+    "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
+];
+// 套用 basePath，確保部署在 /iskpi 時仍能正確攔截
+const matcher = MATCH_ROUTES.map(route => `${basePath}${route}`);
+
 export const config = {
-    matcher: ["/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"],
+    matcher
 };
 
