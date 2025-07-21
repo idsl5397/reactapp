@@ -25,12 +25,19 @@ COPY . .
 # 加入 BASE_PATH 環境變數（如 /iskpi）
 ARG BASE_PATH
 ENV BASE_PATH=${BASE_PATH}
+ARG NEXT_PUBLIC_BASE_PATH
+ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
 
 # 構建應用
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 ENV API=http://kpibackend:8080
+
+
+# 接下來要在 yarn build 之前確保 .env.production 存在
+RUN echo "NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH" >> .env.production && \
+    echo "BASE_PATH=$BASE_PATH" >> .env.production
 RUN yarn build
 
 # 運行階段

@@ -12,7 +12,7 @@ const api = axios.create({ baseURL: '/proxy' });
 export default function SugImportPage() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "建立報告", href: "/reportEntry" },
+        { label: "填報資料", href: "/reportEntry" },
         { label: "批次上傳委員建議報告" }
     ];
 

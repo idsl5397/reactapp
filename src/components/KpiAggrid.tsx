@@ -42,6 +42,7 @@ interface GridComponentProps {
     columnTitleMap: Record<string, string>;
     isLoading?: boolean; // ✅ 新增
     exportMode: "all" | "failed";
+    quickFilterText?: string;
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -62,8 +63,9 @@ const GridComponent: React.FC<GridComponentProps> = ({
     const [filterRange, setFilterRange] = useState("all");
     const [chartData, setChartData] = useState<any[]>([]);
     const [isChartLoading, setIsChartLoading] = useState(false);
-
+    const [quickFilterText, setQuickFilterText] = useState('');
     const [exportMode, setExportMode] = useState<"all" | "failed">("all");
+
 
     useEffect(() => {
         const allReports = selectedDetail?.kpiDatas?.flatMap((kpiData: KpiDataCycle) =>
@@ -96,6 +98,12 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
         return () => clearTimeout(timer);
     }, [selectedDetail, filterRange]);
+
+    // useEffect(() => {
+    //     if (quickFilterText && gridRef.current?.api) {
+    //         gridRef.current.api.setQuickFilter(quickFilterText);
+    //     }
+    // }, [quickFilterText]);
 
     //匯出excel與CSV
     const exportData = (type: "excel" | "csv") => {
@@ -271,7 +279,18 @@ const GridComponent: React.FC<GridComponentProps> = ({
         <>
             <Toaster position="top-right" reverseOrder={false} />
             <div className="flex flex-col gap-4">
+
                 <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                        id="keyword"
+                        name="keyword"
+                        type="text"
+                        aria-label="關鍵字查詢"
+                        placeholder="搜尋指標名稱、編號..."
+                        value={quickFilterText}
+                        onChange={(e) => setQuickFilterText(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                    />
                     {/*<button*/}
                     {/*    onClick={toggleEditMode}*/}
                     {/*    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
@@ -350,11 +369,11 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 const data = params.data;
 
                                                 if (!data || actual === null || actual === undefined) {
-                                                    return { textAlign: "left" };
+                                                    return {textAlign: "left"};
                                                 }
 
                                                 if (!data.isIndicator) {
-                                                    return { textAlign: "left" };  // 不是指標，直接不檢查
+                                                    return {textAlign: "left"};  // 不是指標，直接不檢查
                                                 }
 
                                                 const target = data.lastTargetValue;
@@ -363,18 +382,29 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 let meets = true;
                                                 if (typeof actual === "number" && typeof target === "number") {
                                                     switch (operator) {
-                                                        case ">=": meets = actual >= target; break;
-                                                        case "<=": meets = actual <= target; break;
-                                                        case ">":  meets = actual > target;  break;
-                                                        case "<":  meets = actual < target;  break;
+                                                        case ">=":
+                                                            meets = actual >= target;
+                                                            break;
+                                                        case "<=":
+                                                            meets = actual <= target;
+                                                            break;
+                                                        case ">":
+                                                            meets = actual > target;
+                                                            break;
+                                                        case "<":
+                                                            meets = actual < target;
+                                                            break;
                                                         case "=":
-                                                        case "==": meets = actual === target; break;
-                                                        default:   meets = true;
+                                                        case "==":
+                                                            meets = actual === target;
+                                                            break;
+                                                        default:
+                                                            meets = true;
                                                     }
                                                 }
 
                                                 return meets
-                                                    ? { textAlign: "left" }
+                                                    ? {textAlign: "left"}
                                                     : {
                                                         textAlign: "left",
                                                         // backgroundColor: "#fdecea",
@@ -450,13 +480,24 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                 if (typeof actual === "number" && typeof target === "number") {
                                     let meets = true;
                                     switch (operator) {
-                                        case ">=": meets = actual >= target; break;
-                                        case "<=": meets = actual <= target; break;
-                                        case ">":  meets = actual > target; break;
-                                        case "<":  meets = actual < target; break;
+                                        case ">=":
+                                            meets = actual >= target;
+                                            break;
+                                        case "<=":
+                                            meets = actual <= target;
+                                            break;
+                                        case ">":
+                                            meets = actual > target;
+                                            break;
+                                        case "<":
+                                            meets = actual < target;
+                                            break;
                                         case "=":
-                                        case "==": meets = actual === target; break;
-                                        default:   meets = true;
+                                        case "==":
+                                            meets = actual === target;
+                                            break;
+                                        default:
+                                            meets = true;
                                     }
 
                                     if (!meets) {
@@ -468,7 +509,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                     }
                                 }
 
-                                return  undefined; // 默認樣式
+                                return undefined; // 默認樣式
                             }}
                         />
                     </div>
@@ -493,13 +534,14 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
                             <div className="h-64 mb-4 border rounded flex items-center justify-center bg-gray-50">
                                 {isChartLoading ? (
-                                    <span className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
+                                    <span
+                                        className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
                                 ) : chartData.length === 0 ? (
                                     <div className="text-gray-400 text-sm">尚無執行資料</div>
                                 ) : (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={chartData}>
-                                            <XAxis dataKey="name" />
+                                            <XAxis dataKey="name"/>
                                             <YAxis
                                                 label={{
                                                     value: selectedDetail.unit || "單位",
@@ -507,7 +549,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 }}
                                             />
                                             <Tooltip
-                                                content={({ active, payload, label }) => {
+                                                content={({active, payload, label}) => {
                                                     if (active && payload && payload.length) {
                                                         return (
                                                             <div className="bg-white border p-2 rounded shadow text-xs">
@@ -526,8 +568,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 dataKey="value"
                                                 stroke="#8884d8"
                                                 strokeWidth={2}
-                                                dot={{ r: 4 }}
-                                                activeDot={{ r: 6 }}
+                                                dot={{r: 4}}
+                                                activeDot={{r: 6}}
                                             />
                                             {selectedDetail.targetValue && (
                                                 <ReferenceLine

@@ -61,7 +61,7 @@ const securityHeaders = [
 ];
 const basePath = process.env.BASE_PATH || "";
 const assetPrefix = basePath;
-const nextConfig: NextConfig = {
+const nextConfig: NextConfig= {
     basePath,
     assetPrefix,
     poweredByHeader: false,

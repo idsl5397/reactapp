@@ -17,6 +17,7 @@ import axios from "axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
 
+const basePath = process.env.BASE_PATH || "";
 //步驟一 驗證email
 export interface EmailVerificationFormData {
     userName: string;
@@ -101,7 +102,7 @@ export default function Register() {
             }
 
             toast.success("註冊成功！");
-            window.location.href = "/login";
+            window.location.href =  `${basePath}/login`;
         } catch (err) {
             toast.error((err as Error).message);
         }

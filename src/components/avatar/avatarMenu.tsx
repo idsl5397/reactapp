@@ -12,10 +12,10 @@ interface AvatarMenuProps {
     state: string | null;
     setState: (state: string | null) => void;
 }
-
+const basePath = process.env.BASE_PATH || '';
 export default function AvatarMenu(props: AvatarMenuProps) {
     const { name, image, state, setState } = props;
-    const basePath = process.env.BASE_PATH || '';
+
     const avatarImage = image || basePath+"/user.svg";
 
     const [isLoading] = useState(false);
@@ -42,14 +42,15 @@ export default function AvatarMenu(props: AvatarMenuProps) {
             setIsLoggedIn(false);
             setState(null);
             useMenuStore.getState().clearMenu();
-            window.location.replace('/login');
+            console.log("目前 basePath：", basePath);
+            window.location.replace(basePath+"/login");
         });
     };
 
     const handleLogin = (e?: React.MouseEvent<HTMLSpanElement> | React.KeyboardEvent) => {
         e?.preventDefault();
         setState(null); // 關閉選單
-        window.location.replace('/login');// 跳轉到登入頁面
+        window.location.replace(basePath+"/login");// 跳轉到登入頁面
     };
 
     const toggleMenu = (e?: React.MouseEvent) => {

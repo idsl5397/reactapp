@@ -73,7 +73,19 @@ export const useauthStore = create<GlobalState>()(
             checkAuthStatus: async () => {
                 try {
                     const token = await getAccessToken();
-                    if (!token) throw new Error("沒有 token");
+
+                    if (!token || !token.value) {
+                        console.warn("🔒 尚未登入：找不到 token");
+                        set({
+                            isLoggedIn: false,
+                            userName: null,
+                            permissions: [],
+                            userOrgId: null,
+                            userOrgTypeId: null,
+                            userRole: null,
+                        });
+                        return; // ✅ 不拋錯，乾淨結束
+                    }
 
                     const decoded = jwtDecode<JWTPayload>(token.value);
                     const meRes = await api.get('/auth/me', {

@@ -4,10 +4,10 @@ import type { NextRequest } from "next/server";
 const basePath = process.env.BASE_PATH || "";
 const PUBLIC_PATHS =
     ['/login',
-    '/api/auth',
-    '/_next',
-    '/favicon.ico',
-
+        '/api/auth',
+        '/_next',
+        '/favicon.ico',
+        '/proxy'
     ];
 
 /**

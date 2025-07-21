@@ -2,7 +2,7 @@
 import React from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { motion } from "framer-motion"
-import { CheckCircle, XCircle, Clock, Upload, FileUp } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Upload, FileUp, Calendar, User, TrendingUp, AlertCircle } from 'lucide-react';
 import Link from "next/link";
 import { useUploadOptionModalState } from "@/hooks/useUploadOptionModalState";
 import {UploadOptionModal} from "@/hooks/UploadOptionModal";
@@ -42,8 +42,9 @@ export default function Report(){
     const sugModalState = useUploadOptionModalState();
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "建立報告" }
+        { label: "填報資料" }
     ];
+
     // Sample data - this would come from your actual data source
     const userData = {
         name: "王小明",
@@ -56,137 +57,265 @@ export default function Report(){
         switch(userData.status) {
             case "completed":
                 return {
-                    icon: <CheckCircle className="w-8 h-8 text-green-500" />,
-                    color: "bg-green-100",
-                    textColor: "text-green-800",
-                    message: "已按時上傳報告"
+                    icon: <CheckCircle className="w-8 h-8 text-emerald-500" />,
+                    color: "bg-emerald-50 border-emerald-200",
+                    textColor: "text-emerald-800",
+                    badgeColor: "bg-emerald-100 text-emerald-800",
+                    message: "已按時上傳報告",
+                    badge: "已完成"
                 };
             case "overdue":
                 return {
                     icon: <XCircle className="w-8 h-8 text-red-500" />,
-                    color: "bg-red-100",
+                    color: "bg-red-50 border-red-200",
                     textColor: "text-red-800",
-                    message: "超過期限未上傳"
+                    badgeColor: "bg-red-100 text-red-800",
+                    message: "超過期限未上傳",
+                    badge: "已逾期"
                 };
             case "pending":
                 return {
-                    icon: <Clock className="w-8 h-8 text-yellow-500" />,
-                    color: "bg-yellow-100",
-                    textColor: "text-yellow-800",
-                    message: "即將到期，等待上傳"
+                    icon: <Clock className="w-8 h-8 text-amber-500" />,
+                    color: "bg-amber-50 border-amber-200",
+                    textColor: "text-amber-800",
+                    badgeColor: "bg-amber-100 text-amber-800",
+                    message: "即將到期，等待上傳",
+                    badge: "待處理"
                 };
             default:
                 return {
                     icon: <Clock className="w-8 h-8 text-gray-500" />,
-                    color: "bg-gray-100",
+                    color: "bg-gray-50 border-gray-200",
                     textColor: "text-gray-800",
-                    message: "狀態未知"
+                    badgeColor: "bg-gray-100 text-gray-800",
+                    message: "狀態未知",
+                    badge: "未知"
                 };
         }
     };
 
     const status = getStatusDetails();
-    const buttonStyle = {
-        width: 200,
-        height: 60,
-        borderRadius: 8,
-        fontWeight: 'bold',
-        color: 'white',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        cursor: 'pointer'
+
+    const containerVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                staggerChildren: 0.1
+            }
+        }
     };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 }
+    };
+
     return (
         <>
-            <div className="w-full flex justify-start">
-                <Breadcrumbs items={breadcrumbItems}/>
-            </div>
-            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-                <div className="space-y-8 w-full mx-auto">
-                    <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
-                        建立報告
-                    </h1>
-
-                    {/* Action Buttons */}
-                    <div className="mt-8 card bg-base-100 shadow-xl p-6">
-                        <h2 className="text-xl font-bold mb-4 text-center">執行操作</h2>
-                        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
-                            <motion.button
-                                whileHover={{scale: 1.05}}
-                                whileTap={{scale: 0.95}}
-                                style={{...buttonStyle, backgroundColor: "#4F46E5"}}
-                                onClick={kpiModalState.openModal}
-                                className="shadow-md"
-                                tabIndex={-1}
-                            >
-                                更新/上傳指標項目
-                            </motion.button>
-
-                            <UploadOptionModal
-                                isOpen={kpiModalState.isOpen}
-                                activeIndex={kpiModalState.activeIndex}
-                                toggle={kpiModalState.toggle}
-                                closeModal={kpiModalState.closeModal}
-                                title="請選擇上傳方式"
-                                description="系統提供以下幾種方式供您使用"
-                                items={kpiitems}
-                            />
-
-                            <motion.button
-                                whileHover={{scale: 1.05}}
-                                whileTap={{scale: 0.95}}
-                                style={{...buttonStyle, backgroundColor: "#10B981"}}
-                                onClick={sugModalState .openModal}
-                                className="shadow-md"
-                                tabIndex={-1}
-                            >
-                                更新/上傳改善建議
-                            </motion.button>
-
-                            <UploadOptionModal
-                                isOpen={sugModalState .isOpen}
-                                activeIndex={sugModalState .activeIndex}
-                                toggle={sugModalState .toggle}
-                                closeModal={sugModalState .closeModal}
-                                title="請選擇上傳方式"
-                                description="系統提供以下幾種方式供您使用"
-                                items={sugitems}
-                            />
-
-                            <Link href="/reportEntry/Improvement" tabIndex={0}>
-                                <motion.div
-                                    whileHover={{scale: 1.05}}
-                                    whileTap={{scale: 0.95}}
-                                    style={{...buttonStyle, backgroundColor: "#F59E0B"}}
-                                    className="shadow-md"
-                                    tabIndex={-1}
-                                >
-                                    上傳改善報告書
-                                </motion.div>
-                            </Link>
+            {/* Header Section */}
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                {/* Header Section */}
+                <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <Breadcrumbs items={breadcrumbItems}/>
+                        <div className="mt-6">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                                資料填報系統
+                            </h1>
+                            <div
+                                className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Upload Status Card */}
-                    <div className="flex justify-center">
-                        <div className="mt-8 card bg-base-100 shadow-lg p-6 w-3/4">
-                            <div className="flex flex-col items-center">
-                                <h2 className="text-xl font-bold mb-4">半年度追蹤狀態</h2>
-
-                                <div className={`flex items-center p-4 rounded-lg w-full ${status.color}`}>
-                                <div className="mr-4">
-                                        {status.icon}
+                {/* Main Content */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <motion.div
+                        className="space-y-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        {/* Status Overview */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+                        >
+                            {/* User Info Card */}
+                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                                <div className="flex items-center mb-4">
+                                    <div
+                                        className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <User className="w-6 h-6 text-indigo-600"/>
                                     </div>
-                                    <div className="flex-1">
-                                        <p className={`font-medium ${status.textColor}`}>{status.message}</p>
-                                        <p className="text-gray-700">上次上傳日期: {userData.lastUploadDate}</p>
-                                        <p className="text-gray-700">下次截止日期: {userData.nextDeadline}</p>
+                                    <div className="ml-4">
+                                        <h3 className="text-lg font-semibold text-gray-900">用戶資訊</h3>
+                                        <p className="text-gray-600">{userData.name}</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+
+                            {/* Last Upload Card */}
+                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                                <div className="flex items-center mb-4">
+                                    <div
+                                        className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <Calendar className="w-6 h-6 text-blue-600"/>
+                                    </div>
+                                    <div className="ml-4">
+                                        <h3 className="text-lg font-semibold text-gray-900">上次上傳</h3>
+                                        <p className="text-gray-600">{userData.lastUploadDate}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Next Deadline Card */}
+                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                                <div className="flex items-center mb-4">
+                                    <div
+                                        className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                                        <AlertCircle className="w-6 h-6 text-amber-600"/>
+                                    </div>
+                                    <div className="ml-4">
+                                        <h3 className="text-lg font-semibold text-gray-900">下次截止</h3>
+                                        <p className="text-gray-600">{userData.nextDeadline}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Status Card */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
+                        >
+                            <div className="flex items-center mb-6">
+                                <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
+                                <h2 className="text-xl font-semibold text-gray-800">半年度追蹤狀態</h2>
+                                <span
+                                    className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${status.badgeColor}`}>
+                                {status.badge}
+                            </span>
+                            </div>
+
+                            <div className={`flex items-center p-6 rounded-xl border-2 ${status.color}`}>
+                                <div className="mr-6">
+                                    {status.icon}
+                                </div>
+                                <div className="flex-1">
+                                    <p className={`font-semibold text-lg mb-2 ${status.textColor}`}>
+                                        {status.message}
+                                    </p>
+                                    <div
+                                        className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                        <div className="flex items-center">
+                                            <Calendar className="w-4 h-4 mr-2"/>
+                                            上次上傳: {userData.lastUploadDate}
+                                        </div>
+                                        <div className="flex items-center">
+                                            <Clock className="w-4 h-4 mr-2"/>
+                                            截止日期: {userData.nextDeadline}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Action Buttons */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8"
+                        >
+                            <div className="flex items-center mb-8">
+                                <div className="w-2 h-6 bg-green-500 rounded-full mr-3"></div>
+                                <h2 className="text-xl font-semibold text-gray-800">執行操作</h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* KPI Upload Button */}
+                                <motion.button
+                                    whileHover={{scale: 1.02, y: -2}}
+                                    whileTap={{scale: 0.98}}
+                                    onClick={kpiModalState.openModal}
+                                    className="group relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                                >
+                                    <div
+                                        className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div className="relative z-10">
+                                        <div
+                                            className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                            <TrendingUp className="w-6 h-6"/>
+                                        </div>
+                                        <h3 className="text-lg font-semibold mb-2">更新指標項目</h3>
+                                        <p className="text-sm text-indigo-100">上傳或更新績效指標數據</p>
+                                    </div>
+                                </motion.button>
+
+                                {/* Suggestion Upload Button */}
+                                <motion.button
+                                    whileHover={{scale: 1.02, y: -2}}
+                                    whileTap={{scale: 0.98}}
+                                    onClick={sugModalState.openModal}
+                                    className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                                >
+                                    <div
+                                        className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div className="relative z-10">
+                                        <div
+                                            className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                            <Upload className="w-6 h-6"/>
+                                        </div>
+                                        <h3 className="text-lg font-semibold mb-2">上傳改善建議</h3>
+                                        <p className="text-sm text-emerald-100">提交改善建議與解決方案</p>
+                                    </div>
+                                </motion.button>
+
+                                {/* Report Upload Button */}
+                                <Link href="/reportEntry/Improvement" className="block">
+                                    <motion.div
+                                        whileHover={{scale: 1.02, y: -2}}
+                                        whileTap={{scale: 0.98}}
+                                        className="group relative overflow-hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 h-full"
+                                    >
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div className="relative z-10">
+                                            <div
+                                                className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                                <FileUp className="w-6 h-6"/>
+                                            </div>
+                                            <h3 className="text-lg font-semibold mb-2">上傳改善報告</h3>
+                                            <p className="text-sm text-amber-100">提交完整的改善報告書</p>
+                                        </div>
+                                    </motion.div>
+                                </Link>
+                            </div>
+                        </motion.div>
+
+                        {/* Modals */}
+                        <UploadOptionModal
+                            isOpen={kpiModalState.isOpen}
+                            activeIndex={kpiModalState.activeIndex}
+                            toggle={kpiModalState.toggle}
+                            closeModal={kpiModalState.closeModal}
+                            title="請選擇上傳方式"
+                            description="系統提供以下幾種方式供您使用"
+                            items={kpiitems}
+                        />
+
+                        <UploadOptionModal
+                            isOpen={sugModalState.isOpen}
+                            activeIndex={sugModalState.activeIndex}
+                            toggle={sugModalState.toggle}
+                            closeModal={sugModalState.closeModal}
+                            title="請選擇上傳方式"
+                            description="系統提供以下幾種方式供您使用"
+                            items={sugitems}
+                        />
+                    </motion.div>
                 </div>
             </div>
         </>

@@ -45,25 +45,27 @@ export default function Login() {
         event.preventDefault();
         setErrorMessage('');
 
-        if (!captchaToken) {
-            setErrorMessage("請先完成驗證");
-            return;
-        }
+        // 暫時略過驗證
+        // if (!captchaToken) {
+        //     setErrorMessage("請先完成驗證");
+        //     return;
+        // }
 
         try {
             setIsVerifying(true);
 
-            const captchaResponse = await axios.post(
-                "/api/verify",
-                { token: captchaToken },
-                { headers: { "Content-Type": "application/json" } }
-            );
-
-            if (!captchaResponse.data.success) {
-                setErrorMessage("驗證失敗，請重新嘗試");
-                setIsVerifying(false);
-                return;
-            }
+            // 暫時跳過 captcha 檢查
+            // const captchaResponse = await axios.post(
+            //     "/api/verify",
+            //     { token: captchaToken },
+            //     { headers: { "Content-Type": "application/json" } }
+            // );
+            //
+            // if (!captchaResponse.data.success) {
+            //     setErrorMessage("驗證失敗，請重新嘗試");
+            //     setIsVerifying(false);
+            //     return;
+            // }
 
             const response = await userService.Login(usermail, password);
 
@@ -130,7 +132,8 @@ export default function Login() {
             }
         } finally {
             setIsVerifying(false);
-            turnstile.current?.reset();
+            // 暫時跳過 captcha 檢查
+            // turnstile.current?.reset();
         }
     };
 
@@ -195,14 +198,15 @@ export default function Login() {
                                 </div>
                             </div>
                             <div className="mt-4 flex justify-center">
-                                <Turnstile
+                                {/* 暫時移除 Turnstile */}
+                                {/* <Turnstile
                                     options={{ language: "zh-tw" }}
                                     ref={turnstile}
                                     siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"
                                     onSuccess={(token) => setCaptchaToken(token)}
                                     onError={() => setErrorMessage("驗證失敗，請重試")}
                                     onExpire={() => setCaptchaToken(null)}
-                                />
+                                /> */}
                             </div>
                             <div className="grid gap-x-8">
                                 <button

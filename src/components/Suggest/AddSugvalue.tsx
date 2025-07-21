@@ -47,7 +47,7 @@ const api = axios.create({
 export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "建立報告" , href: "/reportEntry" },
+        { label: "填報資料" , href: "/reportEntry" },
         { label: "新增委員建議報告"}
     ];
 

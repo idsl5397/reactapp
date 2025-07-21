@@ -12,7 +12,7 @@ const api = axios.create({ baseURL: '/proxy' });
 export default function BulkImportPage() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "建立報告", href: "/reportEntry" },
+        { label: "填報資料", href: "/reportEntry" },
         { label: "批次上傳績效指標報告" }
     ];
 

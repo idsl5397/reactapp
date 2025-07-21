@@ -67,7 +67,7 @@ const api = axios.create({
 export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
-        { label: "建立報告" , href: "/reportEntry" },
+        { label: "填報資料" , href: "/reportEntry" },
         { label: "新增績效指標報告"}
     ];
 
@@ -208,7 +208,7 @@ export default function AddKPIvalue() {
                                                 toast.error("該公司尚無 KPI 資料可填報");
                                                 return false;
                                             }
-                                            toast.success(`抓到 ${kpiDataList.length} 筆 KPI 指標，可建立報告`);
+                                            toast.success(`抓到 ${kpiDataList.length} 筆 KPI 指標，可填報資料`);
                                             console.log("抓到的 KPI 資料：",response.data);
                                             console.log("抓到的 KPI 資料：", kpiDataList);
                                             // ✅ 將資料暫存在 stepData 供 Step2 使用
