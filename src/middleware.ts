@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const basePath = process.env.BASE_PATH || "";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const PUBLIC_PATHS =
     ['/login',
         '/api/auth',
         '/_next',
-        '/favicon.ico',
+        NPbasePath+'/favicon.ico',
         '/proxy'
     ];
 

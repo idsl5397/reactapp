@@ -13,6 +13,7 @@ interface AvatarMenuProps {
     setState: (state: string | null) => void;
 }
 const basePath = process.env.BASE_PATH || '';
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 export default function AvatarMenu(props: AvatarMenuProps) {
     const { name, image, state, setState } = props;
 
@@ -43,7 +44,8 @@ export default function AvatarMenu(props: AvatarMenuProps) {
             setState(null);
             useMenuStore.getState().clearMenu();
             console.log("目前 basePath：", basePath);
-            window.location.replace(basePath+"/login");
+            console.log("目前 NPbasePath：", NPbasePath);
+            window.location.replace(NPbasePath+"/login");
         });
     };
 
@@ -105,7 +107,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                             alt={`${name}'s avatar`}
                             width={200}
                             height={200}
-                            priority={avatarImage === "/user.svg"}
+                            priority={avatarImage === NPbasePath+"/user.svg"}
                         />
                     </div>
                 </motion.button>

@@ -47,7 +47,7 @@ const appMetadata = {
         '透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。'
 };
 
-
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     const {checkAuthStatus} = useauthStore()
     useEffect(() => {
@@ -78,6 +78,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     return (
         <html lang="zh-TW" data-theme="fantasy">
         <head>
+            <link rel="icon" href={`${NPbasePath}/favicon.ico`}/>
             <title>{appMetadata.title}</title>
             <meta name="description" content={appMetadata.description}/>
         </head>
