@@ -11,6 +11,7 @@ import { LicenseManager as ChartLicenseManager } from 'ag-charts-enterprise';
 const license = "Using_this_{AG_Charts_and_AG_Grid}_Enterprise_key_{AG-067721}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{Industrial_Safety_And_Health_Association_(ISHA)_Of_The_R.O.C}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{}_need_to_be_licensed___{}_has_been_granted_a_Deployment_License_Add-on_for_{1}_Production_Environment___This_key_works_with_{AG_Charts_and_AG_Grid}_Enterprise_versions_released_before_{27_October_2025}____[v3]_[0102]_MTc2MTUyMzIwMDAwMA==14fa603063a97c2c3a7a73a15786443e";
 import { ConfirmDialogProvider } from "@/hooks/useConfirmDialog";
 
+
 GridLicenseManager.setLicenseKey(license);
 ChartLicenseManager.setLicenseKey(license);
 
@@ -49,6 +50,14 @@ const appMetadata = {
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
+
+    useEffect(() => {
+        const saved = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+        const defaultTheme = saved || (prefersDark ? "fantasydark" : "fantasy");
+        document.documentElement.setAttribute("data-theme", defaultTheme);
+    }, []);
+
     const {checkAuthStatus} = useauthStore()
     useEffect(() => {
         console.log("驗證")
@@ -76,7 +85,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     }, []);
 
     return (
-        <html lang="zh-TW" data-theme="fantasy">
+        <html lang="zh-TW">
         <head>
             <link rel="icon" href={`${NPbasePath}/favicon.ico`}/>
             <title>{appMetadata.title}</title>

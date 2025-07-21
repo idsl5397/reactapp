@@ -1,13 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-import GridComponent from "@/components/KpiAggrid";
+import React, {useRef, useState} from 'react';
+import GridComponent,{IRow} from "@/components/KpiAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectKpiEntriesByDate, { SelectionPayload } from "@/components/select/selectKpiEntriesByDate";
 import Link from 'next/link';
 import axios from "axios";
 import { ColDef } from "ag-grid-community";
 import { Toaster, toast } from 'react-hot-toast';
+import { AgGridReact } from 'ag-grid-react';
+import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
+import type { RowNode } from 'ag-grid-community';
+
 
 const api = axios.create({
     baseURL: "/proxy",
@@ -61,14 +65,16 @@ export default function KPI() {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [keyword, setKeyword] = useState("");
-    const [exportMode] = useState<"all" | "failed">("all");
-
+    const [quickFilterText, setQuickFilterText] = useState('');
+    const [exportMode, setExportMode] = useState<'all' | 'failed'>('all');
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
         { label: "檢視績效指標" }
     ];
 
     const [selection, setSelection] = useState<SelectionPayload>({ orgId: "" });
+
+    const gridRef = useRef<AgGridReactType<any>>(null);
 
     const handleQuery = async () => {
         setIsLoading(true);
@@ -108,6 +114,61 @@ export default function KPI() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const exportData = (type: 'excel' | 'csv') => {
+        const api = gridRef.current?.api;
+        if (!api) return;
+
+        const fileNamePrefix = exportMode === 'failed' ? '未達標資料' : '指標資料';
+        const fileName = `${fileNamePrefix}_${new Date().toISOString().slice(0, 10)}`;
+
+        if (exportMode === 'all') {
+            if (type === 'excel') {
+                api.exportDataAsExcel({ fileName: `${fileName}.xlsx` });
+            } else {
+                api.exportDataAsCsv({ fileName: `${fileName}.csv`, bom: true } as any);
+            }
+            return;
+        }
+
+        const failedNodes: RowNode<IRow>[] = [];
+        api.forEachNodeAfterFilterAndSort((node: any) => {
+            const data = node.data;
+            if (!data?.isIndicator) return;
+
+            const { lastReportValue: actual, lastTargetValue: target, lastComparisonOperator: operator } = data;
+            let meets = true;
+            if (typeof actual === 'number' && typeof target === 'number') {
+                switch (operator) {
+                    case '>=': meets = actual >= target; break;
+                    case '<=': meets = actual <= target; break;
+                    case '>': meets = actual > target; break;
+                    case '<': meets = actual < target; break;
+                    case '=':
+                    case '==': meets = actual === target; break;
+                }
+            }
+            if (!meets) failedNodes.push(node);
+        });
+
+        api.deselectAll();
+        failedNodes.forEach((node: any) => node.setSelected(true));
+
+        if (type === 'excel') {
+            api.exportDataAsExcel({ fileName: `${fileName}.xlsx`, onlySelected: true });
+        } else {
+            const csv = api.getDataAsCsv({ onlySelected: true });
+            const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `${fileName}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        api.deselectAll();
     };
 
     return (
@@ -321,19 +382,64 @@ export default function KPI() {
                                         共 {rowData.length} 筆記錄
                                     </div>
                                 )}
-                                <input
-                                    id="keyword"
-                                    name="keyword"
-                                    type="text"
-                                    aria-label="關鍵字查詢"
-                                    placeholder="搜尋指標名稱、編號..."
-                                    value={keyword}
-                                    onChange={(e) => setKeyword(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                                />
                             </div>
                         </div>
+                        <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
+                            <div
+                                className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                                {/* 搜尋欄位 */}
+                                <div className="relative flex-1 max-w-md">
+                                    <div
+                                        className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="搜尋指標名稱、編號..."
+                                        value={keyword}
+                                        onChange={(e) => setKeyword(e.target.value)}
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    />
+                                </div>
 
+                                {/* 匯出條件 */}
+                                <select
+                                    className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    value={exportMode}
+                                    onChange={(e) => setExportMode(e.target.value as any)}
+                                >
+                                    <option value="all">匯出篩選結果</option>
+                                    <option value="failed">匯出篩選結果未達標</option>
+                                </select>
+
+                                {/* 匯出按鈕 */}
+                                <button
+                                    onClick={() => exportData('excel')}
+                                    className="inline-flex items-center px-4 py-3 border border-green-300 rounded-xl text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                                >
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    匯出 Excel
+                                </button>
+
+                                <button
+                                    onClick={() => exportData('csv')}
+                                    className="inline-flex items-center px-4 py-3 border border-blue-300 rounded-xl text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                                >
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    匯出 CSV
+                                </button>
+                            </div>
+                        </div>
                         <div className="p-6">
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center py-16">
@@ -349,13 +455,15 @@ export default function KPI() {
                             ) : (
                                 <div className="rounded-xl overflow-hidden border border-gray-200">
                                     <GridComponent
+                                        ref={gridRef}
                                         rowData={rowData}
                                         columnDefs={columnDefs}
                                         activeCategory={activeTab}
                                         activeType={activeType}
                                         columnTitleMap={columnTitleMap}
                                         isLoading={isLoading}
-                                        exportMode={exportMode}
+                                        quickFilterText={quickFilterText}
+                                        onExportData={exportData}
                                     />
                                 </div>
                             )}

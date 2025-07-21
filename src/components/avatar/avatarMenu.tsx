@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {getAccessToken, clearAuthCookies} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import {useMenuStore} from "@/Stores/menuStore";
+import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
 
 interface AvatarMenuProps {
     name: string;
@@ -27,7 +28,23 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const avatarMenuId = "avatar-menu";
     const isAvatarMenuOpen = state === avatarMenuId;
 
+    const [theme, setTheme] = useState<'fantasy' | 'fantasydark'>('fantasy');
 
+    // 初始化主題
+    useEffect(() => {
+        const saved = localStorage.getItem('theme') as 'fantasy' | 'fantasydark' | null;
+        const initialTheme = saved ?? 'fantasy';
+        setTheme(initialTheme);
+        document.documentElement.setAttribute('data-theme', initialTheme);
+    }, []);
+
+    // 切換主題
+    const toggleTheme = () => {
+        const newTheme = theme === 'fantasy' ? 'fantasydark' : 'fantasy';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+    };
 
     // 檢查 cookies 中是否有 JWT
     useEffect(() => {

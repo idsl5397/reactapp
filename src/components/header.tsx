@@ -19,6 +19,7 @@ import {getAccessToken, getUserInfo} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
 import {jwtDecode} from "jwt-decode";
+import SelectTheme from "@/components/select/selectTheme";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -98,35 +99,6 @@ export default function Header() {
         }
     }, [isLoggedIn]);
 
-
-    // useEffect(() => {
-    //     const fetchMenuIfLoggedIn = async () => {
-    //
-    //         if (isLoggedIn) {
-    //             const token = await getCookie();
-    //             api.get('/Menu/GetMenus', {
-    //                 headers: {
-    //                     Authorization: token ? `Bearer ${token.value}` : '',
-    //                 },
-    //             })
-    //                 .then(response => {
-    //                     console.log(response.data);
-    //                     setMenu(response.data);
-    //                 })
-    //                 .catch(error => {
-    //                     if (error.response && error.response.status === 401) {
-    //                         console.warn('未授權 (401)，不顯示選單');
-    //                         setMenu([]);
-    //                     } else {
-    //                         console.error('獲取選單失敗:', error);
-    //                     }
-    //                 });
-    //         }
-    //     };
-    //
-    //     fetchMenuIfLoggedIn();
-    // }, [isLoggedIn]); //確保登入狀態已設定
-
     return (
         <header id="top" className="bg-white shadow-md">
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
@@ -147,76 +119,82 @@ export default function Header() {
                 {/* Desktop Menu */}
                 <PopoverGroup className="hidden md:flex md:gap-x-3 lg:gap-x-5">
                     {isLoggedIn && hasMenu ? (
-                        menu.map((item) => (
-                            <React.Fragment key={item.id}>
-                                {item.children && item.children.length > 0 ? (
-                                    <Popover className="relative">
-                                        {({ open, close }) => (
-                                            <div
-                                                onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()} // 避免按鈕焦點黏住
-                                            >
-                                                <Popover.Button
-                                                    onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()}
-                                                    className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
-                                                    {item.label}
-                                                    <ChevronDownIcon aria-hidden="true"
-                                                                     className="size-5 flex-none text-gray-400"/>
-                                                </Popover.Button>
-                                                <Popover.Panel
-                                                    className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
-                                                    onMouseLeave={() => close()}
+                            menu.map((item) => (
+                                <React.Fragment key={item.id}>
+                                    {item.children && item.children.length > 0 ? (
+                                        <Popover className="relative">
+                                            {({open, close}) => (
+                                                <div
+                                                    onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()} // 避免按鈕焦點黏住
                                                 >
-                                                    <div className="p-4">
-                                                        {item.children?.map((child) => (
-                                                            <div key={child.id}
-                                                                 className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
-                                                                <div
-                                                                    className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                                                    {getIcon(child.icon)}
+                                                    <Popover.Button
+                                                        onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()}
+                                                        className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
+                                                        {item.label}
+                                                        <ChevronDownIcon aria-hidden="true"
+                                                                         className="size-5 flex-none text-gray-400"/>
+                                                    </Popover.Button>
+                                                    <Popover.Panel
+                                                        className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+                                                        onMouseLeave={() => close()}
+                                                    >
+                                                        <div className="p-4">
+                                                            {item.children?.map((child) => (
+                                                                <div key={child.id}
+                                                                     className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
+                                                                    <div
+                                                                        className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                                                        {getIcon(child.icon)}
+                                                                    </div>
+                                                                    <div className="flex-auto">
+                                                                        <Link
+                                                                            href={child.link}
+                                                                            className="block font-semibold text-gray-900"
+                                                                            onClick={() => close()}
+                                                                        >
+                                                                            {child.label}
+                                                                            <span className="absolute inset-0"/>
+                                                                        </Link>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="flex-auto">
-                                                                    <Link
-                                                                        href={child.link}
-                                                                        className="block font-semibold text-gray-900"
-                                                                        onClick={() => close()}
-                                                                    >
-                                                                        {child.label}
-                                                                        <span className="absolute inset-0"/>
-                                                                    </Link>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </Popover.Panel>
-                                            </div>
-                                        )}
-                                    </Popover>
-                                ) : (
-                                    <Link key={item.id} href={item.link} className="text-base font-semibold text-gray-900 btn btn-ghost">
-                                        {item.label}
-                                    </Link>
-                                )}
-                            </React.Fragment>
-                        )))
+                                                            ))}
+                                                        </div>
+                                                    </Popover.Panel>
+                                                </div>
+                                            )}
+                                        </Popover>
+                                    ) : (
+                                        <Link key={item.id} href={item.link}
+                                              className="text-base font-semibold text-gray-900 btn btn-ghost">
+                                            {item.label}
+                                        </Link>
+                                    )}
+                                </React.Fragment>
+                            )))
                         : (
-                        <div className="text-gray-400"> </div>
+                            <div className="text-gray-400"></div>
                         )}
                     <Popover className="relative">
-                        <Popover.Button className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
+                        <Popover.Button
+                            className="flex items-center gap-x-1 text-base font-semibold text-gray-900 btn btn-ghost">
                             說明
-                            <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
+                            <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400"/>
                         </Popover.Button>
-                        <Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
+                        <Popover.Panel
+                            className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
                             <div className="p-4">
                                 {illustrate.map((item) => (
-                                    <div key={item.name} className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
-                                        <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                            <item.icon aria-hidden="true" className="size-6 text-gray-600 group-hover:text-indigo-600" />
+                                    <div key={item.name}
+                                         className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50">
+                                        <div
+                                            className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                            <item.icon aria-hidden="true"
+                                                       className="size-6 text-gray-600 group-hover:text-indigo-600"/>
                                         </div>
                                         <div className="flex-auto">
                                             <Link href={item.href} className="block font-semibold text-gray-900">
                                                 {item.name}
-                                                <span className="absolute inset-0" />
+                                                <span className="absolute inset-0"/>
                                             </Link>
                                         </div>
                                     </div>
@@ -234,12 +212,12 @@ export default function Header() {
                         className="-m-2.5 inline-flex items-center rounded-md p-2.5 text-gray-700"
                     >
                         <span className="sr-only">打開menu</span>
-                        <Bars3Icon aria-hidden="true" className="size-8" />
+                        <Bars3Icon aria-hidden="true" className="size-8"/>
                     </button>
                 </div>
-
+                <SelectTheme/>
                 {/* Avatar Menu */}
-                <Ava name={name} state={avatarMenuState} setState={setAvatarMenuState} />
+                <Ava name={name} state={avatarMenuState} setState={setAvatarMenuState}/>
             </nav>
 
             {/* Mobile Menu */}

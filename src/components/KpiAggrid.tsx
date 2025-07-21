@@ -1,4 +1,11 @@
-import React, {useMemo, useState, useRef, useEffect} from "react";
+import React, {
+    useMemo,
+    useState,
+    useRef,
+    useEffect,
+    forwardRef,
+    useImperativeHandle
+} from "react";
 import {ColDef, ModuleRegistry} from "ag-grid-community";
 import type { CellClassParams, CellStyle } from "ag-grid-community"; // ⚠️ 確保你已經有 import
 import { AllEnterpriseModule } from "ag-grid-enterprise";
@@ -26,7 +33,7 @@ interface KpiDataCycle {
     reports?: KpiReport[];
 }
 
-interface IRow {
+export interface IRow {
     id: number;
     category: string; // e.g. "基礎型", "客製型"
     type: string;     // e.g. "basic", "custom"
@@ -40,32 +47,43 @@ interface GridComponentProps {
     activeCategory: string;
     activeType: string;
     columnTitleMap: Record<string, string>;
-    isLoading?: boolean; // ✅ 新增
-    exportMode: "all" | "failed";
+    isLoading?: boolean;
+    onExportData?: (type: 'excel' | 'csv') => void;
     quickFilterText?: string;
 }
 
-const GridComponent: React.FC<GridComponentProps> = ({
-                                                         columnDefs,
-                                                         rowData,
-                                                         defaultColDef,
-                                                         activeCategory,
-                                                         activeType,
-                                                         columnTitleMap,
-                                                         isLoading,
-                                                     }) => {
+const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProps>(
+    (
+        {
+            columnDefs,
+            rowData,
+            defaultColDef,
+            activeCategory,
+            activeType,
+            columnTitleMap,
+            isLoading,
+            quickFilterText,
+        },
+        ref
+    ) => {
     const [isEditable, setIsEditable] = useState(false);
     const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
     const [selectedDetail, setSelectedDetail] = useState<IRow | null>(null);
     const gridRef = useRef<AgGridReactType<IRow>>(null);
 
+    // ✅ 把 gridRef 暴露給父層
+    useImperativeHandle(ref, () => gridRef.current!);
+
     //載入詳細資料圖片
     const [filterRange, setFilterRange] = useState("all");
     const [chartData, setChartData] = useState<any[]>([]);
     const [isChartLoading, setIsChartLoading] = useState(false);
-    const [quickFilterText, setQuickFilterText] = useState('');
-    const [exportMode, setExportMode] = useState<"all" | "failed">("all");
 
+    useEffect(() => {
+        if (quickFilterText && gridRef.current?.api) {
+            (gridRef.current.api as any).setQuickFilter(quickFilterText);
+        }
+    }, [quickFilterText]);
 
     useEffect(() => {
         const allReports = selectedDetail?.kpiDatas?.flatMap((kpiData: KpiDataCycle) =>
@@ -105,84 +123,6 @@ const GridComponent: React.FC<GridComponentProps> = ({
     //     }
     // }, [quickFilterText]);
 
-    //匯出excel與CSV
-    const exportData = (type: "excel" | "csv") => {
-        const api = gridRef.current?.api;
-        if (!api) return;
-
-        const fileNamePrefix = exportMode === "failed" ? "未達標資料" : "指標資料";
-        const fileName = `${fileNamePrefix}_${new Date().toISOString().slice(0, 10)}`;
-
-        if (exportMode === "all") {
-            if (type === "excel") {
-                api.exportDataAsExcel({
-                    fileName: `${fileName}.xlsx`,
-                });
-            } else {
-                api.exportDataAsCsv({
-                    fileName: `${fileName}.csv`,
-                    bom: true,
-                } as any);
-            }
-            return;
-        }
-
-        // 匯出未達標資料（只匯出未達標）
-        const failedNodes: any[] = [];
-        api.forEachNodeAfterFilterAndSort((node) => {
-            const row = node.data;
-            if (!row || !row.isIndicator) return;
-
-            const actual = row.lastReportValue;
-            const target = row.lastTargetValue;
-            const operator = row.lastComparisonOperator;
-
-            let meets = true;
-            if (typeof actual === "number" && typeof target === "number") {
-                switch (operator) {
-                    case ">=": meets = actual >= target; break;
-                    case "<=": meets = actual <= target; break;
-                    case ">": meets = actual > target; break;
-                    case "<": meets = actual < target; break;
-                    case "=":
-                    case "==": meets = actual === target; break;
-                    default: meets = true;
-                }
-            }
-
-            if (!meets) {
-                failedNodes.push(node);
-            }
-        });
-
-        // 使用 AG Grid 內建匯出僅未達標的資料
-        if (failedNodes.length > 0) {
-            // 清除現有選取
-            api.deselectAll();
-
-            // 勾選未達標資料
-            failedNodes.forEach((node) => node.setSelected(true));
-
-            if (type === "excel") {
-                api.exportDataAsExcel({
-                    fileName: `${fileName}.xlsx`,
-                    onlySelected: true,
-                });
-            } else {
-                const csv = api.getDataAsCsv({ onlySelected: true });
-                const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.setAttribute("download", `${fileName}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-
-            // ⚠️ 可選：匯出後還原選取狀態
-            api.deselectAll();
-        }
-    };
 
 
     const filteredRowData = useMemo(() => {
@@ -278,44 +218,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
     return (
         <>
             <Toaster position="top-right" reverseOrder={false} />
-            <div className="flex flex-col gap-4">
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                        id="keyword"
-                        name="keyword"
-                        type="text"
-                        aria-label="關鍵字查詢"
-                        placeholder="搜尋指標名稱、編號..."
-                        value={quickFilterText}
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                    />
-                    {/*<button*/}
-                    {/*    onClick={toggleEditMode}*/}
-                    {/*    className="btn btn-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm rounded-md"*/}
-                    {/*>*/}
-                    {/*    {isEditable ? "鎖定" : "修改"}*/}
-                    {/*</button>*/}
-                    {/*{isEditable && (*/}
-                    {/*    <button*/}
-                    {/*        onClick={deleteSelectedRows}*/}
-                    {/*        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"*/}
-                    {/*    >*/}
-                    {/*        刪除選擇*/}
-                    {/*    </button>*/}
-                    {/*)}*/}
-                    <select
-                        className="select select-sm select-bordered"
-                        value={exportMode}
-                        onChange={(e) => setExportMode(e.target.value as any)}
-                    >
-                        <option value="all">匯出篩選結果</option>
-                        <option value="failed">匯出篩選結果未達標</option>
-                    </select>
-                    <button className="btn btn-outline btn-sm" onClick={() => exportData("excel")}>匯出 Excel</button>
-                    <button className="btn btn-outline btn-sm" onClick={() => exportData("csv")}>匯出 CSV</button>
-                </div>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
 
                 <p className="text-sm text-gray-500 px-1">
                     類別：{activeCategory === "tab_all" ? "全部類別" : activeCategory}，
@@ -552,7 +455,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
                                                 content={({active, payload, label}) => {
                                                     if (active && payload && payload.length) {
                                                         return (
-                                                            <div className="bg-white border p-2 rounded shadow text-xs">
+                                                            <div
+                                                                className="bg-white border p-2 rounded shadow text-xs">
                                                                 <p>{label}</p>
                                                                 <p>
                                                                     執行值：{payload[0].value} {selectedDetail.unit || ""}
@@ -645,6 +549,6 @@ const GridComponent: React.FC<GridComponentProps> = ({
             </div>
         </>
     );
-};
+});
 
 export default GridComponent;

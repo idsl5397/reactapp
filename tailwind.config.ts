@@ -16,7 +16,7 @@ export default {
       },
     },
   },
-  plugins: [daisyui,typography], // 確保 DaisyUI 插件正確引入
+  plugins: [daisyui, typography],
   daisyui: {
     themes: [
       {
@@ -43,14 +43,37 @@ export default {
           "error-content": "#FFFFFF",
         },
       },
-    ], // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
-    darkTheme: "", // name of one of the included themes for dark mode
-    base: true, // applies background color and foreground color for root element by default
-    styled: true, // include daisyUI colors and design decisions for all components
-    utils: true, // adds responsive and modifier utility classes
-    prefix: "", // prefix for daisyUI classnames (components, modifiers and responsive class names. Not colors)
-    logs: true, // Shows info about daisyUI version and used config in the console when building your CSS
-    themeRoot: ":root", // The element that receives theme color CSS variables
+      {
+        fantasydark: {
+          "primary": "#A1C2F1",
+          "primary-content": "#1A1A1A",
+          "secondary": "#6FE0DC",
+          "secondary-content": "#1A1A1A",
+          "accent": "#FF7847",
+          "accent-content": "#1A1A1A",
+          "neutral": "#1E1E1E",
+          "neutral-content": "#F3F3F3",
+          "base-100": "#1A1A1A",
+          "base-200": "#2A2A2A",
+          "base-300": "#3A3A3A",
+          "base-content": "#F3F3F1",
+          "info": "#66C7D9",
+          "info-content": "#001C1C",
+          "success": "#4793AF",
+          "success-content": "#E6FAFF",
+          "warning": "#FFD666",
+          "warning-content": "#2A2A00",
+          "error": "#FF6B6B",
+          "error-content": "#1A0000",
+        },
+      },
+    ],
+    darkTheme: "fantasydark", // 🌙 深色模式自動切換主題
+    base: true,
+    styled: true,
+    utils: true,
+    prefix: "",
+    logs: true,
+    themeRoot: ":root",
   },
 } satisfies Config;
-
