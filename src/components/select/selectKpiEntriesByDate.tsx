@@ -162,7 +162,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                         value={selectedEnterprise}
                         onChange={handleEnterpriseChange}
                         disabled={isCompany}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                     >
                         <option value="">請選擇階層1</option>
                         {data.map((enterprise) => (
@@ -184,7 +184,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                         disabled={isCompany || !companies.length}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                     >
                         <option value="">請選擇階層2</option>
                         {companies.map((company) => (
@@ -206,7 +206,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                         value={selectedFactory}
                         onChange={handleFactoryChange}
                         disabled={isCompany || !factories.length}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                     >
                         <option value="">請選擇階層3</option>
                         {factories.map((factory) => (
@@ -227,7 +227,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 id="startyear"
                                 value={startYear}
                                 onChange={handleStartYearChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
                                 <option value="">請選擇年份</option>
                                 <option value="110">110</option>
@@ -250,7 +250,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 id="startquarter"
                                 value={startQuarter}
                                 onChange={handleStartQuarterChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                                 disabled={!startYear.length}
                             >
                                 <option value="">請選擇季度</option>
@@ -274,7 +274,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 id="endyear"
                                 value={endYear}
                                 onChange={handleEndYearChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
                                 <option value="">請選擇年份</option>
                                 <option value="110">110</option>
@@ -297,7 +297,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                                 id="endquarter"
                                 value={endQuarter}
                                 onChange={handleEndQuarterChange}
-                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
+                                className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                                 disabled={!endYear.length}
                             >
                                 <option value="">請選擇季度</option>

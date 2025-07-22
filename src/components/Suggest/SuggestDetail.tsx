@@ -7,8 +7,9 @@ import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry } from 'ag-grid-community';
 import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
 import { AllEnterpriseModule } from 'ag-grid-enterprise';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import {getAccessToken} from "@/services/serverAuthService";
 
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
@@ -123,9 +124,17 @@ export default function SuggestDetailPage() {
 
     useEffect(() => {
         if (!id) return;
-        setLoading(true);
-        api.get(`/Suggest/GetSuggestDetail/${id}`)
-            .then((res) => {
+
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const token = await getAccessToken(); // 你應該已有這個方法
+                const res = await api.get(`/Suggest/GetSuggestDetail/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token?.value}`,
+                    }
+                });
+
                 setSuggestData(res.data);
                 setReports((res.data.reports || []).map((r: SuggestReport) => ({
                     ...r,
@@ -133,9 +142,24 @@ export default function SuggestDetailPage() {
                     date: res.data.date,
                     suggestEventTypeName: res.data.suggestEventTypeName,
                 })));
-            })
-            .catch((err) => console.error('取得詳情失敗', err))
-            .finally(() => setLoading(false));
+            } catch (err: any) {
+                const status = err?.response?.status;
+                if (status === 403) {
+                    toast.error("您沒有權限查看這筆資料");
+                } else if (status === 401) {
+                    toast.error("尚未登入或登入已過期，請重新登入");
+                } else if (status === 404) {
+                    toast.error("找不到該筆建議詳情資料");
+                } else {
+                    console.error("取得詳情失敗", err);
+                    toast.error("發生錯誤，請稍後再試");
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [id]);
 
     if (loading) {
@@ -151,10 +175,20 @@ export default function SuggestDetailPage() {
 
     if (!suggestData) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="text-6xl mb-4">❌</div>
-                    <p className="text-red-600 text-lg">找不到資料</p>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+                <div className="max-w-7xl mx-auto px-6 py-6">
+                    {/* Header Section */}
+                    <div className="bg-white shadow-sm border-b border-gray-200">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                            <Breadcrumbs items={breadcrumbItems}/>
+                        </div>
+                    </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="text-center">
+                            <div className="text-6xl mb-4">❌</div>
+                            <p className="text-red-600 text-lg">找不到資料</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -162,7 +196,7 @@ export default function SuggestDetailPage() {
 
     return (
         <>
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster position="top-right" reverseOrder={false}/>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
                 <div className="max-w-7xl mx-auto px-6 py-6">
                     {/* Header Section */}
@@ -181,18 +215,22 @@ export default function SuggestDetailPage() {
                         </div>
 
                         {/* Main Info Card */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8 transform hover:scale-[1.01] transition-transform duration-300">
+                        <div
+                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8 transform hover:scale-[1.01] transition-transform duration-300">
                             <div className="flex items-center mb-6">
                                 <div className="p-3 bg-blue-100 rounded-full mr-4">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-800">主檔資訊</h2>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                                <div
+                                    className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
                                     <div className="flex items-center mb-2">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                                         <span className="text-sm font-medium text-blue-700">廠商</span>
@@ -200,7 +238,8 @@ export default function SuggestDetailPage() {
                                     <p className="text-lg font-bold text-gray-900">{suggestData.organizationName}</p>
                                 </div>
 
-                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                                <div
+                                    className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
                                     <div className="flex items-center mb-2">
                                         <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                                         <span className="text-sm font-medium text-green-700">日期</span>
@@ -208,7 +247,8 @@ export default function SuggestDetailPage() {
                                     <p className="text-lg font-bold text-gray-900">{suggestData.date}</p>
                                 </div>
 
-                                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                                <div
+                                    className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
                                     <div className="flex items-center mb-2">
                                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
                                         <span className="text-sm font-medium text-purple-700">會議類型</span>
@@ -220,12 +260,16 @@ export default function SuggestDetailPage() {
 
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                             {/* Section Header */}
-                            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+                            <div
+                                className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <div className="p-3 bg-indigo-100 rounded-full mr-4">
-                                            <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            <svg className="w-6 h-6 text-indigo-600" fill="none"
+                                                 stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      strokeWidth={2}
+                                                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                             </svg>
                                         </div>
                                         <div>
@@ -238,12 +282,17 @@ export default function SuggestDetailPage() {
 
                             {/* Controls */}
                             <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                                <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                                <div
+                                    className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                                     {/* Search */}
                                     <div className="relative flex-1 max-w-md">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        <div
+                                            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg className="h-5 w-5 text-gray-400" fill="none"
+                                                 stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      strokeWidth={2}
+                                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                             </svg>
                                         </div>
                                         <input
@@ -270,8 +319,11 @@ export default function SuggestDetailPage() {
                                             onClick={() => exportData('excel')}
                                             className="inline-flex items-center px-4 py-3 border border-green-300 rounded-xl text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
                                         >
-                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      strokeWidth={2}
+                                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                             </svg>
                                             匯出 Excel
                                         </button>
@@ -280,8 +332,11 @@ export default function SuggestDetailPage() {
                                             onClick={() => exportData('csv')}
                                             className="inline-flex items-center px-4 py-3 border border-blue-300 rounded-xl text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
                                         >
-                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      strokeWidth={2}
+                                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                             </svg>
                                             匯出 CSV
                                         </button>

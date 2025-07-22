@@ -35,10 +35,7 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV API=http://kpibackend:8080
 
 
-# 接下來要在 yarn build 之前確保 .env.production 存在
-RUN echo "NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH" >> .env.production && \
-    echo "BASE_PATH=$BASE_PATH" >> .env.production
-RUN yarn build
+RUN BASE_PATH=$BASE_PATH NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH yarn build
 
 # 運行階段
 FROM base AS runner

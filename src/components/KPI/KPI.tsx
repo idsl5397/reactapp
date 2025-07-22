@@ -8,7 +8,6 @@ import Link from 'next/link';
 import axios from "axios";
 import { ColDef } from "ag-grid-community";
 import { Toaster, toast } from 'react-hot-toast';
-import { AgGridReact } from 'ag-grid-react';
 import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
 import type { RowNode } from 'ag-grid-community';
 
@@ -227,7 +226,7 @@ export default function KPI() {
                         <Link href="/kpi/newKpi" tabIndex={-1}>
                             <button
                                 type="button"
-                                className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-md transition-all duration-200 transform hover:scale-105 whitespace-nowrap"
+                                className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-md transform whitespace-nowrap"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -249,8 +248,9 @@ export default function KPI() {
                                     className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                     <details className="group">
                                         <summary
-                                            className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                                            <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
+                                            className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-gray-50 rounded-lg transition-colors duration-200 custom-select">
+                                            <span
+                                                className="text-sm font-medium text-gray-800 flex items-center gap-2">
                                                 <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -283,7 +283,7 @@ export default function KPI() {
                                         {categories.map((category) => (
                                             <button
                                                 key={category.id}
-                                                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${
+                                                className={`btn flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm ${
                                                     activeTab === category.id
                                                         ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md transform scale-105"
                                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
@@ -311,7 +311,7 @@ export default function KPI() {
                                         ].map((type) => (
                                             <button
                                                 key={type.id}
-                                                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${
+                                                className={`btn flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm ${
                                                     activeType === type.id
                                                         ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md transform scale-105"
                                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
@@ -329,7 +329,7 @@ export default function KPI() {
                                 <div className="flex justify-end pt-4">
                                     <button
                                         type="button"
-                                        className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-md transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
+                                        className="btn flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-md transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
                                         onClick={handleQuery}
                                         disabled={isLoading}
                                     >
@@ -385,8 +385,7 @@ export default function KPI() {
                             </div>
                         </div>
                         <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                            <div
-                                className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                                 {/* 搜尋欄位 */}
                                 <div className="relative flex-1 max-w-md">
                                     <div
@@ -402,42 +401,45 @@ export default function KPI() {
                                         placeholder="搜尋指標名稱、編號..."
                                         value={keyword}
                                         onChange={(e) => setKeyword(e.target.value)}
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-transparent"
                                     />
                                 </div>
+                                <div className="flex items-center space-x-3">
+                                    {/* 匯出條件 */}
+                                    <select
+                                        className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-transparent custom-select"
+                                        value={exportMode}
+                                        onChange={(e) => setExportMode(e.target.value as any)}
+                                    >
+                                        <option value="all">匯出篩選結果</option>
+                                        <option value="failed">匯出篩選結果未達標</option>
+                                    </select>
 
-                                {/* 匯出條件 */}
-                                <select
-                                    className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    value={exportMode}
-                                    onChange={(e) => setExportMode(e.target.value as any)}
-                                >
-                                    <option value="all">匯出篩選結果</option>
-                                    <option value="failed">匯出篩選結果未達標</option>
-                                </select>
+                                    {/* 匯出按鈕 */}
+                                    <button
+                                        onClick={() => exportData('excel')}
+                                        className="btn inline-flex items-center px-4 py-3 border border-green-300 rounded-xl text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-offset-2"
+                                    >
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        匯出 Excel
+                                    </button>
 
-                                {/* 匯出按鈕 */}
-                                <button
-                                    onClick={() => exportData('excel')}
-                                    className="inline-flex items-center px-4 py-3 border border-green-300 rounded-xl text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
-                                >
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                    匯出 Excel
-                                </button>
-
-                                <button
-                                    onClick={() => exportData('csv')}
-                                    className="inline-flex items-center px-4 py-3 border border-blue-300 rounded-xl text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-                                >
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                    匯出 CSV
-                                </button>
+                                    <button
+                                        onClick={() => exportData('csv')}
+                                        className="btn inline-flex items-center px-4 py-3 border border-blue-300 rounded-xl text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-offset-2"
+                                    >
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        匯出 CSV
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div className="p-6">
