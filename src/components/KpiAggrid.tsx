@@ -550,5 +550,5 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
         </>
     );
 });
-
+GridComponent.displayName = "GridComponent";
 export default GridComponent;
