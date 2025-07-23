@@ -23,9 +23,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # 加入 BASE_PATH 環境變數（如 =/iskpi）
-ARG BASE_PATH
+ARG BASE_PATH=/iskpi
 ENV BASE_PATH=${BASE_PATH}
-ARG NEXT_PUBLIC_BASE_PATH
+ARG NEXT_PUBLIC_BASE_PATH=/iskpi
 ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
 
 # 構建應用
