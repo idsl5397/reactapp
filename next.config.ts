@@ -48,7 +48,7 @@ const securityHeaders = [
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: https:;
         font-src 'self' https: data:;
-        connect-src 'self' https://kpi.isafe.org.tw https://security.bip.gov.tw;
+        connect-src 'self' ${API_URL} ${RAG_API} https://kpi.isafe.org.tw https://security.bip.gov.tw;
         frame-src https://challenges.cloudflare.com;
         worker-src 'self' blob:;
         frame-ancestors https://security.bip.gov.tw;
