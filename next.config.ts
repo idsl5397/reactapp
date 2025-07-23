@@ -65,7 +65,15 @@ const nextConfig: NextConfig= {
     basePath,
     assetPrefix,
     poweredByHeader: false,
-
+    experimental: {
+        serverActions: {
+            allowedOrigins: [
+                'https://security.bip.gov.tw',
+                'https://kpi.isafe.org.tw'
+            ],
+            bodySizeLimit: '10mb', // 可選，或改 '2mb' '10mb' 等
+        }
+    },
     async headers() {
         return [
             {
