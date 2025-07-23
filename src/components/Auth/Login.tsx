@@ -221,7 +221,7 @@ export default function Login() {
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-600">
                                 還沒有帳號嗎？{' '}
-                                <a href={`${basePath}/register`} className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                <a className="font-semibold text-indigo-600 hover:text-indigo-500" href={`${basePath}/register`}>
                                     前往註冊
                                 </a>
                             </p>
