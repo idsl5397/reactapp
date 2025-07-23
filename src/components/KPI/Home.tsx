@@ -82,7 +82,7 @@ export default function Home() {
             <Toaster position="top-right" reverseOrder={false} />
 
             {/* 背景漸層 */}
-            <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50 -z-10" />
+            <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 -z-10" />
 
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems} />
@@ -94,7 +94,7 @@ export default function Home() {
                     {/* 標題區塊 */}
                     <div className="text-center space-y-6">
                         <div className="space-y-4">
-                            <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-900">
+                            <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-900 z-10">
                                 績效指標資料庫平台
                             </h1>
                             <div

@@ -2,6 +2,7 @@
 import React from "react";
 
 export default function Component() {
+    const basePath = process.env.BASE_PATH || '';
     return (
         <>
 
@@ -18,9 +19,9 @@ export default function Component() {
                 {/*</a>*/}
 
                 <nav className="grid grid-flow-col gap-4">
-                    <a className="link link-hover" href="/about">關於我們</a>
+                    <a className="link link-hover" href={`${basePath}/about`}>關於我們</a>
                     <span>|</span>
-                    <a className="link link-hover" href="/direction">網站導覽</a>
+                    <a className="link link-hover" href={`${basePath}/direction`}>網站導覽</a>
                 </nav>
                 <aside>
                     <p className="font-bold">

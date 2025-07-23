@@ -30,7 +30,7 @@ export default function Login() {
         { label: "登入" }
     ];
     const router = useRouter();
-
+    const basePath = process.env.BASE_PATH || '';
     useEffect(() => {
         const checkLoginStatus = async () => {
             await checkIsLoggedIn();
@@ -221,7 +221,7 @@ export default function Login() {
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-600">
                                 還沒有帳號嗎？{' '}
-                                <a href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                <a href={`${basePath}/register`} className="font-semibold text-indigo-600 hover:text-indigo-500">
                                     前往註冊
                                 </a>
                             </p>

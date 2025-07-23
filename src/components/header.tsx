@@ -19,7 +19,6 @@ import {getAccessToken, getUserInfo} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
 import {jwtDecode} from "jwt-decode";
-import SelectTheme from "@/components/select/selectTheme";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -215,7 +214,7 @@ export default function Header() {
                         <Bars3Icon aria-hidden="true" className="size-8"/>
                     </button>
                 </div>
-                <SelectTheme/>
+
                 {/* Avatar Menu */}
                 <Ava name={name} state={avatarMenuState} setState={setAvatarMenuState}/>
             </nav>

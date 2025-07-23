@@ -240,7 +240,7 @@ export default function Report(){
                                     whileHover={{scale: 1.02, y: -2}}
                                     whileTap={{scale: 0.98}}
                                     onClick={kpiModalState.openModal}
-                                    className="group relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                                    className="group relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
                                 >
                                     <div
                                         className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -259,7 +259,7 @@ export default function Report(){
                                     whileHover={{scale: 1.02, y: -2}}
                                     whileTap={{scale: 0.98}}
                                     onClick={sugModalState.openModal}
-                                    className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                                    className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
                                 >
                                     <div
                                         className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -274,11 +274,11 @@ export default function Report(){
                                 </motion.button>
 
                                 {/* Report Upload Button */}
-                                <Link href="/reportEntry/Improvement" className="block">
+                                <Link href="/reportEntry/Improvement" className="block" tabIndex={-1}>
                                     <motion.div
                                         whileHover={{scale: 1.02, y: -2}}
                                         whileTap={{scale: 0.98}}
-                                        className="group relative overflow-hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 h-full"
+                                        className="group relative overflow-hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
                                     >
                                         <div
                                             className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

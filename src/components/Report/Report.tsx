@@ -1,19 +1,18 @@
-
-'use client'
-import React, {useEffect, useState} from "react";
+'use client';
+import React, { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise, {SelectionPayload} from "@/components/select/selectEnterprise";
+import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
 import SuggestionPieChart from "@/components/Report/ReportAggridchart";
 import Aggridline from "@/components/aggridline";
 import RankingSugAg from "@/components/Report/RankingSugAg";
 import RankingKpi from "@/components/Report/RankingKpi";
 import axios from "axios";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useauthStore } from "@/Stores/authStore";
+import { getAccessToken } from "@/services/serverAuthService";
+import { enterpriseService } from "@/services/selectCompany";
 
-const api = axios.create({
-    baseURL: '/proxy',
-});
+const api = axios.create({ baseURL: '/proxy' });
 
 interface CompletionRateCard {
     kpiFieldId: number;
@@ -21,30 +20,29 @@ interface CompletionRateCard {
     completionRate: number;
 }
 
-export default function Report(){
+export default function Report() {
     const [cards, setCards] = useState<CompletionRateCard[]>([]);
     const [selection, setSelection] = useState<SelectionPayload>({
         orgId: '',
+        orgName: '',
         startYear: '',
         endYear: ''
     });
-    const [orgName, setOrgName] = useState<string>("所有公司");
     const [isLoading, setIsLoading] = useState(false);
 
-    const breadcrumbItems = [
-        { label: "首頁", href: "/" },
-        { label: "報表" }
-    ];
-
-    const permissions = useauthStore(state => state.permissions);
+    const { userRole, userOrgId, permissions } = useauthStore();
     const canViewRanking = permissions.includes("view-ranking");
 
-    const fetchRates = async () => {
+    // ✅ 共用拉資料邏輯
+    const fetchRates = async (orgId?: string) => {
         setIsLoading(true);
         try {
+            const token = await getAccessToken();
             const response = await api.get("/Report/GetCompletionRates", {
-                params: selection.orgId ? { organizationId: selection.orgId } : {}
+                params: orgId ? { organizationId: orgId } : {},
+                headers: { Authorization: `Bearer ${token?.value}` }
             });
+
             if (response.data?.success) {
                 setCards(response.data.data);
             } else {
@@ -58,8 +56,40 @@ export default function Report(){
         }
     };
 
+    // ✅ 初始化時若為公司角色，鎖定自己的組織並帶入名稱
     useEffect(() => {
-        fetchRates();
+        const init = async () => {
+            if (userRole === 'company' && userOrgId) {
+                const enterprises = await enterpriseService.fetchData();
+                let foundName = '';
+
+                for (const e of enterprises) {
+                    if (e.id === userOrgId) { foundName = e.name; break; }
+                    for (const c of e.children || []) {
+                        if (c.id === userOrgId) { foundName = c.name; break; }
+                        for (const f of c.children || []) {
+                            if (f.id === userOrgId) { foundName = f.name; break; }
+                        }
+                    }
+                }
+
+                setSelection({
+                    orgId: userOrgId.toString(),
+                    orgName: foundName,
+                    startYear: '',
+                    endYear: ''
+                });
+                await fetchRates(userOrgId.toString());
+            }
+        };
+
+        init();
+    }, [userRole, userOrgId]);
+
+    // ✅ 使用者互動更新資料
+    useEffect(() => {
+        if (selection.orgId) fetchRates(selection.orgId);
+        else fetchRates(); // 查全部
     }, [selection.orgId]);
 
     const getCompletionRateColor = (rate: number) => {
@@ -75,6 +105,11 @@ export default function Report(){
         if (rate >= 50) return 'bg-yellow-500';
         return 'bg-red-500';
     };
+
+    const breadcrumbItems = [
+        { label: "首頁", href: "/" },
+        { label: "報表" }
+    ];
 
     return (
         <>
@@ -105,8 +140,8 @@ export default function Report(){
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                                 <SelectEnterprise
                                     onSelectionChange={(s) => {
+                                        console.log("選到：", s);
                                         setSelection(s);
-                                        setOrgName(s.orgName || "所有公司");
                                     }}
                                 />
                             </div>
@@ -120,7 +155,7 @@ export default function Report(){
                                     <h2 className="text-xl font-semibold text-gray-800">
                                         各類型改善完成率
                                         <span className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                                            {orgName}
+                                            {selection.orgName || "所有公司"}
                                         </span>
                                     </h2>
                                 </div>
@@ -187,7 +222,7 @@ export default function Report(){
                                 <div className="h-[450px]">
                                     <SuggestionPieChart
                                         organizationId={selection.orgId}
-                                        organizationName={orgName}
+                                        organizationName={selection.orgName || "所有公司"}
                                     />
                                 </div>
                             </div>
