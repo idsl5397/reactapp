@@ -69,7 +69,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const handleLogin = (e?: React.MouseEvent<HTMLSpanElement> | React.KeyboardEvent) => {
         e?.preventDefault();
         setState(null); // 關閉選單
-        window.location.replace(basePath+"/login");// 跳轉到登入頁面
+        window.location.replace(NPbasePath+"/login");// 跳轉到登入頁面
     };
 
     const toggleMenu = (e?: React.MouseEvent) => {

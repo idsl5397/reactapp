@@ -4,7 +4,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {userService} from "@/services/userServices";
-import {Turnstile} from "@marsidev/react-turnstile";
 import {getAccessToken, storeAuthTokens} from "@/services/serverAuthService";
 import {UserData} from "@/types/UserType";
 import {useauthStore} from "@/Stores/authStore";
@@ -15,7 +14,8 @@ import {toast, Toaster} from "react-hot-toast";
 const api = axios.create({
     baseURL: "/proxy",
 });
-
+const basePath = process.env.BASE_PATH || '';
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 export default function Login() {
     const [usermail, setusermail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +30,7 @@ export default function Login() {
         { label: "登入" }
     ];
     const router = useRouter();
-    const basePath = process.env.BASE_PATH || '';
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             await checkIsLoggedIn();
@@ -221,7 +221,7 @@ export default function Login() {
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-600">
                                 還沒有帳號嗎？{' '}
-                                <a className="font-semibold text-indigo-600 hover:text-indigo-500" href={`${basePath}/register`}>
+                                <a className="font-semibold text-indigo-600 hover:text-indigo-500" href={`${NPbasePath}/register`}>
                                     前往註冊
                                 </a>
                             </p>
