@@ -18,6 +18,12 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get("token");
     const tokenValue = token?.value || "";
 
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+    const rootPath = basePath || "/";
+
+    if (req.nextUrl.pathname === rootPath || req.nextUrl.pathname === `${rootPath}/`) {
+        return NextResponse.redirect(new URL(`${basePath}/login`, req.url));
+    }
     // 動態去除 basePath（ex: /iskpi），取得純路徑
     const rawPath = req.nextUrl.pathname;
     const cleanedPath = rawPath.replace(/^\/iskpi/, "");
