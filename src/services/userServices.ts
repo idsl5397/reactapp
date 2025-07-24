@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
-
+const basePath = process.env.BASE_PATH || '';
 const api = axios.create({
-    baseURL: "/proxy",
+    baseURL: `${basePath}/proxy`,
     timeout: 10000, // 添加請求超時設置
 });
 
