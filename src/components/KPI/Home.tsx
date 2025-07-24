@@ -154,7 +154,7 @@ export default function Home() {
                             關於我們
                         </button>
                         <button
-                            onClick={() => router.push('/guide')}
+                            onClick={() => router.push('/direction')}
                             className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group"
                         >
                             <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

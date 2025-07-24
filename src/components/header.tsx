@@ -19,6 +19,7 @@ import {getAccessToken, getUserInfo} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
 import {jwtDecode} from "jwt-decode";
+import logo from "@/../public/logo.svg"
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -103,11 +104,11 @@ export default function Header() {
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
                 {/* Logo */}
                 <div className="flex flex-1">
-                    <Link href={`${NPbasePath}/home`} className="btn btn-ghost">
+                    <Link href="/home" className="btn btn-ghost">
                         <span className="sr-only">首頁</span>
                         <Image
                             alt="Logo"
-                            src={`${basePath}/logo.svg`}
+                            src={logo}
                             className="h-8 w-auto sm:h-11 md:h-9 lg:h-11"
                             width={100}
                             height={40}
@@ -226,7 +227,7 @@ export default function Header() {
                     <div className="flex items-center justify-between">
                         <Link href={`${NPbasePath}/`} className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
-                            <Image alt="" src={`${basePath}/logo.svg`} className="h-11 w-auto" width={100} height={40} />
+                            <Image alt="" src={logo} className="h-11 w-auto" width={100} height={40} />
                         </Link>
                         <button
                             type="button"

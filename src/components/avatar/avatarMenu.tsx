@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {getAccessToken, clearAuthCookies} from "@/services/serverAuthService";
 import {useauthStore} from "@/Stores/authStore";
 import {useMenuStore} from "@/Stores/menuStore";
+import userlogo from "@/../public/user.svg"
 import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
 
 interface AvatarMenuProps {
@@ -16,9 +17,7 @@ interface AvatarMenuProps {
 const basePath = process.env.BASE_PATH || '';
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 export default function AvatarMenu(props: AvatarMenuProps) {
-    const { name, image, state, setState } = props;
-
-    const avatarImage = image || basePath+"/user.svg";
+    const { name, state, setState } = props;
 
     const [isLoading] = useState(false);
     const {isLoggedIn, setIsLoggedIn} = useauthStore(); // 登入狀態
@@ -120,11 +119,11 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                 >
                     <div className="w-10 rounded-full">
                         <Image
-                            src={avatarImage}
+                            src={userlogo}
                             alt={`${name}'s avatar`}
                             width={200}
                             height={200}
-                            priority={avatarImage === NPbasePath+"/user.svg"}
+                            priority={userlogo}
                         />
                     </div>
                 </motion.button>
