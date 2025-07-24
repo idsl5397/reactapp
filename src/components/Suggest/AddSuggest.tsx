@@ -5,13 +5,14 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import SingleAddSuggest from './SingleAddSuggest';
 import BatchUploadSuggest from './BatchUploadSuggest';
 import { Toaster } from 'react-hot-toast';
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function AddSuggestPage() {
     const [mode, setMode] = useState<'single' | 'batch' | 'all'>('single');
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
-        { label: "委員回覆及改善建議" , href: "/suggest" },
+        { label: "首頁", href: `${NPbasePath}/home` },
+        { label: "委員回覆及改善建議" , href: `${NPbasePath}/suggest` },
         { label: "新增委員建議"}
     ];
 

@@ -70,7 +70,7 @@ const api = axios.create({
 export default function Register() {
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "註冊" }
     ];
 

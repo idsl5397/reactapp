@@ -6,6 +6,7 @@ import { CheckCircle, XCircle, Clock, Upload, FileUp, Calendar, User, TrendingUp
 import Link from "next/link";
 import { useUploadOptionModalState } from "@/hooks/useUploadOptionModalState";
 import {UploadOptionModal} from "@/hooks/UploadOptionModal";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const kpiitems = [
     {
@@ -41,7 +42,7 @@ export default function Report(){
     const kpiModalState = useUploadOptionModalState();
     const sugModalState = useUploadOptionModalState();
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "填報資料" }
     ];
 

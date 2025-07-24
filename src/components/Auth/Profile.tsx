@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, Lock, Eye, EyeOff, Save, Edit3, Shield, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import {Toaster} from "react-hot-toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 interface TextInputProps {
     label: string;
@@ -44,7 +45,7 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     const passwordSectionRef = useRef<HTMLDivElement | null>(null);
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "個人資料" }
     ];
 

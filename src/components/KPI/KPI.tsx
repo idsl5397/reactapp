@@ -67,7 +67,7 @@ export default function KPI() {
     const [quickFilterText, setQuickFilterText] = useState('');
     const [exportMode, setExportMode] = useState<'all' | 'failed'>('all');
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "檢視績效指標" }
     ];
 

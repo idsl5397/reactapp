@@ -68,8 +68,8 @@ export default function Improvement(){
     ];
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
-        { label: "填報資料" , href: "/reportEntry" },
+        { label: "首頁", href: `${NPbasePath}/home` },
+        { label: "填報資料" , href: `${NPbasePath}/reportEntry` },
         { label: "改善報告書" }
     ];
 

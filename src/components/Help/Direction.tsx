@@ -4,11 +4,12 @@
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import React from "react";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function Direction(){
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "網站導覽" }
     ];
 

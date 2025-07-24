@@ -56,7 +56,7 @@ export default function Header() {
     const hasMenu = useMenuStore((state) => state.hasMenu);
 
     const basePath = process.env.BASE_PATH || '';
-
+    const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
     //先檢查登入狀態
     useEffect(() => {
         checkIsLoggedIn(); // 單純檢查登入狀態
@@ -103,7 +103,7 @@ export default function Header() {
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
                 {/* Logo */}
                 <div className="flex flex-1">
-                    <Link href="/" className="btn btn-ghost">
+                    <Link href={`${NPbasePath}/home`} className="btn btn-ghost">
                         <span className="sr-only">首頁</span>
                         <Image
                             alt="Logo"
@@ -224,7 +224,7 @@ export default function Header() {
                 <div className="fixed inset-0 z-10" />
                 <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div className="flex items-center justify-between">
-                        <Link href="/" className="-m-1.5 p-1.5 btn btn-ghost">
+                        <Link href={`${NPbasePath}/`} className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
                             <Image alt="" src={`${basePath}/logo.svg`} className="h-11 w-auto" width={100} height={40} />
                         </Link>

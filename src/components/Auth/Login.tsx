@@ -27,7 +27,7 @@ export default function Login() {
     const turnstile = useRef<any>(null);
     const { setIsLoggedIn, checkIsLoggedIn, isLoggedIn, checkAuthStatus } = useauthStore();
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "登入" }
     ];
     const router = useRouter();

@@ -111,7 +111,7 @@ export default function Report() {
     };
 
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "報表" }
     ];
 

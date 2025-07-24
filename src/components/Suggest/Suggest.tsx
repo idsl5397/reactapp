@@ -13,8 +13,10 @@ import _ from 'lodash';
 import { useauthStore } from "@/Stores/authStore";
 import {getAccessToken} from "@/services/serverAuthService";
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const breadcrumbItems = [
-    { label: "首頁", href: "/" },
+    { label: "首頁", href: `${NPbasePath}/home` },
     { label: "委員回覆及改善建議" }
 ];
 
@@ -24,8 +26,6 @@ interface SuggestDto {
     organizationName: string;
     suggestEventTypeName: string;
 }
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({
     baseURL: `${NPbasePath}/proxy`,

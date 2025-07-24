@@ -568,7 +568,7 @@ export default function Steps() {
         }
     };
     const breadcrumbItems = [
-        { label: "首頁", href: "/" },
+        { label: "首頁", href: `${NPbasePath}/home` },
         { label: "註冊" }
     ];
 
