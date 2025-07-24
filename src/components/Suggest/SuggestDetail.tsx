@@ -58,9 +58,9 @@ export default function SuggestDetailPage() {
     const [exportFilter, setExportFilter] = useState<'all' | 'incomplete'>('all');
 
     const breadcrumbItems = [
-        { label: '首頁', href: '/' },
-        { label: '委員回覆及改善建議', href: '/suggest' },
-        { label: '詳情' },
+        { label: "首頁", href: `${NPbasePath}/home` },
+        { label: "委員回覆及改善建議", href: `${NPbasePath}/suggest` },
+        { label: "詳情" },
     ];
 
     const filteredReports = useMemo(() => {

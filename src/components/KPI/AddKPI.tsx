@@ -6,13 +6,14 @@ import SingleAddKpiForm from './SingleAddKpiForm';
 import BatchUploadKpi from './BatchUploadKpi';
 import FullImportKpi from './FullImportKpi'; // ⬅️ 新增元件
 import { Toaster } from 'react-hot-toast';
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function AddKpiPage() {
     const [mode, setMode] = useState<'single' | 'batch' | 'all'>('single');
 
     const breadcrumbItems = [
-        { label: '首頁', href: '/' },
-        { label: '績效指標', href: '/kpi' },
+        { label: "首頁", href: `${NPbasePath}/home` },
+        { label: '績效指標', href: `${NPbasePath}/kpi` },
         { label: '新增績效指標' }
     ];
 
