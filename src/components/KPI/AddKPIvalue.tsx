@@ -12,7 +12,7 @@ import Step1 from '@/components/ReportKPI/AddKpiValueStep1';
 import Step2 from '@/components/ReportKPI/AddKpiValueStep2';
 import type { Kpi } from "@/components/ReportKPI/AddKpiValueStep2";
 import Step3 from '@/components/ReportKPI/AddKpiValueStep3';
-import axios from "axios";
+import api from "@/services/apiService"
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
 
@@ -62,9 +62,6 @@ const steps = [
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },

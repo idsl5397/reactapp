@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry } from 'ag-grid-community';
 import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
@@ -10,14 +9,11 @@ import { AllEnterpriseModule } from 'ag-grid-enterprise';
 import { Toaster, toast } from 'react-hot-toast';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import {getAccessToken} from "@/services/serverAuthService";
-
+import api from "@/services/apiService"
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 interface SuggestData {
     id: number;

@@ -7,14 +7,9 @@ import {
     PaginationModule,
     ModuleRegistry
 } from 'ag-grid-community';
-import axios from 'axios';
 import { useauthStore } from '@/Stores/authStore';
 import {getAccessToken} from "@/services/serverAuthService";
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
+import api from "@/services/apiService"
 
 ModuleRegistry.registerModules([
     ClientSideRowModelModule,

@@ -1,11 +1,6 @@
 import axios, { AxiosError } from "axios";
+import api from "@/services/apiService"
 
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-    timeout: 10000, // 添加請求超時設置
-});
 
 // 定義 API 回應的介面
 interface LoginResponse {

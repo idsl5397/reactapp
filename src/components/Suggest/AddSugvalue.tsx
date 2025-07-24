@@ -10,9 +10,9 @@ import {
 } from '@/components/StepComponse';
 import Step1 from '@/components/ReportSuggest/AddSugValueStep1';
 import Step2 from '@/components/ReportSuggest/AddSugValueStep2';
-import axios from "axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
+import api from "@/services/apiService"
 
 //步驟一 選擇公司/工廠
 export interface SelectCompany {
@@ -41,10 +41,6 @@ const steps = [
 ];
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 export default function AddKPIvalue() {
     const breadcrumbItems = [

@@ -1,9 +1,9 @@
 'use client'
 import React, {ReactNode, useState, useRef, useEffect} from 'react';
-import axios from 'axios';
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {getAccessToken} from "@/services/serverAuthService";
+import api from "@/services/apiService"
 
 // 定義接口
 interface StepsContainerProps {
@@ -444,9 +444,6 @@ export default function Steps() {
 
     const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-    const api = axios.create({
-        baseURL: `${NPbasePath}/proxy`,
-    });
 
     //設定每個步驟事件
     const handleNextStep = () => {

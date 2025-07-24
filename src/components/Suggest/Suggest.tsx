@@ -5,14 +5,13 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Aggrid from "@/components/SuggestAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { SelectionPayload } from "@/components/select/selectEnterprise";
-import axios from 'axios';
 import Link from "next/link";
 import { toast, Toaster } from "react-hot-toast";
 import { AgGridReact } from "ag-grid-react";
 import _ from 'lodash';
 import { useauthStore } from "@/Stores/authStore";
 import {getAccessToken} from "@/services/serverAuthService";
-
+import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const breadcrumbItems = [
@@ -26,10 +25,6 @@ interface SuggestDto {
     organizationName: string;
     suggestEventTypeName: string;
 }
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 const Modal = ({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50 p-4">

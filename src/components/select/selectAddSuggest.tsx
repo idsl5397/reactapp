@@ -1,21 +1,14 @@
 import React, { useImperativeHandle, forwardRef, useState, useEffect } from "react";
 import { IMaskInput } from 'react-imask';
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
 import dynamic from 'next/dynamic';
 import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
 import {enterpriseService} from "@/services/selectCompany";
 import {toast, Toaster} from "react-hot-toast";
-
+import api from "@/services/apiService"
 const CreatableSelect = dynamic(() => import('react-select/creatable'), {
     ssr: false,
-});
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
 });
 
 interface CommitteeUser {

@@ -1,15 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
+import api from "@/services/apiService"
 
 export default function BatchUploadKpi() {
     const [file, setFile] = useState<File | null>(null);

@@ -1,13 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import { useStepContext} from "../StepComponse";
 import {Checkdata, KpiReportInput, SelectCompany} from "@/components/KPI/AddKPIvalue";
-import axios from "axios";
+import api from "@/services/apiService"
 
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 export interface Kpi {
     kpiDataId: number;
     kpiCategoryName: string;

@@ -2,14 +2,8 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import React, { useEffect, useImperativeHandle, useState, forwardRef } from "react";
 import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import { enterpriseService } from "@/services/selectCompany";
-import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
+import api from "@/services/apiService"
 
 export interface AddKpiFormData {
     kpiCycleId: number;

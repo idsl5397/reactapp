@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { isAuthenticated } from "@/services/clientAuthService";
 import { authService } from "@/services/authService";
 import { getAccessToken, clearAuthCookies } from "@/services/serverAuthService";
-import axios from 'axios';
+import api from "@/services/apiService"
 
 // 🔐 JWT 權限與識別結構
 interface JWTPayload {
@@ -17,11 +17,6 @@ interface JWTPayload {
 // 👤 角色定義
 type Role = 'admin' | 'company' | null;
 
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 // 🧠 全域狀態結構
 interface GlobalState {

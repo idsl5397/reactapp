@@ -12,8 +12,7 @@ import Step1 from '@/components/register/Step1';
 import Step2,{ getLatestSelectedOrganization } from '@/components/register/Step2';
 import Step3 from '@/components/register/Step3';
 import Step4 from '@/components/register/Step4';
-
-import axios from "axios";
+import api from "@/services/apiService"
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
 
@@ -64,9 +63,6 @@ const steps = [
 ];
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 export default function Register() {
 
     const breadcrumbItems = [

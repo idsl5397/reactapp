@@ -2,12 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AgCharts } from "ag-charts-react";
 import { AgChartOptions } from "ag-charts-community";
-import axios from "axios";
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
+import api from "@/services/apiService"
 
 interface SuggestionData {
     category: string;

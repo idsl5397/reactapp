@@ -11,10 +11,10 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
-import axios from 'axios';
 import { ColDef } from 'ag-grid-community';
 import { getAccessToken } from '@/services/serverAuthService';
 import { useauthStore } from '@/Stores/authStore'; // ✅ 加入這行
+import api from "@/services/apiService"
 
 ModuleRegistry.registerModules([
     ClientSideRowModelModule,
@@ -42,12 +42,6 @@ type SuggestUncompletedDto = {
     remark: string;
     isAdopted: string;
 };
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 export default function RankingSugAg() {
     const { permissions } = useauthStore(); // ✅ 使用 authStore

@@ -1,11 +1,7 @@
 // services/enterpriseService.ts
-import axios from "axios";
 import { getAccessToken } from "@/services/serverAuthService";
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+import api from "@/services/apiService"
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 export const oldenterpriseService = {
     fetchData: async () => {
         try {

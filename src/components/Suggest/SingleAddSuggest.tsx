@@ -2,14 +2,8 @@
 
 import React, { useRef } from "react";
 import SelectAddSuggest, {AddSuggestFormData} from "@/components/select/selectAddSuggest";
-import axios from "axios";
 import toast from "react-hot-toast";
-
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
+import api from "@/services/apiService"
 
 export default function SingleAddSuggest() {
     const formRef = useRef<{ getFormData: () => AddSuggestFormData | null }>(null);

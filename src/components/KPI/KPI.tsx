@@ -5,17 +5,13 @@ import GridComponent,{IRow} from "@/components/KpiAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectKpiEntriesByDate, { SelectionPayload } from "@/components/select/selectKpiEntriesByDate";
 import Link from 'next/link';
-import axios from "axios";
 import { ColDef } from "ag-grid-community";
 import { Toaster, toast } from 'react-hot-toast';
 import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
 import type { RowNode } from 'ag-grid-community';
-
+import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 const categories = [
     { id: "tab_all", name: "全部類別", icon: "📊" },
     { id: "製程安全管理", name: "製程安全管理(PSM)", icon: "🔒" },

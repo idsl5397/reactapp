@@ -10,12 +10,9 @@ import {useauthStore} from "@/Stores/authStore";
 import { useRouter } from 'next/navigation'
 import { useMenuStore } from "@/Stores/menuStore";
 import {toast, Toaster} from "react-hot-toast";
-
+import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 export default function Login() {
     const [usermail, setusermail] = useState('');

@@ -3,16 +3,12 @@ import React, { useState } from "react";
 import { Download } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectOnlyEnterprise";
-import axios from "axios";
 import { AgGridReact } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
 import {toast, Toaster} from "react-hot-toast";
-
+import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 export default function SugImportPage() {
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },

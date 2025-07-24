@@ -7,11 +7,8 @@ import {TrashIcon, DocumentArrowUpIcon, ClockIcon, CheckCircleIcon, ExclamationC
 import {CloudArrowUpIcon, DocumentTextIcon, CalendarDaysIcon, BuildingOfficeIcon} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { Toaster, toast } from 'react-hot-toast';
+import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const api = axios.create({
-    baseURL: `${NPbasePath}/proxy`,
-});
 
 export default function Improvement(){
     const [orgId, setOrgId] = useState<string>("");
