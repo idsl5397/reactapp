@@ -43,7 +43,11 @@ type SuggestUncompletedDto = {
     isAdopted: string;
 };
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 export default function RankingSugAg() {
     const { permissions } = useauthStore(); // ✅ 使用 authStore

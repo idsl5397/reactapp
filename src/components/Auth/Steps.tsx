@@ -442,8 +442,10 @@ export default function Steps() {
         return 'default';
     };
 
+    const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
     const api = axios.create({
-        baseURL: '/proxy',
+        baseURL: `${NPbasePath}/proxy`,
     });
 
     //設定每個步驟事件

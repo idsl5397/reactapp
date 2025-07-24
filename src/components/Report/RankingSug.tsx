@@ -22,8 +22,10 @@ export type SuggestUncompletedDto = {
     isAdopted: string;          // 參採狀態（如 "否"）
 };
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: '/proxy',
+    baseURL: `${NPbasePath}/proxy`,
 });
 const RankingSug: React.FC = () => {
     const [data, setData] = useState<CompanyCompletionRankingDto[]>([]);

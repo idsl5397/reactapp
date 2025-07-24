@@ -17,7 +17,11 @@ interface JWTPayload {
 // 👤 角色定義
 type Role = 'admin' | 'company' | null;
 
-const api = axios.create({ baseURL: "/proxy" });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 // 🧠 全域狀態結構
 interface GlobalState {

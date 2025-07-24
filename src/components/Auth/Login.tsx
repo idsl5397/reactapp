@@ -11,11 +11,12 @@ import { useRouter } from 'next/navigation'
 import { useMenuStore } from "@/Stores/menuStore";
 import {toast, Toaster} from "react-hot-toast";
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: "/proxy",
+    baseURL: `${NPbasePath}/proxy`,
 });
-const basePath = process.env.BASE_PATH || '';
-const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export default function Login() {
     const [usermail, setusermail] = useState('');
     const [password, setPassword] = useState('');

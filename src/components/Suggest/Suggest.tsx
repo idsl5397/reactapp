@@ -25,7 +25,11 @@ interface SuggestDto {
     suggestEventTypeName: string;
 }
 
-const api = axios.create({ baseURL: "/proxy" });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 const Modal = ({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50 p-4">

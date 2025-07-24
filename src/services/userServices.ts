@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-const basePath = process.env.BASE_PATH || '';
+
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({

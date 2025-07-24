@@ -12,7 +12,11 @@ import { useauthStore } from "@/Stores/authStore";
 import { getAccessToken } from "@/services/serverAuthService";
 import { enterpriseService } from "@/services/selectCompany";
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 interface CompletionRateCard {
     kpiFieldId: number;

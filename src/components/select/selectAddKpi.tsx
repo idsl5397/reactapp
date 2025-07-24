@@ -5,8 +5,10 @@ import { enterpriseService } from "@/services/selectCompany";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: "/proxy",
+    baseURL: `${NPbasePath}/proxy`,
 });
 
 export interface AddKpiFormData {

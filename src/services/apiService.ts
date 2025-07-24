@@ -1,7 +1,8 @@
 import axios from "axios";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "/proxy",
+    baseURL: `${NPbasePath}/proxy`,
     timeout: 10000, // 可加上timeout
     headers: {
         "Content-Type": "application/json", // 可統一設定Header

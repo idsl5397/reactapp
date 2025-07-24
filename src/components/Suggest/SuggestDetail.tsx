@@ -13,7 +13,11 @@ import {getAccessToken} from "@/services/serverAuthService";
 
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 interface SuggestData {
     id: number;

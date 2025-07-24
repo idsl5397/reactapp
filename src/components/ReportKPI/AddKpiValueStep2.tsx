@@ -3,8 +3,10 @@ import { useStepContext} from "../StepComponse";
 import {Checkdata, KpiReportInput, SelectCompany} from "@/components/KPI/AddKPIvalue";
 import axios from "axios";
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: '/proxy'
+    baseURL: `${NPbasePath}/proxy`,
 });
 export interface Kpi {
     kpiDataId: number;

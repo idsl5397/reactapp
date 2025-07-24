@@ -40,8 +40,10 @@ const steps = [
 
 ];
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: '/proxy',
+    baseURL: `${NPbasePath}/proxy`,
 });
 
 export default function AddKPIvalue() {

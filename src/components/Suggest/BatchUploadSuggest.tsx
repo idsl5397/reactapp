@@ -5,7 +5,11 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 export default function BatchUploadSuggest() {
     const [file, setFile] = useState<File | null>(null);

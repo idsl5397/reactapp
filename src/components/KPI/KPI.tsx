@@ -11,11 +11,11 @@ import { Toaster, toast } from 'react-hot-toast';
 import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
 import type { RowNode } from 'ag-grid-community';
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({
-    baseURL: "/proxy",
+    baseURL: `${NPbasePath}/proxy`,
 });
-
 const categories = [
     { id: "tab_all", name: "全部類別", icon: "📊" },
     { id: "製程安全管理", name: "製程安全管理(PSM)", icon: "🔒" },

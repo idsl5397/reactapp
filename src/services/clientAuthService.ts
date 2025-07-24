@@ -22,8 +22,10 @@ interface JWTPayload {
 }
 
 // API 客戶端
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-  baseURL: '/proxy'
+  baseURL: `${NPbasePath}/proxy`,
 });
 
 api.defaults.headers.post["Content-Type"] = "application/json";

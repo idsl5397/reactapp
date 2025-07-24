@@ -1,9 +1,10 @@
 import axios from "axios";
 import { storeAuthTokens, clearAuthCookies } from "@/services/serverAuthService";
 import { jwtDecode } from "jwt-decode";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({
-    baseURL: "/proxy",
+    baseURL: `${NPbasePath}/proxy`,
     withCredentials: true, // ✅ 關鍵：讓 refreshToken (HttpOnly cookie) 自動附帶
     headers: {
         "Content-Type": "application/json"

@@ -10,7 +10,11 @@ import {
 import axios from 'axios';
 import { useauthStore } from '@/Stores/authStore';
 import {getAccessToken} from "@/services/serverAuthService";
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 ModuleRegistry.registerModules([
     ClientSideRowModelModule,

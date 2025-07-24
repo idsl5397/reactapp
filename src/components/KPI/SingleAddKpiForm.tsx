@@ -5,7 +5,11 @@ import SelectAddKpi, { AddKpiFormData } from '@/components/select/selectAddKpi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 
 export default function SingleAddKpiForm() {
     const formRef = useRef<{ getFormData: () => AddKpiFormData | null }>(null);

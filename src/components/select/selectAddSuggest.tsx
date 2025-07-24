@@ -12,8 +12,10 @@ const CreatableSelect = dynamic(() => import('react-select/creatable'), {
     ssr: false,
 });
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-    baseURL: '/proxy',
+    baseURL: `${NPbasePath}/proxy`,
 });
 
 interface CommitteeUser {

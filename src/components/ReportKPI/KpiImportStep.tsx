@@ -8,7 +8,11 @@ import { AgGridReact } from "ag-grid-react";
 import {AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
 import {toast, Toaster} from "react-hot-toast";
 
-const api = axios.create({ baseURL: '/proxy' });
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const api = axios.create({
+    baseURL: `${NPbasePath}/proxy`,
+});
 export default function BulkImportPage() {
     const breadcrumbItems = [
         { label: "首頁", href: "/" },
