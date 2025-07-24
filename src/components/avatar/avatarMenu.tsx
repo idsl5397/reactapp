@@ -99,7 +99,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const items = isLoggedIn
         ? [
             { label: "個人資料", link: "/profile" },
-            { label: "設定", link: "/settings" },
+            // { label: "設定", link: "/settings" },
             { label: "登出", onClick: handleLogout },
         ]
         : [{ label: "登入", onClick: handleLogin }];

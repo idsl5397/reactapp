@@ -70,7 +70,7 @@ export function middleware(req: NextRequest) {
 }
 
 // ✅ 僅攔指定路徑
-const BASE_PATH = "/iskpi";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
 const MATCH_ROUTES = [
     "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
 ];
