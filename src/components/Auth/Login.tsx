@@ -176,11 +176,11 @@ export default function Login() {
                                     <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                                         輸入密碼
                                     </label>
-                                    <div className="text-sm">
-                                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                            忘記密碼?
-                                        </a>
-                                    </div>
+                                    {/*<div className="text-sm">*/}
+                                    {/*    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">*/}
+                                    {/*        忘記密碼?*/}
+                                    {/*    </a>*/}
+                                    {/*</div>*/}
                                 </div>
                                 <div className="mt-2">
                                     <input
