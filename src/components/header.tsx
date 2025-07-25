@@ -20,6 +20,8 @@ import {useauthStore} from "@/Stores/authStore";
 import { useMenuStore } from "@/Stores/menuStore";
 import {jwtDecode} from "jwt-decode";
 import logo from "@/../public/logo.svg"
+import AutoRefresh from "@/components/Auth/AutoRefresh";
+import api from "@/utils/api";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -63,41 +65,61 @@ export default function Header() {
         checkIsLoggedIn(); // 單純檢查登入狀態
     }, [checkIsLoggedIn]);
 
+useEffect(() => {
+    if (isLoggedIn) {
+        // Get user info
+        getUserInfo().then(cookieInfo => {
+            if (cookieInfo) {
+                setName(cookieInfo?.NickName);
+            }
+            console.log("✅ 用戶名稱:", cookieInfo?.NickName);
+        }).catch(err => {
+            console.error("❌ 獲取用戶資訊失敗:", err);
+        });
 
-    useEffect(() => {
-        if (isLoggedIn) {
-            getUserInfo().then(cookieInfo => {
-                if (cookieInfo) {
-                    setName(cookieInfo?.NickName);
-                }
-                console.log("✅ 用戶名稱:", cookieInfo?.NickName);
-            }).catch(err => {
-                console.error("❌ 獲取用戶資訊失敗:", err);
-            });
+        // Define async function for getting menu
+        const getMenu = async () => {
+            try {
+                // Get token first
+                const token = await getAccessToken();
+                const res = await api.get('/Menu/GetMenus', {
+                    headers: {
+                        Authorization: token ? `Bearer ${token.value}` : '',
+                    },
+                });
+                useMenuStore.getState().setMenu(res.data);
+            } catch (menuError) {
+                console.warn("選單取得失敗，預設為空");
+                useMenuStore.getState().setMenu([]);
+            }
+        };
 
-            // 解析權限
-            getAccessToken().then(token => {
-                if (token?.value) {
-                    try {
-                        const decoded = jwtDecode<any>(token.value);
-                        const rawPerms = decoded.permission ?? [];
-                        const permissions = Array.isArray(rawPerms) ? rawPerms : [rawPerms];
-                        console.log("🛡️ 使用者權限:", permissions);
+        // Parse permissions
+        getAccessToken().then(token => {
+            if (token?.value) {
+                try {
+                    const decoded = jwtDecode<any>(token.value);
+                    const rawPerms = decoded.permission ?? [];
+                    const permissions = Array.isArray(rawPerms) ? rawPerms : [rawPerms];
+                    console.log("🛡️ 使用者權限:", permissions);
 
-                        useauthStore.getState().setPermissions(permissions);
-                    } catch (error) {
-                        console.error("❌ JWT 解析失敗:", error);
-                        useauthStore.getState().setPermissions([]);
-                    }
-                } else {
-                    console.warn("⚠️ 無法取得 access token");
+                    useauthStore.getState().setPermissions(permissions);
+                } catch (error) {
+                    console.error("❌ JWT 解析失敗:", error);
                     useauthStore.getState().setPermissions([]);
                 }
-            }).catch(err => {
-                console.error("❌ 獲取 token 失敗:", err);
-            });
-        }
-    }, [isLoggedIn]);
+            } else {
+                console.warn("⚠️ 無法取得 access token");
+                useauthStore.getState().setPermissions([]);
+            }
+        }).catch(err => {
+            console.error("❌ 獲取 token 失敗:", err);
+        });
+
+        // Call getMenu only when logged in
+        getMenu();
+    }
+}, [isLoggedIn]);
 
     return (
         <header id="top" className="bg-white shadow-md">
@@ -118,8 +140,14 @@ export default function Header() {
 
                 {/* Desktop Menu */}
                 <PopoverGroup className="hidden md:flex md:gap-x-3 lg:gap-x-5">
+                    {/*登入刷新foy版*/}
+                    {isLoggedIn &&(
+                        <AutoRefresh/>
+                    )}
                     {isLoggedIn && hasMenu ? (
+
                             menu.map((item) => (
+
                                 <React.Fragment key={item.id}>
                                     {item.children && item.children.length > 0 ? (
                                         <Popover className="relative">

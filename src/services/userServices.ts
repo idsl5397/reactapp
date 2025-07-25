@@ -7,6 +7,7 @@ interface LoginResponse {
     success: boolean;
     message: string;
     warningMessage?: string; // 👈 加這個
+    refreshToken?: string;
     token?: string;
     nickname?: string;
     email?: string;
@@ -21,15 +22,8 @@ export const userService = {
             });
 
             // 確保 API 回應的狀態碼是 200，且 success 為 true
-            if (response.status === 200) {
-                return {
-                    success: response.data.success,
-                    message: response.data.message,
-                    warningMessage: response.data.warningMessage,
-                    token: response.data.token,
-                    nickname: response.data.nickname,
-                    email: response.data.email,
-                };
+            if (response.status === 200&& response.data.success) {
+                return response.data;
 
             } else {
                 return {

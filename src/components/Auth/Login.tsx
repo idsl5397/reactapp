@@ -91,7 +91,7 @@ export default function Login() {
 
             const response = await userService.Login(usermail, password);
 
-            if (response.success && response.nickname && response.email && response.token) {
+            if (response.success && response.nickname && response.email && response.token &&response.refreshToken) {
                 if (response.message?.includes("密碼將於")) {
                     toast.custom((t) => (
                         <div className="bg-white shadow-md rounded px-4 py-3 text-gray-800 max-w-md w-full">
@@ -121,7 +121,7 @@ export default function Login() {
                     token: response.token
                 });
 
-                await storeAuthTokens(response.token);
+                await storeAuthTokens(response.token,response.refreshToken);
                 const token = await getAccessToken();
                 console.log('Access Token', token?.value);
 
@@ -130,17 +130,7 @@ export default function Login() {
                 setIsLoggedIn(true); // 再設定登入狀態
                 setErrorMessage("");
 
-                try {
-                    const res = await api.get('/Menu/GetMenus', {
-                        headers: {
-                            Authorization: token ? `Bearer ${token.value}` : '',
-                        },
-                    });
-                    useMenuStore.getState().setMenu(res.data);
-                } catch (menuError) {
-                    console.warn("選單取得失敗，預設為空");
-                    useMenuStore.getState().setMenu([]);
-                }
+
 
                 // 修正 3: 延遲導航，確保狀態已更新
                 setTimeout(() => {
@@ -148,6 +138,7 @@ export default function Login() {
                 }, 100);
 
             } else {
+
                 setErrorMessage(response.message || "登入失敗，請稍後再試");
             }
 

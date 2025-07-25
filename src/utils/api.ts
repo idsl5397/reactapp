@@ -1,5 +1,5 @@
 import axios from "axios";
-import { storeAuthTokens, clearAuthCookies } from "@/services/serverAuthService";
+import getAuthtoken, {storeAuthTokens, clearAuthCookies, getAccessToken} from "@/services/serverAuthService";
 import { jwtDecode } from "jwt-decode";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -12,55 +12,21 @@ const api = axios.create({
 });
 
 // Request 攔截器（可以加 access token）
-api.interceptors.request.use((config) => {
-    const token = getAccessTokenFromCookie();
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+api.interceptors.request.use(async (config) => {
+  const token = await getAuthtoken(); // 從 Cookie 取得 Token
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token.value}`;
+  } else {
+    console.warn("⚠️ 無 Token，請求將不攜帶 Authorization");
+  }
+
+  return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 // Response 攔截器：自動 refresh
-api.interceptors.response.use(
-    (res) => res,
-    async (err) => {
-        if (err.response?.status === 401) {
-            try {
-                const refreshRes = await axios.post("/proxy/Auth/RefreshToken", null, {
-                    withCredentials: true
-                });
 
-                const newAccessToken = refreshRes.data.accessToken;
-                await storeAuthTokens(newAccessToken);
-
-                // 重送原本 request
-                err.config.headers.Authorization = `Bearer ${newAccessToken}`;
-                return api.request(err.config);
-            } catch (e) {
-                await clearAuthCookies();
-            }
-        }
-        return Promise.reject(err);
-    }
-);
-
-function getAccessTokenFromCookie(): string | null {
-    if (typeof document === "undefined") return null;
-    const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : null;
-}
-
-export function getPermissionsFromAccessToken(): string[] {
-    const token = getAccessTokenFromCookie();
-    if (!token) return [];
-
-    try {
-        const decoded = jwtDecode<{ permission?: string[] }>(token);
-        return decoded.permission || [];
-    } catch (err) {
-        console.warn("JWT decode failed", err);
-        return [];
-    }
-}
 
 export default api;

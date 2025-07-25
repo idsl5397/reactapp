@@ -1,9 +1,7 @@
 import axios from "axios";
-import {
-  getAccessToken,
+import getAuthtoken, {
   clearAuthCookies,
   isAuthenticated as serverIsAuthenticated,
-  storeAuthTokens
 } from './serverAuthService';
 import api from "@/services/apiService"
 
@@ -39,41 +37,43 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      if (error.response?.status === 401) {
-        try {
-          const refreshResult = await tryRefreshToken();
-          if (refreshResult.success) {
-            console.debug('🔄 Refresh Token 成功，重送請求');
-            return api.request(error.config); // 重新送出原本的 request
-          } else {
-            console.warn('🔒 無法使用 Refresh Token，自動登出');
-            await logout();
-          }
-        } catch (refreshError) {
-          console.error('🔒 Refresh Token 流程錯誤:', refreshError);
-          await logout();
-        }
-      }
-      return Promise.reject(error);
-    }
-);
+// api.interceptors.response.use(
+//     (response) => response,
+//     async (error) => {
+//       if (error.response?.status === 401) {
+//         try {
+//           const refreshResult = await tryRefreshToken();
+//           if (refreshResult.success) {
+//             console.debug('🔄 Refresh Token 成功，重送請求');
+//             return api.request(error.config); // 重新送出原本的 request
+//           } else {
+//             console.warn('🔒 無法使用 Refresh Token，自動登出');
+//             await logout();
+//           }
+//         } catch (refreshError) {
+//           console.error('🔒 Refresh Token 流程錯誤:', refreshError);
+//           await logout();
+//         }
+//       }
+//       return Promise.reject(error);
+//     }
+// );
+//
+// // ✨ 自動 Refresh Token
+// async function tryRefreshToken(): Promise<{ success: boolean }> {
+//   try {
+//     const response = await api.post('/Auth/RefreshToken');
+//     if (response.status === 200 && response.data.accessToken) {
+//       await storeAuthTokens(response.data.accessToken);
+//       return { success: true };
+//     }
+//   } catch (error) {
+//     console.error("Refresh Token 錯誤:", error);
+//   }
+//   return { success: false };
+// }
+//
 
-// ✨ 自動 Refresh Token
-async function tryRefreshToken(): Promise<{ success: boolean }> {
-  try {
-    const response = await api.post('/Auth/RefreshToken');
-    if (response.status === 200 && response.data.accessToken) {
-      await storeAuthTokens(response.data.accessToken);
-      return { success: true };
-    }
-  } catch (error) {
-    console.error("Refresh Token 錯誤:", error);
-  }
-  return { success: false };
-}
 
 export async function isAuthenticated(): Promise<boolean> {
   // 客戶端檢查
@@ -94,7 +94,7 @@ export async function isAuthenticated(): Promise<boolean> {
 
 export async function validateToken(): Promise<{isValid:boolean}> {
   try {
-    const token = await getAccessToken();
+    const token = await getAuthtoken();
     // 如果沒有 token，直接返回未驗證
     if (!token) {
       return {
