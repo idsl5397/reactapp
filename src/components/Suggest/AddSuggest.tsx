@@ -1,15 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SingleAddSuggest from './SingleAddSuggest';
 import BatchUploadSuggest from './BatchUploadSuggest';
 import { Toaster } from 'react-hot-toast';
+import {useRouter} from "next/navigation";
+import {useauthStore} from "@/Stores/authStore";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function AddSuggestPage() {
     const [mode, setMode] = useState<'single' | 'batch' | 'all'>('single');
+    const { userRole } = useauthStore();
+    const router = useRouter();
 
+    // ⛔ 權限限制：公司角色不能進入此頁
+    useEffect(() => {
+        if (userRole === 'company') {
+            router.replace("/home"); // 或其他你想導向的頁面
+        }
+    }, [userRole]);
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "委員回覆及改善建議" , href: `${NPbasePath}/suggest` },

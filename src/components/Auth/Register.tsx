@@ -15,8 +15,8 @@ import Step4 from '@/components/register/Step4';
 import api from "@/services/apiService"
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
+import {useRouter} from "next/navigation";
 
-const basePath = process.env.BASE_PATH || "";
 //步驟一 驗證email
 export interface EmailVerificationFormData {
     userName: string;
@@ -64,7 +64,7 @@ const steps = [
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function Register() {
-
+    const router = useRouter();
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "註冊" }
@@ -77,6 +77,7 @@ export default function Register() {
         const emailData = data.EmailVerificationForm as EmailVerificationFormData;
         const baseInfo = data.BaseUserInfo as BaseUserInfo;
         const userInfo = data.UserInfo as UserInfo;
+
         try {
             const response = await api.post('/Register/insert-user',
                 {
@@ -98,7 +99,8 @@ export default function Register() {
             }
 
             toast.success("註冊成功！");
-            window.location.href =  `${basePath}/login`;
+            router.push("/login");
+
         } catch (err) {
             toast.error((err as Error).message);
         }

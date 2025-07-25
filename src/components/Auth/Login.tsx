@@ -21,6 +21,7 @@ export default function Login() {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState<boolean>(false);
+    const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true); // 新增：追蹤驗證狀態
     const turnstile = useRef<any>(null);
     const { setIsLoggedIn, checkIsLoggedIn, isLoggedIn, checkAuthStatus } = useauthStore();
     const breadcrumbItems = [
@@ -29,15 +30,38 @@ export default function Login() {
     ];
     const router = useRouter();
 
+    // 修正 1: 正確設定依賴項，避免無限迴圈
     useEffect(() => {
+        let isCancelled = false; // 防止競態條件
+
         const checkLoginStatus = async () => {
-            await checkIsLoggedIn();
-            if (isLoggedIn) {
-                router.push("/home");
+            try {
+                setIsCheckingAuth(true);
+                await checkIsLoggedIn();
+
+                // 只有在元件還未卸載時才執行後續操作
+                if (!isCancelled) {
+                    const currentLoginState = useauthStore.getState().isLoggedIn;
+                    if (currentLoginState) {
+                        router.push("/home");
+                    }
+                }
+            } catch (error) {
+                console.error("檢查登入狀態失敗:", error);
+            } finally {
+                if (!isCancelled) {
+                    setIsCheckingAuth(false);
+                }
             }
         };
+
         checkLoginStatus();
-    }, [isLoggedIn, checkIsLoggedIn, router]);
+
+        // 清理函數
+        return () => {
+            isCancelled = true;
+        };
+    }, []); // 修正：移除 isLoggedIn 和其他可能變化的依賴項
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -99,7 +123,11 @@ export default function Login() {
 
                 await storeAuthTokens(response.token);
                 const token = await getAccessToken();
-                await useauthStore.getState().checkAuthStatus();
+                console.log('Access Token', token?.value);
+
+                // 修正 2: 優化狀態更新順序，避免重複呼叫
+                await checkAuthStatus(); // 先更新認證狀態
+                setIsLoggedIn(true); // 再設定登入狀態
                 setErrorMessage("");
 
                 try {
@@ -114,9 +142,11 @@ export default function Login() {
                     useMenuStore.getState().setMenu([]);
                 }
 
-                setIsLoggedIn(true);
-                await checkAuthStatus(); // ✅ ⬅️ 這行是關鍵：登入後立即取得 userRole 等資訊
-                router.push("/home");
+                // 修正 3: 延遲導航，確保狀態已更新
+                setTimeout(() => {
+                    router.push("/home");
+                }, 100);
+
             } else {
                 setErrorMessage(response.message || "登入失敗，請稍後再試");
             }
@@ -134,6 +164,18 @@ export default function Login() {
             // turnstile.current?.reset();
         }
     };
+
+    // 如果還在檢查認證狀態，顯示載入畫面
+    if (isCheckingAuth) {
+        return (
+            <div className="flex min-h-full flex-1 flex-col items-center justify-center px-6 py-12 lg:px-8">
+                <div className="text-center">
+                    <div className="loading loading-spinner loading-lg"></div>
+                    <p className="mt-4 text-gray-500">檢查登入狀態中...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -176,11 +218,11 @@ export default function Login() {
                                     <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                                         輸入密碼
                                     </label>
-                                    {/*<div className="text-sm">*/}
-                                    {/*    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">*/}
-                                    {/*        忘記密碼?*/}
-                                    {/*    </a>*/}
-                                    {/*</div>*/}
+                                    <div className="text-sm">
+                                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                            忘記密碼?
+                                        </a>
+                                    </div>
                                 </div>
                                 <div className="mt-2">
                                     <input

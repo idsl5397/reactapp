@@ -67,6 +67,8 @@ export default function BatchUploadSuggest() {
         }
     };
 
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+    const templateUrl = `${basePath}/templates/suggest-template.xlsx`;
     return (
         <div className="space-y-6">
             <div className="space-y-2">
@@ -74,7 +76,7 @@ export default function BatchUploadSuggest() {
                     下載 Excel 範本
                 </label>
                 <a
-                    href="/templates/suggest-template.xlsx"
+                    href={templateUrl}
                     download
                     className="btn btn-outline btn-sm text-primary border-primary hover:bg-primary hover:text-white mb-2"
                 >

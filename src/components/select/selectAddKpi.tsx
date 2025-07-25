@@ -4,6 +4,7 @@ import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import { enterpriseService } from "@/services/selectCompany";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
+import { useauthStore } from "@/Stores/authStore";
 
 export interface AddKpiFormData {
     kpiCycleId: number;
@@ -46,6 +47,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
     const [selectedOrgId, setSelectedOrgId] = useState("");
     const [formData, setFormData] = useState<Partial<AddKpiFormData>>({});
     const [kpiCycles, setKpiCycles] = useState<KpiCycle[]>([]);
+    const { userRole, userOrgId } = useauthStore();
     const fields = [
         { label: "指標項目", name: "indicatorName", type: "text" },
         { label: "指標細項", name: "detailItemName", type: "text" },
@@ -63,11 +65,45 @@ const SelectAddKpi = forwardRef((_, ref) => {
             const result = await enterpriseService.fetchData();
             setData(result);
 
+            // ⬇️ 新增鎖定邏輯：如果是公司角色，預設選定並鎖住該公司
+            if (userRole === "company" && userOrgId) {
+                const orgId = userOrgId.toString();
+                for (const enterprise of result) {
+                    if (enterprise.id === orgId) {
+                        setSelectedEnterprise(orgId);
+                        setCompanies(enterprise.children || []);
+                        setSelectedOrgId(orgId);
+                        break;
+                    }
+                    for (const company of enterprise.children || []) {
+                        if (company.id === orgId) {
+                            setSelectedEnterprise(enterprise.id);
+                            setCompanies(enterprise.children || []);
+                            setSelectedCompany(orgId);
+                            setFactories(company.children || []);
+                            setSelectedOrgId(orgId);
+                            break;
+                        }
+                        for (const factory of company.children || []) {
+                            if (factory.id === orgId) {
+                                setSelectedEnterprise(enterprise.id);
+                                setCompanies(enterprise.children || []);
+                                setSelectedCompany(company.id);
+                                setFactories(company.children || []);
+                                setSelectedFactory(orgId);
+                                setSelectedOrgId(orgId);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             const cycles = await kpiCycleService.fetchAll();
             setKpiCycles(cycles);
         };
         fetchData();
-    }, []);
+    }, [userRole, userOrgId]);
 
     useImperativeHandle(ref, () => ({
         getFormData: (): AddKpiFormData | null => {
@@ -114,7 +150,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
         setSelectedFactory(factoryId);
         setSelectedOrgId(factoryId || selectedCompany || selectedEnterprise);
     };
-
+    const isCompany = userRole === 'company';
     return (
         <>
             <Toaster position="top-right" reverseOrder={false} />
@@ -127,6 +163,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                             <select
                                 value={selectedEnterprise}
                                 onChange={handleEnterpriseChange}
+                                disabled={isCompany}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
                             >
                                 <option value="">請選擇階層1</option>
@@ -147,7 +184,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                                 value={selectedCompany}
                                 onChange={handleCompanyChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
-                                disabled={!companies.length}
+                                disabled={isCompany || !companies.length}
                             >
                                 <option value="">請選擇階層2</option>
                                 {companies.map((company) => (
@@ -167,7 +204,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                                 value={selectedFactory}
                                 onChange={handleFactoryChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
-                                disabled={!factories.length}
+                                disabled={isCompany || !factories.length}
                             >
                                 <option value="">請選擇階層3</option>
                                 {factories.map((factory) => (

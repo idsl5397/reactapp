@@ -3,7 +3,7 @@ import axios from "axios";
 import { storeAuthTokens } from "@/services/serverAuthService";
 
 let refreshTimer: NodeJS.Timeout | null = null;
-const basePath = process.env.BASE_PATH || "";
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 /**
  * 啟動 Silent Refresh 計時器
  * @param accessToken JWT Token
@@ -67,7 +67,7 @@ async function triggerRefresh() {
         console.error("RefreshToken 失敗，可能需要重新登入", error);
         stopSilentRefresh();
         // 可以跳轉回登入頁
-        window.location.href =  `${basePath}/login`;
+        window.location.href =  `${NPbasePath}/login`;
     }
 }
 

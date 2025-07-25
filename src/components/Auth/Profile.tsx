@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Lock, Eye, EyeOff, Save, Edit3, Shield, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
-import {Toaster} from "react-hot-toast";
+import {toast, Toaster} from "react-hot-toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 interface TextInputProps {
+    id: string;
     label: string;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -26,6 +27,7 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     const [nickname, setNickname] = useState('王小明');
     const [mobile, setMobile] = useState('0912345678');
     const [unit, setUnit] = useState('資訊部');
+    const [position, setPosition] = useState('');
 
     // 密碼修改狀態
     const [oldPassword, setOldPassword] = useState('');
@@ -55,6 +57,16 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
         }
     }, [isPasswordExpired]);
 
+    const isPasswordValid = (password: string): boolean => {
+        return (
+            password.length >= 12 &&
+            /[A-Z]/.test(password) &&
+            /[a-z]/.test(password) &&
+            /[0-9]/.test(password) &&
+            /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        );
+    };
+
     // 處理個人資料更新
     const handleUpdateProfile = async () => {
         setIsLoading(true);
@@ -73,25 +85,24 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     // 處理密碼修改
     const handleChangePassword = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
-            alert('請填寫所有密碼欄位');
+            toast.error('請填寫所有密碼欄位');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            alert('新密碼與確認密碼不一致');
+            toast.error('新密碼與確認密碼不一致');
             return;
         }
 
-        if (newPassword.length < 8) {
-            alert('新密碼長度至少需要8個字符');
+        if (!isPasswordValid(newPassword)) {
+            toast.error('新密碼不符合所有安全要求（需含大小寫、數字、特殊符號，且至少12字元）');
             return;
         }
 
         setIsLoading(true);
         try {
-            // 模擬 API 調用
             await new Promise(resolve => setTimeout(resolve, 1500));
-            alert('密碼已成功修改！');
+            toast.success('密碼已成功修改！');
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
@@ -105,7 +116,7 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     // 密碼強度檢查
     const getPasswordStrength = (password:any) => {
         let strength = 0;
-        if (password.length >= 8) strength++;
+        if (password.length >= 12) strength++;
         if (/[A-Z]/.test(password)) strength++;
         if (/[a-z]/.test(password)) strength++;
         if (/[0-9]/.test(password)) strength++;
@@ -119,75 +130,6 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
 
     const passwordStrength = getPasswordStrength(newPassword);
 
-    const TextInput: React.FC<TextInputProps> = ({ label, value, onChange, placeholder, icon: Icon }) => (
-        <div className="mb-6">
-            <label className="block text-sm font-semibold text-slate-700 mb-3">
-                {label}
-            </label>
-            <div className="relative group">
-                {Icon && (
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors duration-200">
-                        <Icon size={18} />
-                    </div>
-                )}
-                <input
-                    type="text"
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    className={`w-full ${Icon ? 'pl-12' : 'pl-4'} pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus:border-transparent bg-white hover:border-slate-300 text-slate-900 placeholder-slate-400`}
-                />
-            </div>
-        </div>
-    );
-
-    const PasswordInput: React.FC<PasswordInputProps> = ({ label, value, onChange, showPassword, onToggleShow, showStrength = false }) => (
-        <div className="mb-6">
-            <label className="block text-sm font-semibold text-slate-700 mb-3">
-                {label}
-            </label>
-            <div className="relative group">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                    <Lock size={18} />
-                </div>
-                <input
-                    type={showPassword ? "text" : "password"}
-                    value={value}
-                    onChange={onChange}
-                    className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white hover:border-slate-300 text-slate-900"
-                />
-                <button
-                    type="button"
-                    onClick={onToggleShow}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200 focus:outline-none"
-                >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-            </div>
-
-            {showStrength && value && (
-                <div className="mt-3">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-slate-600">密碼強度</span>
-                        <span className={`text-xs font-semibold ${
-                            passwordStrength.level === 'weak' ? 'text-red-600' :
-                                passwordStrength.level === 'medium' ? 'text-yellow-600' :
-                                    passwordStrength.level === 'strong' ? 'text-green-600' :
-                                        'text-emerald-600'
-                        }`}>
-                            {passwordStrength.text}
-                        </span>
-                    </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2">
-                        <div
-                            className={`h-2 rounded-full ${passwordStrength.color}`}
-                            style={{ width: `${Math.min((passwordStrength.level === 'weak' ? 25 : passwordStrength.level === 'medium' ? 50 : passwordStrength.level === 'strong' ? 75 : 100), 100)}%` }}
-                        ></div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
 
     return (
         <>
@@ -259,10 +201,10 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
                             </nav>
                         </div>
 
-                        <div className="p-8">
+                        <div className="p-8  flex flex-col items-center">
                             {/* 個人資料表單 */}
                             {activeTab === 'profile' && (
-                                <div className="max-w-2xl">
+                                <div className="w-full">
                                     <div className="mb-8">
                                         <div className="flex items-center space-x-3 mb-3">
                                             <Sparkles className="w-6 h-6 text-indigo-500"/>
@@ -273,32 +215,79 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div>
-                                            <TextInput
-                                                label="顯示名稱"
-                                                value={nickname}
-                                                onChange={(e) => setNickname(e.target.value)}
-                                                placeholder="請輸入您的顯示名稱"
-                                                icon={User}
-                                            />
+                                            <div className="mb-6">
+                                                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                    顯示名稱
+                                                </label>
+                                                <div className="relative group">
+                                                    <div
+                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors duration-200">
+                                                        <User size={18}/>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        value={nickname}
+                                                        onChange={(e) => setNickname(e.target.value)}
+                                                        placeholder="請輸入您的顯示名稱"
+                                                        className={`w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-transparent bg-white hover:border-slate-300 text-slate-900 placeholder-slate-400`}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div>
-                                            <TextInput
-                                                label="聯絡電話"
-                                                value={mobile}
-                                                onChange={(e) => setMobile(e.target.value)}
-                                                placeholder="請輸入手機號碼"
-                                            />
+                                            <div className="mb-6">
+                                                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                    聯絡電話
+                                                </label>
+                                                <div className="relative group">
+
+                                                    <input
+                                                        type="text"
+                                                        value={mobile}
+                                                        onChange={(e) => setMobile(e.target.value)}
+                                                        placeholder="請輸入手機號碼"
+                                                        className={`w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-transparent bg-white hover:border-slate-300 text-slate-900 placeholder-slate-400`}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <TextInput
-                                        label="所屬單位"
-                                        value={unit}
-                                        onChange={(e) => setUnit(e.target.value)}
-                                        placeholder="請輸入您的所屬單位"
-                                    />
+                                    <div>
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                所屬單位
+                                            </label>
+                                            <div className="relative group">
 
+                                                <input
+                                                    type="text"
+                                                    value={unit}
+                                                    onChange={(e) => setUnit(e.target.value)}
+                                                    placeholder="請輸入您的所屬單位"
+                                                    className={`w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-transparent bg-white hover:border-slate-300 text-slate-900 placeholder-slate-400`}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                職稱
+                                            </label>
+                                            <div className="relative group">
+
+                                                <input
+                                                    type="text"
+                                                    value={position}
+                                                    onChange={(e) => setPosition(e.target.value)}
+                                                    placeholder="請輸入您的職稱"
+                                                    className={`w-full pl-4 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-transparent bg-white hover:border-slate-300 text-slate-900 placeholder-slate-400`}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="flex justify-end pt-4">
                                         <button
                                             type="button"
@@ -325,7 +314,7 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
 
                             {/* 密碼修改表單 */}
                             {activeTab === 'password' && (
-                                <div ref={passwordSectionRef} className="max-w-2xl">
+                                <div ref={passwordSectionRef} className="w-full">
                                     <div className="mb-8">
                                         <div className="flex items-center space-x-3 mb-3">
                                             <Shield className="w-6 h-6 text-emerald-500"/>
@@ -341,30 +330,109 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
                                     </div>
 
                                     <div className="space-y-6">
-                                        <PasswordInput
-                                            label="目前密碼"
-                                            value={oldPassword}
-                                            onChange={(e) => setOldPassword(e.target.value)}
-                                            showPassword={showOldPassword}
-                                            onToggleShow={() => setShowOldPassword(!showOldPassword)}
-                                        />
+                                        {/* 目前密碼 */}
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                目前密碼
+                                            </label>
+                                            <div className="relative group">
+                                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                                                    <Lock size={18} />
+                                                </div>
+                                                <input
+                                                    type={showOldPassword ? "text" : "password"}
+                                                    value={oldPassword}
+                                                    onChange={(e) => setOldPassword(e.target.value)}
+                                                    className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-xl focus:outline-none bg-white hover:border-slate-300 text-slate-900"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                >
+                                                    {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                        <PasswordInput
-                                            label="新密碼"
-                                            value={newPassword}
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                            showPassword={showNewPassword}
-                                            onToggleShow={() => setShowNewPassword(!showNewPassword)}
-                                            showStrength={true}
-                                        />
+                                        {/* 新密碼 */}
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                新密碼
+                                            </label>
+                                            <div className="relative group">
+                                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                                                    <Lock size={18} />
+                                                </div>
+                                                <input
+                                                    type={showNewPassword ? "text" : "password"}
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                    className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-xl focus:outline-none bg-white hover:border-slate-300 text-slate-900"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                >
+                                                    {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
 
-                                        <PasswordInput
-                                            label="確認新密碼"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            showPassword={showConfirmPassword}
-                                            onToggleShow={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        />
+                                            {/* 密碼強度 */}
+                                            {newPassword && (
+                                                <div className="mt-3">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-xs font-medium text-slate-600">密碼強度</span>
+                                                        <span className={`text-xs font-semibold ${
+                                                            passwordStrength.level === 'weak' ? 'text-red-600' :
+                                                                passwordStrength.level === 'medium' ? 'text-yellow-600' :
+                                                                    passwordStrength.level === 'strong' ? 'text-green-600' :
+                                                                        'text-emerald-600'
+                                                        }`}>
+                                                        {passwordStrength.text}
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-200 rounded-full h-2">
+                                                        <div
+                                                            className={`h-2 rounded-full ${passwordStrength.color}`}
+                                                            style={{
+                                                                width: `${Math.min(
+                                                                    passwordStrength.level === 'weak' ? 25 :
+                                                                        passwordStrength.level === 'medium' ? 50 :
+                                                                            passwordStrength.level === 'strong' ? 75 : 100, 100
+                                                                )}%`
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* 確認新密碼 */}
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-semibold text-slate-700 mb-3">
+                                                確認新密碼
+                                            </label>
+                                            <div className="relative group">
+                                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                                                    <Lock size={18} />
+                                                </div>
+                                                <input
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    value={confirmPassword}
+                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                    className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-xl focus:outline-none bg-white hover:border-slate-300 text-slate-900"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                >
+                                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                        </div>
 
                                         {/* 密碼要求提示 */}
                                         <div
@@ -397,6 +465,12 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
                                                     <div
                                                         className={`w-2 h-2 rounded-full ${/[0-9]/.test(newPassword) ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
                                                     <span>包含數字</span>
+                                                </div>
+                                                <div
+                                                    className={`flex items-center space-x-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? 'text-emerald-600' : ''}`}>
+                                                    <div
+                                                        className={`w-2 h-2 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
+                                                    <span>包含特殊字元</span>
                                                 </div>
                                             </div>
                                         </div>

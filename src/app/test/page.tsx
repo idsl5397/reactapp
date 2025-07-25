@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import api from "@/utils/api"
+import {getAccessToken} from "@/services/serverAuthService";
 
 interface JWTPayload {
     exp: number;
@@ -33,7 +34,12 @@ export default function TokenTestPage() {
 
     const handleTestAPI = async () => {
         try {
-            const res = await api.get("/Menu/GetMenus");
+            const token = await getAccessToken();
+            const res = await api.get("/Menu/GetMenus", {
+                headers: {
+                    Authorization: `Bearer ${token?.value}`,
+                },
+            });
             console.log("API 成功:", res.data);
             setRefreshResult("✅ API 請求成功，Access Token 有效或已自動刷新");
         } catch (err) {

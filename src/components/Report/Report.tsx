@@ -113,26 +113,28 @@ export default function Report() {
 
     return (
         <>
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <Breadcrumbs items={breadcrumbItems}/>
-                    <div className="mt-6">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                            數據分析報表
-                        </h1>
-                        <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                {/* Header Section */}
+                <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <Breadcrumbs items={breadcrumbItems}/>
+                        <div className="mt-6">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                                數據分析報表
+                            </h1>
+                            <div
+                                className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Content */}
-            <div className="min-h-screen bg-gray-50">
+                {/* Main Content */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="space-y-8">
 
                         {/* Filter Section */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                        <div
+                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                             <div className="flex items-center mb-4">
                                 <div className="w-2 h-6 bg-indigo-500 rounded-full mr-3"></div>
                                 <h2 className="text-xl font-semibold text-gray-800">篩選條件</h2>
@@ -148,20 +150,23 @@ export default function Report() {
                         </div>
 
                         {/* KPI Cards Section */}
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                        <div
+                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center">
                                     <div className="w-2 h-6 bg-blue-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">
                                         各類型改善完成率
-                                        <span className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                        <span
+                                            className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                                             {selection.orgName || "所有公司"}
                                         </span>
                                     </h2>
                                 </div>
                                 {isLoading && (
                                     <div className="flex items-center text-gray-500">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-500 mr-2"></div>
+                                        <div
+                                            className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-500 mr-2"></div>
                                         載入中...
                                     </div>
                                 )}
@@ -169,16 +174,20 @@ export default function Report() {
 
                             {cards.length === 0 ? (
                                 <div className="text-center py-16">
-                                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    <div
+                                        className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                         </svg>
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-500 mb-2">目前無資料</h3>
                                     <p className="text-sm text-gray-400">請選擇其他篩選條件或稍後再試</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <div
+                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {cards.map((card, index) => (
                                         <div
                                             key={card.kpiFieldId}
@@ -188,9 +197,12 @@ export default function Report() {
                                             }}
                                         >
                                             <div className="flex items-center justify-between mb-4">
-                                                <div className="w-12 h-12 rounded-lg bg-white/50 flex items-center justify-center">
-                                                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                                                <div
+                                                    className="w-12 h-12 rounded-lg bg-white/50 flex items-center justify-center">
+                                                    <svg className="w-6 h-6" fill="currentColor"
+                                                         viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                                                     </svg>
                                                 </div>
                                                 <div className="text-right">
@@ -214,7 +226,8 @@ export default function Report() {
 
                         {/* Charts Section */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div
+                                className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                 <div className="flex items-center mb-4">
                                     <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">建議分布圖</h2>
@@ -226,7 +239,8 @@ export default function Report() {
                                     />
                                 </div>
                             </div>
-                            <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div
+                                className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                 <div className="flex items-center mb-4">
                                     <div className="w-2 h-6 bg-green-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">趨勢分析</h2>
@@ -240,14 +254,16 @@ export default function Report() {
                         {/* Ranking Section */}
                         {canViewRanking && (
                             <div className="space-y-6">
-                                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                                <div
+                                    className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                     <div className="flex items-center mb-4">
                                         <div className="w-2 h-6 bg-yellow-500 rounded-full mr-3"></div>
                                         <h2 className="text-xl font-semibold text-gray-800">建議排名</h2>
                                     </div>
                                     <RankingSugAg/>
                                 </div>
-                                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
+                                <div
+                                    className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                     <div className="flex items-center mb-4">
                                         <div className="w-2 h-6 bg-red-500 rounded-full mr-3"></div>
                                         <h2 className="text-xl font-semibold text-gray-800">KPI 排名</h2>

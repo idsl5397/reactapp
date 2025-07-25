@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import SelectAddKpi, { AddKpiFormData } from '@/components/select/selectAddKpi';
 import { toast } from 'react-hot-toast';
 import api from "@/services/apiService"
+import {getAccessToken} from "@/services/serverAuthService";
 
 export default function SingleAddKpiForm() {
     const formRef = useRef<{ getFormData: () => AddKpiFormData | null }>(null);
@@ -30,7 +31,12 @@ export default function SingleAddKpiForm() {
             };
             console.log("送出的 payload：", payload);
             try {
-                const res = await api.post('/Kpi/import-single', payload);
+                const token = await getAccessToken();
+                const res = await api.post('/Kpi/import-single', payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 toast.success(res.data.message);
             } catch (err: any) {
                 const msg = err.response?.data?.message ?? '匯入失敗，請稍後再試';

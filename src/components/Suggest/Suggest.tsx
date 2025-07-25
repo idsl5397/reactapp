@@ -208,14 +208,16 @@ export default function Suggest() {
                             </div>
                         </div>
 
-                        <Link href="/suggest/newSuggest" tabIndex={-1}>
-                            <button className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                新增建議
-                            </button>
-                        </Link>
+                        {userRole !== 'company' && (
+                            <Link href="/suggest/newSuggest" tabIndex={-1}>
+                                <button className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    新增建議
+                                </button>
+                            </Link>
+                        )}
                     </div>
 
                     {/* Data table */}
