@@ -4,8 +4,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon, ClipboardDocumentCheckIcon, DocumentChartBarIcon, PencilSquareIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { useauthStore } from '@/Stores/authStore';
 
 export default function Home() {
+
+    const isLoggedIn = useauthStore(state => state.isLoggedIn);
+
+    useEffect(() => {
+        console.log("✅ 當前登入狀態 isLoggedIn =", isLoggedIn);
+    }, [isLoggedIn]);
+
     const router = useRouter();
 
     const breadcrumbItems = [

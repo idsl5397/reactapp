@@ -54,11 +54,12 @@ async function triggerRefresh() {
     try {
         const response = await axios.post("/proxy/Auth/RefreshToken", {}, { withCredentials: true });
         const newAccessToken = response.data.accessToken;
+        const newRefreshToken = response.data.refreshToken;
         console.log("Refresh 成功，新的 accessToken:", newAccessToken);
 
         // 存下新的 accessToken（存在你的狀態管理、store、或 cookie)
         // ✅ 將新 token 寫入 cookie（非 localStorage）
-        await storeAuthTokens(newAccessToken); // 這個函數應該也會重寫 cookie
+        await storeAuthTokens(newAccessToken,newRefreshToken); // 這個函數應該也會重寫 cookie
 
         // 重新啟動 Silent Refresh
         startSilentRefresh(newAccessToken);

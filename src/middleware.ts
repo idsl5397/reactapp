@@ -30,7 +30,7 @@ export function middleware(req: NextRequest) {
 
     // 根路徑重定向
     if (req.nextUrl.pathname === rootPath || req.nextUrl.pathname === `${rootPath}/`) {
-        return NextResponse.redirect(new URL(`${basePath}/login`, req.url));
+        return NextResponse.redirect(new URL("/iskpi/login", req.url));
     }
 
     // 判斷是否是公開路徑
@@ -68,11 +68,3 @@ export function middleware(req: NextRequest) {
 
     return NextResponse.next();
 }
-
-// 使用更寬泛的 matcher
-export const config = {
-    matcher: [
-        '/iskpi/:path*',
-        '/'
-    ]
-};
