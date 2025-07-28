@@ -22,6 +22,7 @@ import {jwtDecode} from "jwt-decode";
 import logo from "@/../public/logo.svg"
 import AutoRefresh from "@/components/Auth/AutoRefresh";
 import api from "@/utils/api";
+import {DialogContent} from "next/dist/client/components/react-dev-overlay/ui/components/dialog";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -250,17 +251,16 @@ export default function Header() {
 
             {/* Mobile Menu */}
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                <div className="fixed inset-0 z-10" />
-                <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                <DialogContent className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right">
                     <div className="flex items-center justify-between">
-                        <Link href={`${NPbasePath}/`} className="-m-1.5 p-1.5 btn btn-ghost">
+                        <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
-                            <Image alt="" src={logo} className="h-11 w-auto" width={100} height={40} />
+                            <Image alt="Logo" src={logo} className="h-11 w-auto" width={100} height={40} />
                         </Link>
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(false)}
-                            className="-m-2.5 rounded-md p-2.5 text-gray-700"
+                            className="-m-2.5 rounded-md p-2.5 text-gray-700 hover:bg-gray-50"
                         >
                             <span className="sr-only">Close menu</span>
                             <XMarkIcon aria-hidden="true" className="size-6" />
@@ -279,14 +279,14 @@ export default function Header() {
                                                 </DisclosureButton>
                                                 <DisclosurePanel className="mt-2 space-y-2">
                                                     {item.children.map((child) => (
-                                                        <DisclosureButton
+                                                        <Link
                                                             key={child.id}
-                                                            as="a"
                                                             href={child.link}
                                                             className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                            onClick={() => setMobileMenuOpen(false)}
                                                         >
                                                             {child.label}
-                                                        </DisclosureButton>
+                                                        </Link>
                                                     ))}
                                                 </DisclosurePanel>
                                             </Disclosure>
@@ -295,6 +295,7 @@ export default function Header() {
                                                 key={item.id}
                                                 href={item.link}
                                                 className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                onClick={() => setMobileMenuOpen(false)}
                                             >
                                                 {item.label}
                                             </Link>
@@ -308,29 +309,30 @@ export default function Header() {
                                     </DisclosureButton>
                                     <DisclosurePanel className="mt-2 space-y-2">
                                         {illustrate.map((item) => (
-                                            <DisclosureButton
+                                            <Link
                                                 key={item.name}
-                                                as="a"
                                                 href={item.href}
                                                 className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                                onClick={() => setMobileMenuOpen(false)}
                                             >
                                                 {item.name}
-                                            </DisclosureButton>
+                                            </Link>
                                         ))}
                                     </DisclosurePanel>
                                 </Disclosure>
                             </div>
                             <div className="py-6">
                                 <Link
-                                    href="#"
+                                    href="/login"
                                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                    onClick={() => setMobileMenuOpen(false)}
                                 >
                                     登入
                                 </Link>
                             </div>
                         </div>
                     </div>
-                </DialogPanel>
+                </DialogContent>
             </Dialog>
         </header>
     );
