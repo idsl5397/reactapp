@@ -41,24 +41,20 @@ const securityHeaders = [
         key: "Permissions-Policy",
         value: "geolocation=(), camera=(), microphone=()"
     },
-    {
-        key: "Content-Security-Policy",
-        value: `
-        default-src 'self';
-        script-src ${scriptSrc.join(" ")};
-        style-src 'self' 'unsafe-inline';
-        img-src 'self' data: https:;
-        font-src 'self' https: data:;
-        connect-src 'self' ${API_URL} ${RAG_API} https://kpi.isafe.org.tw https://security.bip.gov.tw;
-        frame-src https://challenges.cloudflare.com;
-        worker-src 'self' blob:;
-        frame-ancestors https://security.bip.gov.tw;
-      `.replace(/\s{2,}/g, " ").trim()
-    },
-    {
-        key: 'X-Powered-By',
-        value: '' // 再保險移除
-    }
+    // {
+    //     key: "Content-Security-Policy",
+    //     value: `
+    //     default-src 'self';
+    //     script-src ${scriptSrc.join(" ")};
+    //     style-src 'self' 'unsafe-inline';
+    //     img-src 'self' data: https:;
+    //     font-src 'self' https: data:;
+    //     connect-src 'self' ${API_URL} ${RAG_API} https://kpi.isafe.org.tw https://security.bip.gov.tw;
+    //     frame-src https://challenges.cloudflare.com;
+    //     worker-src 'self' blob:;
+    //     frame-ancestors https://security.bip.gov.tw;
+    //   `.replace(/\s{2,}/g, " ").trim()
+    // },
 ];
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const assetPrefix = basePath;
