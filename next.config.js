@@ -81,18 +81,18 @@ const nextConfig= {
     },
      async rewrites() {
            return [
-        {
-            source: `${basePath}/proxy/:path*`,  // 加上 basePath
-            destination: `${API_URL}/:path*`,
-            basePath: false,
-            locale: false
-        },
-        {
-            source: `${basePath}/app/:path*`,    // 加上 basePath
-            destination: `${RAG_API}/:path*`,
-            basePath: false,
-            locale: false
-        }
+        // {
+        //     source: `${basePath}/proxy/:path*`,  // 加上 basePath
+        //     destination: `${API_URL}/:path*`,
+        //     basePath: false,
+        //     locale: false
+        // },
+        // {
+        //     source: `${basePath}/kpi/:path*`,    // 加上 basePath
+        //     destination: `${RAG_API}/:path*`,
+        //     basePath: false,
+        //     locale: false
+        // }
     ];
         }
 };
