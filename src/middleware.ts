@@ -1,6 +1,7 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import getAuthtoken from "@/services/serverAuthService";
 
 const PUBLIC_PATHS = [
     "/login",
@@ -13,8 +14,8 @@ const PUBLIC_PATHS = [
     "/proxy"  // 保持這個
 ];
 
-export function middleware(req: NextRequest) {
-    const token = req.cookies.get("token");
+export async function middleware(req: NextRequest) {
+    const token = await getAuthtoken();
     const tokenValue = token?.value || "";
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
     const rootPath = basePath || "/";
@@ -68,3 +69,21 @@ export function middleware(req: NextRequest) {
 
     return NextResponse.next();
 }
+
+// 使用更寬泛的 matcher
+export const config = {
+    matcher: [
+        '/iskpi/:path*',
+        '/'
+    ]
+};
+
+// const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
+// const MATCH_ROUTES = [
+//     "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
+// ];
+// const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
+//
+// export const config = {
+//     matcher
+// };
