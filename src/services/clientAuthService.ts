@@ -5,19 +5,19 @@ import getAuthtoken, {
 } from './serverAuthService';
 import api from "@/services/apiService"
 
-interface JWTPayload {
-  role?: string | string[];
-  sub: string;
-  exp: number;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
-  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": string;
-  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
-  iat: number;
-  nbf: number;
-  jti: string;
-  unique_name?: string;
-}
+// interface JWTPayload {
+//   role?: string | string[];
+//   sub: string;
+//   exp: number;
+//   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
+//   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
+//   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": string;
+//   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
+//   iat: number;
+//   nbf: number;
+//   jti: string;
+//   unique_name?: string;
+// }
 
 // API 客戶端
 

@@ -91,7 +91,7 @@ export default function Login() {
 
             const response = await userService.Login(usermail, password);
 
-            if (response.success && response.nickname && response.email && response.token &&response.refreshToken) {
+            if (response.success && response.nickname && response.email && response.token && response.refreshToken) {
                 if (response.message?.includes("密碼將於")) {
                     toast.custom((t) => (
                         <div className="bg-white shadow-md rounded px-4 py-3 text-gray-800 max-w-md w-full">
@@ -120,7 +120,9 @@ export default function Login() {
                     email: response.email,
                     token: response.token
                 });
-
+                console.log(response.nickname);
+                console.log("response.token: ",response.token);
+                console.log("response.refreshToken: ",response.refreshToken);
                 await storeAuthTokens(response.token,response.refreshToken);
                 const token = await getAccessToken();
                 console.log('Access Token', token?.value);

@@ -46,9 +46,21 @@ export async function middleware(req: NextRequest) {
         return response;
     }
 
+    function base64UrlDecode(str: string): string {
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        const padding = 4 - (str.length % 4);
+        if (padding !== 4) {
+            str += '='.repeat(padding);
+        }
+        return atob(str);
+    }
+
     if (tokenValue) {
         try {
-            const payload = JSON.parse(atob(tokenValue.split(".")[1]));
+            const payloadBase64 = tokenValue.split(".")[1];
+            const payloadJson = base64UrlDecode(payloadBase64); // ⚠️ 用這個取代原本 atob
+            const payload = JSON.parse(payloadJson);
+            // const payload = JSON.parse(atob(tokenValue.split(".")[1]));
             const expiry = payload.exp;
             const now = Math.floor(Date.now() / 1000);
             if (expiry && now > expiry) {
@@ -57,6 +69,7 @@ export async function middleware(req: NextRequest) {
                 return response;
             }
         } catch (e) {
+            console.error("解析 Token 時發生錯誤：", e);
             const response = NextResponse.redirect(new URL("/iskpi/login", req.url));
             response.cookies.delete("token");
             return response;
@@ -71,19 +84,19 @@ export async function middleware(req: NextRequest) {
 }
 
 // 使用更寬泛的 matcher
-export const config = {
-    matcher: [
-        '/iskpi/:path*',
-        '/'
-    ]
-};
-
-// const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
-// const MATCH_ROUTES = [
-//     "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
-// ];
-// const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
-//
 // export const config = {
-//     matcher
+//     matcher: [
+//         '/iskpi/:path*',
+//         '/'
+//     ]
 // };
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
+const MATCH_ROUTES = [
+    "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
+];
+const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
+
+export const config = {
+    matcher
+};

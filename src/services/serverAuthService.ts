@@ -40,7 +40,7 @@ export default async function getAuthtoken() {
 }
 export async function getAccessToken() {
   const cookieStore = await cookies();
-  return cookieStore.get("token") ?? null;
+  return cookieStore.get('token') ?? null;
 }
 
 
@@ -90,7 +90,7 @@ export async function storeAuthTokens(accessToken: string, refreshToken: string)
   try {
     // 解析 Access Token
     const decodedAccess = jwtDecode<JWTPayload>(accessToken);
-
+    console.log("解析 Access Token: ",decodedAccess);
     // 計算 Access Token 過期時間
     const accessExpiration = new Date(decodedAccess.exp * 1000);
     const cookieStore = await cookies();
@@ -129,17 +129,17 @@ export async function storeAuthTokens(accessToken: string, refreshToken: string)
     const userId = decodedAccess.sub || "未知";
 
     // 解析角色
-    let roles: string[] = [];
-    if (decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
-      const roleData = decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      roles = Array.isArray(roleData) ? roleData : [roleData];
-    } else if (decodedAccess.role) {
-      roles = Array.isArray(decodedAccess.role) ? decodedAccess.role : [decodedAccess.role];
-    }
+    // let roles: string[] = [];
+    // if (decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
+    //   const roleData = decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    //   roles = Array.isArray(roleData) ? roleData : [roleData];
+    // } else if (decodedAccess.role) {
+    //   roles = Array.isArray(decodedAccess.role) ? decodedAccess.role : [decodedAccess.role];
+    // }
 
     return {
       userName,
-      roles,
+      // roles,
       userId,
     };
   } catch (error) {

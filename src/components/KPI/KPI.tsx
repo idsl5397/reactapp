@@ -83,7 +83,7 @@ export default function KPI() {
         };
 
         try {
-            const response = await api.get("/Kpi/display", { params });
+            const response = await api.get("/Kpi/display", { params, timeout: 10000,});
 
             if (response.data?.success) {
                 const raw = response.data.data;
