@@ -1,6 +1,9 @@
 # 基礎階段
 FROM node:24-alpine AS base
 
+# 安裝 curl 等常用工具（前端容器可診斷網路）
+RUN apk add --no-cache libc6-compat curl bash iputils bind-tools
+
 # 依賴階段
 FROM base AS deps
 WORKDIR /app
