@@ -120,9 +120,6 @@ export default function Login() {
                     email: response.email,
                     token: response.token
                 });
-                console.log(response.nickname);
-                console.log("response.token: ",response.token);
-                console.log("response.refreshToken: ",response.refreshToken);
                 await storeAuthTokens(response.token,response.refreshToken);
                 const token = await getAccessToken();
                 console.log('Access Token', token?.value);

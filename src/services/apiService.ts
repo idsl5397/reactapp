@@ -4,9 +4,7 @@ const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const api = axios.create({
     baseURL: `${NPbasePath}/proxy`,
     timeout: 10000, // 可加上timeout
-    headers: {
-        "Content-Type": "application/json", // 可統一設定Header
-    },
+
 });
 
 // // 你可以這裡加上攔截器
