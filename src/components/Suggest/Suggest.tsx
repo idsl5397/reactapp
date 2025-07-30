@@ -134,7 +134,7 @@ export default function Suggest() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    查看建議
+                    查看歷史
                 </button>
             )
         }
@@ -160,26 +160,14 @@ export default function Suggest() {
         <>
             <Toaster
                 position="top-right"
-                reverseOrder={false}
                 toastOptions={{
                     duration: 4000,
-                    style: {
-                        background: '#363636',
-                        color: '#fff',
-                    },
+                    className: "bg-neutral-900 text-white", // 👈 不受暗/亮模式影響
                     success: {
-                        duration: 3000,
-                        iconTheme: {
-                            primary: '#4ade80',
-                            secondary: '#fff',
-                        },
+                        className: "bg-green-600 text-white",
                     },
                     error: {
-                        duration: 4000,
-                        iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#fff',
-                        },
+                        className: "bg-red-600 text-white",
                     },
                 }}
             />

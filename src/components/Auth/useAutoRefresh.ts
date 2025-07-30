@@ -9,8 +9,12 @@ import {useauthStore} from "@/Stores/authStore";
 
 import getAuthtoken, {clearAuthCookies, getrefreshToken, storeAuthTokens} from "@/services/serverAuthService";
 
+const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const api = axios.create({
-  baseURL: '/proxy'
+  baseURL: `${NPbasePath}/proxy`,
+  timeout: 10000, // 可加上timeout
+
 });
 /**
  * 自動刷新 Token 的 Hook

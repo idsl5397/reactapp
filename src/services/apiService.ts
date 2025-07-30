@@ -3,7 +3,7 @@ const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const api = axios.create({
     baseURL: `${NPbasePath}/proxy`,
-    timeout: 10000, // 可加上timeout
+    timeout: 100000, // 可加上timeout
 
 });
 

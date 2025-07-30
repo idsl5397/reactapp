@@ -2,6 +2,7 @@ import {ChevronDownIcon} from "@heroicons/react/16/solid";
 import React, {useEffect, useState} from "react";
 import {enterpriseService} from "@/services/selectCompany";
 import {Company, Enterprise, Factory} from "@/types/EnterPriseType";
+import {useauthStore} from "@/Stores/authStore";
 
 export interface SelectionPayload {
     orgId: string;
@@ -24,14 +25,51 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
 
     const [selectedOrgId, setSelectedOrgId] = useState("");
 
+    const { userRole, userOrgId } = useauthStore();
+
     // 請求 API 獲取企業數據
     useEffect(() => {
         const fetchData = async () => {
-            const x = await enterpriseService.fetchData();
-            setData(x);
+            const enterprises = await enterpriseService.fetchData();
+            setData(enterprises);
+
+            // 如果是 company 角色，自動選取對應組織
+            if (userRole === 'company' && userOrgId) {
+                const orgId = userOrgId.toString();
+
+                // 尋找 enterprise/company/factory 結構
+                for (const enterprise of enterprises) {
+                    if (enterprise.id === orgId) {
+                        setSelectedEnterprise(orgId);
+                        setCompanies(enterprise.children || []);
+                        break;
+                    }
+                    for (const company of enterprise.children || []) {
+                        if (company.id === orgId) {
+                            setSelectedEnterprise(enterprise.id);
+                            setSelectedCompany(orgId);
+                            setCompanies(enterprise.children || []);
+                            setFactories(company.children || []);
+                            break;
+                        }
+                        for (const factory of company.children || []) {
+                            if (factory.id === orgId) {
+                                setSelectedEnterprise(enterprise.id);
+                                setSelectedCompany(company.id);
+                                setSelectedFactory(factory.id);
+                                setCompanies(enterprise.children || []);
+                                setFactories(company.children || []);
+                                break;
+                            }
+                        }
+                    }
+                }
+                setSelectedOrgId(orgId);
+                emitSelection(orgId);
+            }
         };
-        fetchData(); // 調用內部異步函式
-    }, []);
+        fetchData();
+    }, [userRole, userOrgId]);
 
     // 當選擇企業時更新公司列表
     const handleEnterpriseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -80,6 +118,7 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
             orgName: selected?.name || "所有公司",
         });
     };
+    const isCompany = userRole === 'company';
 
     return (
         <>
@@ -93,6 +132,7 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
                         name="enterprise"
                         value={selectedEnterprise}
                         onChange={handleEnterpriseChange}
+                        disabled={isCompany}
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                     >
                         <option value="">請選擇階層1</option>
@@ -119,7 +159,7 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!companies.length} // 如果沒有公司數據則禁用
+                        disabled={isCompany || !companies.length}
                     >
                         <option value="">請選擇階層2</option>
                         {companies.map((company) => (
@@ -145,7 +185,7 @@ export default function SelectEnterprise({ onSelectionChange}: SelectEnterpriseP
                         value={selectedFactory}
                         onChange={handleFactoryChange}
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
-                        disabled={!factories.length} // 如果沒有工廠數據則禁用
+                        disabled={isCompany || !factories.length}
                     >
                         <option value="">請選擇階層3</option>
                         {factories.map((factory) => (

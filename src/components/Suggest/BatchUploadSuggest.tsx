@@ -21,9 +21,15 @@ export default function BatchUploadSuggest() {
         setFile(uploadedFile);
 
         setIsLoading(true); // ✅ 上傳開始時打開loading
-
         try {
-            const res = await api.post('/suggest/import-preview', formData);
+            const res = await api.post('/suggest/import-preview', formData,
+                {
+                    headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'accept': '*/*',
+                },
+                timeout: 300000, // 5 分鐘超時
+            });
             setPreviewData(res.data); // ✅ 接回來的是解析後的陣列
             console.log(res.data);
             toast.success('檔案解析成功，請確認預覽');

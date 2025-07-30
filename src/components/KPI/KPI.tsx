@@ -170,26 +170,14 @@ export default function KPI() {
         <>
             <Toaster
                 position="top-right"
-                reverseOrder={false}
                 toastOptions={{
                     duration: 4000,
-                    style: {
-                        background: '#363636',
-                        color: '#fff',
-                    },
+                    className: "bg-neutral-900 text-white", // 👈 不受暗/亮模式影響
                     success: {
-                        duration: 3000,
-                        iconTheme: {
-                            primary: '#4ade80',
-                            secondary: '#fff',
-                        },
+                        className: "bg-green-600 text-white",
                     },
                     error: {
-                        duration: 4000,
-                        iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#fff',
-                        },
+                        className: "bg-red-600 text-white",
                     },
                 }}
             />

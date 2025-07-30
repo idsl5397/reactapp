@@ -93,7 +93,7 @@ export async function middleware(req: NextRequest) {
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
 const MATCH_ROUTES = [
-    "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report"
+    "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/reportEntry/newKpiValue"
 ];
 const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
 

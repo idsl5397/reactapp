@@ -1,6 +1,7 @@
 // SilentRefresh.ts
 import axios from "axios";
 import { storeAuthTokens } from "@/services/serverAuthService";
+import api from "@/services/apiService";
 
 let refreshTimer: NodeJS.Timeout | null = null;
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -52,7 +53,7 @@ export function stopSilentRefresh() {
  */
 async function triggerRefresh() {
     try {
-        const response = await axios.post("/proxy/Auth/refresh-token", {}, { withCredentials: true });
+        const response = await api.post("/Auth/refresh-token", {}, { withCredentials: true });
         const newAccessToken = response.data.accessToken;
         const newRefreshToken = response.data.refreshToken;
         console.log("Refresh 成功，新的 accessToken:", newAccessToken);

@@ -7,6 +7,8 @@ import { AgGridReact } from "ag-grid-react";
 import {AG_GRID_LOCALE_TW } from "@/utils/gridConfig";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
+import {getAccessToken} from "@/services/serverAuthService";
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function BulkImportPage() {
@@ -22,6 +24,7 @@ export default function BulkImportPage() {
     const [orgId, setOrgId] = useState<string>("");
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear() - 1911);
     const [selectedQuarter, setSelectedQuarter] = useState<number>(Math.floor(new Date().getMonth() / 3) + 1);
+    const { confirm } = useConfirmDialog();
 
     const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 1911 - i);
     const quarters = [
@@ -70,35 +73,102 @@ export default function BulkImportPage() {
         setIsValid(false);
 
         try {
-            const res = await api.post('/Kpi/fullpreview-for-report', formData);
+            const token = await getAccessToken();
+            const res = await api.post('/Kpi/fullpreview-for-report', formData,
+                {headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token?.value}`,
+                }});
             setPreviewData(res.data);
             setIsValid(true);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            console.error("📛 錯誤訊息：", err);
+            setPreviewData([]);
             setIsValid(false);
-            toast.error("解析失敗，請確認格式是否正確");
+
+            if (err.response) {
+                // 伺服器回應錯誤（如 400, 500）
+                console.error("📡 伺服器回應錯誤：", err.response);
+                console.error("🔢 狀態碼：", err.response.status);
+                console.error("📦 回應資料：", err.response.data);
+
+                const statusCode = err.response.status;
+                const message = err.response.data?.message || "解析失敗";
+                const errorList: string[] = err.response.data?.errors || [];
+
+                if (Array.isArray(errorList) && errorList.length > 0) {
+                    console.error("🔍 驗證錯誤列表：", errorList);
+
+                    const errorText = errorList.join('\n');
+
+                    await confirm({
+                        title: `❌ 匯入錯誤（${statusCode}）`,
+                        message: `${message}\n\n${errorText}`,
+                        showCancel: false // ✅ 只顯示「確認」按鈕
+                    });
+
+                } else {
+                    await confirm({
+                        title: `❌ 伺服器錯誤（${statusCode}）`,
+                        message: message,
+                        showCancel: false
+                    });
+                }
+
+            } else if (err.request) {
+                // 請求已發送但無回應（如 CORS、網路斷線）
+                console.error("📭 沒有回應的請求：", err.request);
+                toast.error("❌ 未收到伺服器回應，請檢查網路或伺服器狀態");
+            } else {
+                // 請求建立錯誤（Axios 設定錯等）
+                console.error("⚙️ 設定錯誤：", err.message);
+                toast.error(`❌ 請求建立失敗：${err.message}`);
+            }
         }
+        e.target.value = "";
     };
 
     const handleConfirmImport = async () => {
-        if (!file || !isValid) return;
+        const isConfirmed = await confirm({
+            title: "上傳確認",
+            message: "確定要上傳這批資料嗎？此操作無法復原。",
+        });
+        if (isConfirmed) {
+            if (!file || !isValid) return;
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('year', selectedYear.toString());
-        formData.append('quarter', toQuarterText(selectedQuarter));   // 👈 轉成 "Q1"
-        formData.append('organizationId', orgId);
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('year', selectedYear.toString());
+            formData.append('quarter', toQuarterText(selectedQuarter));   // 👈 轉成 "Q1"
+            formData.append('organizationId', orgId);
 
-        try {
-            await api.post('/Kpi/fullsubmit-for-report', formData);
-            toast.success("✅ 匯入成功");
-            setFile(null);
-            setPreviewData([]);
-            setIsValid(false);
-        } catch (err) {
-            console.error(err);
-            toast.error("❌ 匯入失敗");
+            try {
+                await api.post('/Kpi/fullsubmit-for-report', formData);
+                toast.success("匯入成功");
+                setFile(null);
+                setPreviewData([]);
+                setIsValid(false);
+            } catch (err: any) {
+                console.error("📛 匯入發生錯誤：", err);
+
+                if (err.response) {
+                    console.error("📡 伺服器回應錯誤：", err.response);
+                    console.error("🔢 狀態碼：", err.response.status);
+                    console.error("📦 回應資料：", err.response.data);
+                    toast.error(`❌ 匯入失敗（${err.response.status}）：${err.response.data?.message || '請檢查格式或資料內容'}`);
+                } else if (err.request) {
+                    console.error("📭 沒有回應的請求：", err.request);
+                    toast.error("❌ 沒有收到伺服器回應，請檢查網路或 API 設定");
+                } else {
+                    console.error("⚙️ 錯誤訊息：", err.message);
+                    toast.error(`❌ 匯入失敗：${err.message}`);
+                }
+            }
+            console.log("使用者已確認上傳");
+        } else {
+            console.log("使用者取消上傳");
         }
+
     };
     const columnDefs = [
         { headerName: "指標名稱", field: "indicatorName", flex: 1 },

@@ -4,6 +4,7 @@ import React, { useState, useCallback, createContext, useContext } from "react";
 type ConfirmOptions = {
     message: string;
     title?: string;
+    showCancel?: boolean;
 };
 
 type ConfirmDialogContextType = {
@@ -24,7 +25,7 @@ export const ConfirmDialogProvider = ({ children }: { children: React.ReactNode 
     const [resolveFn, setResolveFn] = useState<(result: boolean) => void>();
 
     const confirm = useCallback((options: ConfirmOptions): Promise<boolean> => {
-        setOptions(options);
+        setOptions({ showCancel: true, ...options });
         setIsOpen(true);
         return new Promise<boolean>((resolve) => {
             setResolveFn(() => resolve);
@@ -46,11 +47,23 @@ export const ConfirmDialogProvider = ({ children }: { children: React.ReactNode 
             {children}
             {isOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-                        <h3 className="text-lg font-semibold mb-4">{options.title || "確認操作"}</h3>
-                        <p className="mb-6">{options.message}</p>
-                        <div className="flex justify-end gap-2">
-                            <button className="btn btn-outline" onClick={handleCancel}>取消</button>
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[80vh] flex flex-col">
+                        {/* 標題區 */}
+                        <div className="px-6 pt-6 pb-2 border-b">
+                            <h3 className="text-lg font-semibold">{options.title || "確認操作"}</h3>
+                        </div>
+
+                        {/* 內容區：加滾動 */}
+                        <div className="px-6 py-4 overflow-y-auto text-sm text-gray-800 whitespace-pre-wrap"
+                             style={{flexGrow: 1}}>
+                            {options.message}
+                        </div>
+
+                        {/* 按鈕區：固定在底部 */}
+                        <div className="px-6 pb-4 pt-2 border-t flex justify-end gap-2 flex-shrink-0">
+                            {options.showCancel && (
+                                <button className="btn btn-outline" onClick={handleCancel}>取消</button>
+                            )}
                             <button className="btn btn-primary" onClick={handleConfirm}>確認</button>
                         </div>
                     </div>
