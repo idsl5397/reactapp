@@ -1,6 +1,5 @@
 import React, { useImperativeHandle, forwardRef, useState, useEffect } from "react";
 import { IMaskInput } from 'react-imask';
-import "react-datepicker/dist/react-datepicker.css";
 import dynamic from 'next/dynamic';
 import { Company, Enterprise, Factory } from "@/types/EnterPriseType";
 import {ChevronDownIcon} from "@heroicons/react/16/solid";
@@ -177,6 +176,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
             ...provided,
             outline: state.isFocused ? '4px dashed #ff1493' : 'none',
             outlineOffset: state.isFocused ? '2px' : '0',
+            fontSize: '0.875rem',
             boxShadow: 'none',
             transition: 'none', // 移除所有過渡動畫
             '&:hover': {
@@ -199,6 +199,9 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="enterprise"
+                                name="enterprise"
+                                aria-label="請選擇階層 1"
                                 value={selectedEnterprise}
                                 onChange={handleEnterpriseChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
@@ -218,6 +221,9 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="company"
+                                name="company"
+                                aria-label="請選擇階層 2"
                                 value={selectedCompany}
                                 onChange={handleCompanyChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
@@ -238,6 +244,9 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="factory"
+                                name="factory"
+                                aria-label="請選擇階層 3"
                                 value={selectedFactory}
                                 onChange={handleFactoryChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
@@ -256,13 +265,13 @@ export default forwardRef(function SelectAddAll(_, ref) {
                     </div>
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-900">年月日</label>
-                        <input type="date" value={formData.date ?? ""}
+                        <input type="date" value={formData.date ?? ""} id="date" name="date" aria-label="日期"
                                onChange={(e) => handleChange("date", e.target.value)}
                                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2"/>
                     </div>
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-900">會議/活動</label>
-                        <select value={formData.eventType} onChange={(e) => handleChange("eventType", e.target.value)}
+                        <select id="eventType" name="eventType" aria-label="會議/活動" value={formData.eventType} onChange={(e) => handleChange("eventType", e.target.value)}
                                 className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select">
                             <option value="">請選擇</option>
                             <option value="書面審查會議">書面審查會議</option>
@@ -285,6 +294,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                             類別（可搜尋或新增）
                         </label>
                         <CreatableSelect
+                            aria-label="類別"
                             styles={customStyles}
                             classNamePrefix="myselect"
                             isClearable
@@ -360,6 +370,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                             委員（可搜尋或新增）
                         </label>
                         <CreatableSelect
+                            aria-label="委員"
                             styles={customStyles}
                             classNamePrefix="myselect"
                             isClearable
@@ -385,7 +396,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                     </div>
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-900">建議類別</label>
-                        <select value={formData.suggestionType}
+                        <select value={formData.suggestionType} id="suggestionType" name="suggestionType" aria-label="建議類別"
                                 onChange={(e) => handleChange("suggestionType", e.target.value)}
                                 className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select">
                             <option value="">請選擇建議類別</option>

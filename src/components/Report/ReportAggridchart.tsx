@@ -74,8 +74,15 @@ export default function SuggestionPieChart({ organizationId, organizationName }:
     }, [data]);
 
     return (
-        <div style={{ width: "100%", height: "500px" }}>
-            <AgCharts options={options} />
-        </div>
+        <>
+            <h2 id="trend-chart-label" className="sr-only">各建議類別佔比圖表</h2>
+            <div
+                style={{width: "100%", height: "500px"}}
+                role="img"
+                aria-label={`各建議類別佔比圖表，顯示 ${organizationName || '所有公司'} 的建議分布`}
+            >
+                <AgCharts options={options}/>
+            </div>
+        </>
     );
 }

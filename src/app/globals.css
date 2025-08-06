@@ -13,6 +13,17 @@
 /*  animation: outlineGrow 0.1s ease-out forwards !important;*/
 /*}*/
 
+/* ✅ 覆蓋 AG Grid / Charts 預設 font-size */
+.ag-theme-quartz,
+.ag-charts-theme,
+.ag-root-wrapper {
+  font-size: 0.875rem !important; /* 14px → 0.875rem */
+}
+
+/* 若有其他 page.css 用 px 字級，也一起覆蓋 */
+.report-page {
+  font-size: 1rem;
+}
 
 .outline-dashed-pink:focus-visible {
   outline: 4px dashed #ff1493 !important;

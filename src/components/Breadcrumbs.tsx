@@ -14,9 +14,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
     return (
         <div className="breadcrumbs text-sm">
             <ul className="flex space-x-2 pl-2">
-                <HomeIcon aria-hidden="true" className="size-4"/>
+                <HomeIcon aria-hidden="true" className="size-4 text-gray-800"/>
                 {items.map((item, index) => (
-                    <li key={index} className="flex items-center ml-2">
+                    <li key={index} className="flex items-center ml-2 text-gray-800">
                         {item.href ? (
                             <a href={item.href} className="text-blue-500 hover:underline">
                                 {item.label}

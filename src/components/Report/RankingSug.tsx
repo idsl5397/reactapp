@@ -157,7 +157,7 @@ const RankingSug: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                 {uncompletedList.map(item => (
                                     <tr key={item.id}>
-                                        <td className="p-3 whitespace-nowrap">{item.date}</td>
+                                        <td className="p-3 whitespace-nowrap text-gray-800">{item.date}</td>
                                         <td className="p-3 whitespace-normal break-words">{item.suggestionContent}</td>
                                         <td className="p-3">{item.kpiField}</td>
                                         <td className="p-3">{item.eventType}</td>

@@ -32,7 +32,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
     const [selectedOrgId, setSelectedOrgId] = useState("");
 
     const { userRole, userOrgId } = useauthStore();
-
+    const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 1911 - i);
     useEffect(() => {
         const fetchData = async () => {
             const enterprises = await enterpriseService.fetchData();
@@ -159,6 +159,8 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="enterprise"
+                        name="enterprise"
+                        aria-label="請選擇階層 1"
                         value={selectedEnterprise}
                         onChange={handleEnterpriseChange}
                         disabled={isCompany}
@@ -181,6 +183,8 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="company"
+                        name="company"
+                        aria-label="請選擇階層 2"
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                         disabled={isCompany || !companies.length}
@@ -203,6 +207,8 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                 <div className="mt-2 grid grid-cols-1">
                     <select
                         id="factory"
+                        name="factory"
+                        aria-label="請選擇階層 3"
                         value={selectedFactory}
                         onChange={handleFactoryChange}
                         disabled={isCompany || !factories.length}
@@ -225,16 +231,18 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="startyear"
+                                name="startyear"
+                                aria-label="選擇開始年份(民國)"
                                 value={startYear}
                                 onChange={handleStartYearChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
                                 <option value="">請選擇年份</option>
-                                <option value="110">110</option>
-                                <option value="111">111</option>
-                                <option value="112">112</option>
-                                <option value="113">113</option>
-                                <option value="114">114</option>
+                                {yearOptions.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
                             </select>
                             <ChevronDownIcon
                                 className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"/>
@@ -272,16 +280,18 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="endyear"
+                                name="endyear"
+                                aria-label="選擇結束年份(民國)"
                                 value={endYear}
                                 onChange={handleEndYearChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
                                 <option value="">請選擇年份</option>
-                                <option value="110">110</option>
-                                <option value="111">111</option>
-                                <option value="112">112</option>
-                                <option value="113">113</option>
-                                <option value="114">114</option>
+                                {yearOptions.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
                             </select>
                             <ChevronDownIcon
                                 className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"/>

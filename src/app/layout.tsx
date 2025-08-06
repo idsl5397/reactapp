@@ -251,7 +251,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     </div>
                 </Drawer>
             )}
-            <main id="center" className="flex-1">
+            <main id="center" className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
 
                 <ConfirmDialogProvider>
                 {children}

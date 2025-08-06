@@ -306,6 +306,7 @@ export default function SuggestDetailPage() {
                                 {/* Export Controls */}
                                 <div className="flex items-center space-x-3">
                                     <select
+                                        aria-label="匯出選項"
                                         className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-transparent custom-select"
                                         value={exportFilter}
                                         onChange={(e) => setExportFilter(e.target.value as 'all' | 'incomplete')}

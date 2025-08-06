@@ -4,31 +4,18 @@ import { User, Lock, Eye, EyeOff, Save, Edit3, Shield, CheckCircle, AlertTriangl
 import {toast, Toaster} from "react-hot-toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-interface TextInputProps {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-    icon?: React.ElementType;
-}
-interface PasswordInputProps {
-    label: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    showPassword: boolean;
-    onToggleShow: () => void;
-    showStrength?: boolean;
-}
+import api from '@/services/apiService';
+import {getUserInfo} from "@/services/serverAuthService";
+import {useAutoRefresh} from "@/components/Auth/useAutoRefresh";
+import { handleLogout } from '@/utils/logoutHelper';
 
 const UserProfilePage = ({ isPasswordExpired = false }) => {
     // 個人資料狀態
-    const [nickname, setNickname] = useState('王小明');
-    const [mobile, setMobile] = useState('0912345678');
-    const [unit, setUnit] = useState('資訊部');
+    const [nickname, setNickname] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [unit, setUnit] = useState('');
     const [position, setPosition] = useState('');
-
+    const [userId, setUserId] = useState('');
     // 密碼修改狀態
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -42,7 +29,7 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     // 頁面狀態
     const [activeTab, setActiveTab] = useState(isPasswordExpired ? 'password' : 'profile');
     const [isLoading, setIsLoading] = useState(false);
-
+    const { refreshToken } = useAutoRefresh();
     // 用於自動滾動到密碼修改區塊
     const passwordSectionRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,6 +37,30 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "個人資料" }
     ];
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const cookieInfo = await getUserInfo();
+                if (cookieInfo?.UserId) {
+                    setUserId(cookieInfo.UserId);
+                    const res = await api.get(`/User/${cookieInfo.UserId}`);
+                    const { nickname, mobile, unit, position } = res.data;
+                    setNickname(nickname || '');
+                    setMobile(mobile || '');
+                    setUnit(unit || '');
+                    setPosition(position || '');
+                } else {
+                    toast.error("找不到用戶資訊");
+                }
+            } catch (err) {
+                console.error("❌ 載入個人資料失敗:", err);
+                toast.error("無法載入個人資料");
+            }
+        };
+        fetchUserProfile();
+    }, []);
+
 
     useEffect(() => {
         if (isPasswordExpired && passwordSectionRef.current) {
@@ -71,12 +82,23 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
     const handleUpdateProfile = async () => {
         setIsLoading(true);
         try {
-            // 模擬 API 調用
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            // 這裡可以替換為 toast 通知
-            alert('個人資料已成功更新！');
+            const cookieInfo = await getUserInfo();
+            const userId = cookieInfo?.UserId;
+
+            if (!userId) throw new Error("更新失敗，請重整後再試一次");
+
+            await api.put(`/User/${userId}`, {
+                nickname,
+                mobile,
+                unit,
+                position
+            });
+
+            await refreshToken();
+            toast.success('個人資料已成功更新，請重整頁面！');
         } catch (error) {
-            alert('更新失敗，請稍後再試');
+            console.error('個人資料更新錯誤:', error);
+            toast.error('更新失敗，請稍後再試');
         } finally {
             setIsLoading(false);
         }
@@ -101,13 +123,29 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
 
         setIsLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            toast.success('密碼已成功修改！');
+            const cookieInfo = await getUserInfo();
+            const userId = cookieInfo?.UserId;
+            if (!userId) throw new Error("找不到使用者 ID");
+
+            await api.put(`/User/${userId}/ChangePassword`, {
+                oldPassword,
+                newPassword
+            });
+
+            toast.success('密碼已成功修改！請重新登入');
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
-        } catch (error) {
-            alert('密碼修改失敗，請檢查舊密碼是否正確');
+            handleLogout(); //登出
+
+        } catch (error: any) {
+            console.error('密碼修改錯誤:', error);
+
+            if (error?.response?.status === 400) {
+                toast.error('舊密碼錯誤，請重新輸入');
+            } else {
+                toast.error('密碼修改失敗，請稍後再試');
+            }
         } finally {
             setIsLoading(false);
         }

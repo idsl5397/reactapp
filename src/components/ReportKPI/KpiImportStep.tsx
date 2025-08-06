@@ -197,6 +197,9 @@ export default function BulkImportPage() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">民國年度</label>
                             <select
+                                id="selectedYear"
+                                name="selectedYear"
+                                aria-label="選擇年度(民國)"
                                 className="select select-bordered w-full"
                                 value={selectedYear}
                                 onChange={(e) => handleSelectChange("year", e.target.value)}
@@ -212,6 +215,9 @@ export default function BulkImportPage() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">季度</label>
                             <select
+                                id="selectedQuarter"
+                                name="selectedQuarter"
+                                aria-label="季度"
                                 className="select select-bordered w-full"
                                 value={selectedQuarter}
                                 onChange={(e) => handleSelectChange("quarter", e.target.value)}
@@ -248,7 +254,7 @@ export default function BulkImportPage() {
 
                 <div className="card border bg-base-100 shadow-md p-4">
                     <h2 className="text-lg font-semibold mb-2">📤 上傳檔案</h2>
-                    <input type="file" accept=".xlsx" onChange={handleFileChange} className="file-input file-input-bordered w-full max-w-md" />
+                    <input id="file" name="file" aria-label="上傳檔案" type="file" accept=".xlsx" onChange={handleFileChange} className="file-input file-input-bordered w-full max-w-md" />
                     {file && <p className="mt-2 text-sm text-gray-600">已選擇檔案：{file.name}</p>}
                 </div>
 

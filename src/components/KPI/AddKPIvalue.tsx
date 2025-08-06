@@ -51,7 +51,6 @@ interface ExtendedFormData extends FormDataType {
     Checkdata?: Checkdata;
 }
 
-
 // 步驟定義
 const steps = [
     { title: '選擇公司/工廠' },

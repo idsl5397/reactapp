@@ -55,25 +55,31 @@ export default function LineExample() {
     }), [filteredData]);
 
     return (
-        <div className="">
-            {/* 篩選選單 */}
-            <div className="flex justify-between mb-4">
-                <label>
-                    開始時間：
-                    <select value={startPeriod} onChange={(e) => setStartPeriod(e.target.value)}>
-                        {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
-                    </select>
-                </label>
-                <label>
-                    結束時間：
-                    <select value={endPeriod} onChange={(e) => setEndPeriod(e.target.value)}>
-                        {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
-                    </select>
-                </label>
-            </div>
+        <>
+            <h2 id="trend-chart-label" className="sr-only">公司達成率趨勢圖表</h2>
+            <div
+                role="img"
+                aria-label={`公司達成率趨勢圖表，顯示從 ${startPeriod} 到 ${endPeriod} 的變化`}
+            >
+                {/* 篩選選單 */}
+                <div className="flex justify-between mb-4 text-gray-800">
+                    <label>
+                        開始時間：
+                        <select value={startPeriod} onChange={(e) => setStartPeriod(e.target.value)}>
+                            {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
+                        </select>
+                    </label>
+                    <label>
+                        結束時間：
+                        <select value={endPeriod} onChange={(e) => setEndPeriod(e.target.value)}>
+                            {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
+                        </select>
+                    </label>
+                </div>
 
-            {/* 圖表 */}
-            <AgCharts options={options} />
-        </div>
+                {/* 圖表 */}
+                <AgCharts options={options}/>
+            </div>
+        </>
     );
 };

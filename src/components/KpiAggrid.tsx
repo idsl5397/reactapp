@@ -426,6 +426,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                             <div className="mb-2 flex justify-between items-center">
                                 <span className="text-sm text-gray-500">KPI 趨勢圖</span>
                                 <select
+                                    aria-label="篩選條件"
                                     className="select select-sm select-bordered"
                                     value={filterRange}
                                     onChange={(e) => setFilterRange(e.target.value)}

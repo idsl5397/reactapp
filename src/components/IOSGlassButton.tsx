@@ -7,6 +7,8 @@ export default function IOSGlassButton() {
 
   return (
       <motion.button
+        type="button"
+        aria-label="測試"
         className="relative overflow-hidden"
         style={{
           borderRadius: '0px 0px 12px 12px',

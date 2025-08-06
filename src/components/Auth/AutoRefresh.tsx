@@ -1,9 +1,5 @@
 'use client'
 
-
-
-
-
 import {useAutoRefresh} from "@/components/Auth/useAutoRefresh";
 
 /**

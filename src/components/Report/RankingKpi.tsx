@@ -195,13 +195,13 @@ const RankingKpiAg: React.FC = () => {
 
     return (
         <div className="max-w-6xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">KPI 達成率排行榜</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">KPI 達成率排行榜</h2>
 
             {!hasPermission ? (
                 <div className="text-red-600">🚫 您沒有查看排行榜的權限</div>
             ) : (
                 <>
-                    <div className="flex flex-wrap gap-4 mb-4">
+                    <div className="flex flex-wrap gap-4 mb-4 text-gray-800">
                         <select className="select select-sm select-bordered" value={fieldFilter} onChange={e => setFieldFilter(e.target.value)}>
                             <option value="">全部類別</option>
                             {fieldOptions.map(f => (

@@ -46,6 +46,9 @@ export default function AddKpiValueStep1() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">請選擇民國年度</label>
                         <select
+                            id="year"
+                            name="year"
+                            aria-label="選擇民國年度"
                             className="select select-bordered w-full"
                             value={selectedYear}
                             onChange={(e) => handleSelectChange("year", e.target.value)}
@@ -60,6 +63,9 @@ export default function AddKpiValueStep1() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">請選擇季度</label>
                         <select
+                            id="quarter"
+                            name="quarter"
+                            aria-label="選擇季度"
                             className="select select-bordered w-full"
                             value={selectedQuarter}
                             onChange={(e) => handleSelectChange("quarter", e.target.value)}

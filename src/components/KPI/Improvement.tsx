@@ -233,6 +233,9 @@ export default function Improvement(){
                                         民國年度
                                     </label>
                                     <select
+                                        id="year"
+                                        name="year"
+                                        aria-label="選擇年度(民國)"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         value={selectedYear}
                                         onChange={(e) => handleSelectChange("year", e.target.value)}
@@ -251,6 +254,9 @@ export default function Improvement(){
                                         報告季度
                                     </label>
                                     <select
+                                        id="quarter"
+                                        name="quarter"
+                                        aria-label="選擇季度"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         value={selectedQuarter}
                                         onChange={(e) => handleSelectChange("quarter", e.target.value)}
@@ -368,6 +374,9 @@ export default function Improvement(){
                                         )}
                                     </div>
                                     <input
+                                        id="file"
+                                        name="file"
+                                        aria-label="上傳檔案"
                                         type="file"
                                         className="hidden"
                                         onChange={(e) => {

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SelectEnterprise, { SelectionPayload } from "@/components/select/selectEnterprise";
+import SelectEnterprise, { SelectionPayload } from "@/components/select/selectOnlyEnterprise";
 import SuggestionPieChart from "@/components/Report/ReportAggridchart";
 import Aggridline from "@/components/aggridline";
 import RankingSugAg from "@/components/Report/RankingSugAg";
@@ -25,8 +25,6 @@ export default function Report() {
     const [selection, setSelection] = useState<SelectionPayload>({
         orgId: '',
         orgName: '',
-        startYear: '',
-        endYear: ''
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -76,8 +74,6 @@ export default function Report() {
                 setSelection({
                     orgId: userOrgId.toString(),
                     orgName: foundName,
-                    startYear: '',
-                    endYear: ''
                 });
                 await fetchRates(userOrgId.toString());
             }
@@ -139,7 +135,7 @@ export default function Report() {
                                 <div className="w-2 h-6 bg-indigo-500 rounded-full mr-3"></div>
                                 <h2 className="text-xl font-semibold text-gray-800">篩選條件</h2>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <SelectEnterprise
                                     onSelectionChange={(s) => {
                                         console.log("選到：", s);

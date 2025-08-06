@@ -46,12 +46,12 @@ export default function Home() {
         {
             title: "績效指標檢視",
             description: "查看績效指標完成情況與趨勢分析",
-            icon: <ClipboardDocumentCheckIcon className="w-8 h-8 text-indigo-600" />,
+            icon: <ClipboardDocumentCheckIcon className="w-8 h-8 text-rose-600" />,
             href: "/kpi",
-            color: "indigo",
-            bgGradient: "from-indigo-50 to-blue-50",
-            iconBg: "bg-indigo-100",
-            hoverShadow: "hover:shadow-indigo-200/50"
+            color: "rose",
+            bgGradient: "from-rose-50 to-orange-100",
+            iconBg: "bg-rose-100",
+            hoverShadow: "hover:shadow-rose-200/50"
         },
         {
             title: "委員建議檢視",
@@ -76,24 +76,21 @@ export default function Home() {
         {
             title: "報表檢視",
             description: "檢視歷年執行報表與圖表資料分析",
-            icon: <DocumentChartBarIcon className="w-8 h-8 text-blue-600" />,
+            icon: <DocumentChartBarIcon className="w-8 h-8 text-fuchsia-600" />,
             href: "/report",
-            color: "blue",
-            bgGradient: "from-blue-50 to-cyan-50",
-            iconBg: "bg-blue-100",
-            hoverShadow: "hover:shadow-blue-200/50"
+            color: "fuchsia",
+            bgGradient: "from-fuchsia-50 to-pink-100",
+            iconBg: "bg-fuchsia-100",
+            hoverShadow: "hover:shadow-fuchsia-200/50"
         }
     ];
 
     return (
         <>
-            <Toaster position="top-right" reverseOrder={false} />
-
-            {/* 背景漸層 */}
-            <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 -z-10" />
+            <Toaster position="top-right" reverseOrder={false}/>
 
             <div className="w-full flex justify-start">
-                <Breadcrumbs items={breadcrumbItems} />
+                <Breadcrumbs items={breadcrumbItems}/>
             </div>
 
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-8 lg:px-8">
@@ -122,11 +119,13 @@ export default function Home() {
                                     onClick={() => router.push(item.href)}
                                 >
                                     {/* 背景裝飾 */}
-                                    <div className={`absolute -top-10 -right-10 w-20 h-20 bg-${item.color}-100 rounded-full opacity-20 group-hover:opacity-30 transition-opacity`} />
+                                    <div
+                                        className={`absolute -top-10 -right-10 w-20 h-20 bg-${item.color}-100 rounded-full opacity-20 group-hover:opacity-30 transition-opacity`}/>
 
                                     <div className="relative p-8 flex flex-col items-start gap-4 h-full">
                                         {/* 圖標 */}
-                                        <div className={`${item.iconBg} rounded-xl p-3 group-hover:scale-110 transition-transform duration-300`}>
+                                        <div
+                                            className={`${item.iconBg} rounded-xl p-3 group-hover:scale-110 transition-transform duration-300`}>
                                             {item.icon}
                                         </div>
 
@@ -141,9 +140,11 @@ export default function Home() {
                                         </div>
 
                                         {/* 前往按鈕 */}
-                                        <div className={`mt-auto flex items-center gap-2 text-${item.color}-600 font-medium text-sm group-hover:text-${item.color}-700 transition-colors`}>
+                                        <div
+                                            className={`mt-auto flex items-center gap-2 text-${item.color}-600 font-medium text-sm group-hover:text-${item.color}-700 transition-colors`}>
                                             <span>前往</span>
-                                            <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            <ArrowRightIcon
+                                                className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
                                         </div>
                                     </div>
                                 </div>
@@ -156,8 +157,10 @@ export default function Home() {
                             onClick={() => router.push('/about')}
                             className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group"
                         >
-                            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none"
+                                 stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             關於我們
                         </button>
@@ -165,8 +168,10 @@ export default function Home() {
                             onClick={() => router.push('/direction')}
                             className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group"
                         >
-                            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none"
+                                 stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             網頁導覽
                         </button>

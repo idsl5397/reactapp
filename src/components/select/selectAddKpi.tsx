@@ -161,6 +161,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="enterprise"
+                                name="enterprise"
+                                aria-label="請選擇階層 1"
                                 value={selectedEnterprise}
                                 onChange={handleEnterpriseChange}
                                 disabled={isCompany}
@@ -181,6 +184,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="company"
+                                name="company"
+                                aria-label="請選擇階層 2"
                                 value={selectedCompany}
                                 onChange={handleCompanyChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
@@ -201,6 +207,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="factory"
+                                name="factory"
+                                aria-label="請選擇階層 3"
                                 value={selectedFactory}
                                 onChange={handleFactoryChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
@@ -240,7 +249,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">KPI 循環</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="kpiCycleId"
                                 name="kpiCycleId"
+                                aria-label="KPI 循環"
                                 onChange={handleInputChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
                             >
@@ -261,7 +272,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">指標類型</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="category"
                                 name="category"
+                                aria-label="指標類型"
                                 onChange={handleInputChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
@@ -279,7 +292,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         <label className="block text-sm font-medium text-gray-900">領域</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
+                                id="field"
                                 name="field"
+                                aria-label="領域"
                                 onChange={handleInputChange}
                                 className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                             >
@@ -302,7 +317,9 @@ const SelectAddKpi = forwardRef((_, ref) => {
                                 {type === "select" ? (
                                     <div className="relative">
                                         <select
+                                            id={name}
                                             name={name}
+                                            aria-label="選擇項目"
                                             onChange={handleInputChange}
                                             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
                                         >
@@ -320,6 +337,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                                         name={name}
                                         placeholder={type === "number" ? "請填寫數值" : `請填寫${label}`}
                                         type={type}
+                                        aria-label={label}
                                         step="any"
                                         onChange={handleInputChange}
                                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600"

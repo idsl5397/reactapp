@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import { useMenuStore } from "@/Stores/menuStore";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
+import ForgotPasswordModal from './ForgotPasswordModal';
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 
@@ -24,6 +25,8 @@ export default function Login() {
     const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true); // 新增：追蹤驗證狀態
     const turnstile = useRef<any>(null);
     const { setIsLoggedIn, checkIsLoggedIn, isLoggedIn, checkAuthStatus } = useauthStore();
+    const [showForgotModal, setShowForgotModal] = useState(false);
+
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "登入" }
@@ -98,6 +101,7 @@ export default function Login() {
                             <div className="flex justify-between items-start">
                                 <div className="text-sm">{response.message}</div>
                                 <button
+                                    type="button"
                                     onClick={() => toast.dismiss(t.id)}
                                     className="ml-4 text-indigo-600 underline text-sm"
                                 >
@@ -169,11 +173,11 @@ export default function Login() {
 
     return (
         <>
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster position="top-right" reverseOrder={false}/>
             <div className="w-full flex justify-start">
-                <Breadcrumbs items={breadcrumbItems} />
+                <Breadcrumbs items={breadcrumbItems}/>
             </div>
-            <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
+            <div className="flex flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         登入
@@ -209,7 +213,11 @@ export default function Login() {
                                         輸入密碼
                                     </label>
                                     <div className="text-sm">
-                                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                        <a
+                                            href="#"
+                                            onClick={() => setShowForgotModal(true)}
+                                            className="font-semibold text-indigo-600 hover:text-indigo-500"
+                                        >
                                             忘記密碼?
                                         </a>
                                     </div>
@@ -242,6 +250,7 @@ export default function Login() {
                                 <button
                                     type="submit"
                                     disabled={isVerifying}
+                                    aria-label="登入"
                                     className="flex btn btn-primary w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm "
                                 >
                                     {isVerifying ? "驗證中..." : "登入"}
@@ -251,15 +260,21 @@ export default function Login() {
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-600">
                                 還沒有帳號嗎？{' '}
-                                <a className="font-semibold text-indigo-600 hover:text-indigo-500" href={`${NPbasePath}/register`}>
+                                <a className="font-semibold text-indigo-600 hover:text-indigo-500"
+                                   href={`${NPbasePath}/register`}>
                                     前往註冊
                                 </a>
                             </p>
                         </div>
-                        {errorMessage && <p role="alert" style={{ color: 'red' }}>{errorMessage}</p>}
+                        {errorMessage && <p role="alert" style={{color: 'red'}}>{errorMessage}</p>}
                     </div>
                 </div>
             </div>
+            {/* 彈出視窗 */}
+            <ForgotPasswordModal
+                isOpen={showForgotModal}
+                onClose={() => setShowForgotModal(false)}
+            />
         </>
     );
 };

@@ -70,6 +70,8 @@ export default function FullImportKpi() {
                 <label className="block text-sm font-medium text-gray-900">上傳 Excel 檔案</label>
                 <input
                     id="uploadFile"
+                    name="uploadFile"
+                    aria-label="上傳檔案"
                     type="file"
                     accept=".xlsx,.xls"
                     onChange={handleFileChange}

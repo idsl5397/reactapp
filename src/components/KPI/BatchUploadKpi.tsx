@@ -87,8 +87,9 @@ export default function BatchUploadKpi() {
                 {/* 隱藏 input，不讓它鋪滿 */}
                 <input
                     id="uploadFile"
-                    type="file"
+                    name="uploadFile"
                     aria-label="上傳檔案"
+                    type="file"
                     accept=".xlsx,.xls"
                     onChange={handleFileChange}
                     className="hidden"

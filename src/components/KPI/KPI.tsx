@@ -379,6 +379,7 @@ export default function KPI() {
                                     </div>
                                     <input
                                         type="text"
+                                        aria-label="搜尋指標"
                                         placeholder="搜尋指標名稱、編號..."
                                         value={keyword}
                                         onChange={(e) => setKeyword(e.target.value)}
@@ -388,6 +389,7 @@ export default function KPI() {
                                 <div className="flex items-center space-x-3">
                                     {/* 匯出條件 */}
                                     <select
+                                        aria-label="匯出選項"
                                         className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-transparent custom-select"
                                         value={exportMode}
                                         onChange={(e) => setExportMode(e.target.value as any)}

@@ -57,8 +57,14 @@ export default function SuggestionPieChart() {
     }, [data]);
 
     return (
-        <div style={{ width: "100%", height: "500px" }}>
-            <AgCharts options={options} />
-        </div>
+        <>
+            <h2 id="trend-chart-label" className="sr-only">建議趨勢圖表</h2>
+            <div
+                role="img"
+                aria-label="建議趨勢圖表，顯示各期數建議數變化情形"
+                style={{width: "100%", height: "500px"}}>
+                <AgCharts options={options}/>
+            </div>
+        </>
     );
 }
