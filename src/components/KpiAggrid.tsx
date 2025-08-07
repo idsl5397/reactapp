@@ -79,11 +79,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
     const [chartData, setChartData] = useState<any[]>([]);
     const [isChartLoading, setIsChartLoading] = useState(false);
 
-    useEffect(() => {
-        if (quickFilterText && gridRef.current?.api) {
-            (gridRef.current.api as any).setQuickFilter(quickFilterText);
-        }
-    }, [quickFilterText]);
+
 
     useEffect(() => {
         const allReports = selectedDetail?.kpiDatas?.flatMap((kpiData: KpiDataCycle) =>
@@ -246,6 +242,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                         <AgGridReact
                             key={`${activeCategory}-${activeType}`}
                             ref={gridRef}
+                            quickFilterText={quickFilterText}
                             localeText={AG_GRID_LOCALE_TW}
                             onGridReady={onGridReady}
                             rowData={filteredRowData}
@@ -381,7 +378,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                                 const operator = row.lastComparisonOperator;
 
                                 if (typeof actual === "number" && typeof target === "number") {
-                                    let meets = true;
+                                    let meets ;
                                     switch (operator) {
                                         case ">=":
                                             meets = actual >= target;

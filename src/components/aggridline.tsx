@@ -1,85 +1,140 @@
-'use client'
-import React, { useMemo, useState } from "react";
+'use client';
+
+import React, { useMemo, useState, useEffect } from "react";
 import { AgCharts } from "ag-charts-react";
 import { AgChartOptions } from "ag-charts-community";
+import api from "@/services/apiService";
 
-// 模擬數據（年份 & 季度）
-function getData() {
-    return [
-        { period: "2019Q1", EP: 80, PSM: 75, FR: 60, ECO: 55 },
-        { period: "2019Q3", EP: 82, PSM: 76, FR: 62, ECO: 57 },
-        { period: "2020Q1", EP: 83, PSM: 77, FR: 63, ECO: 58 },
-        { period: "2020Q3", EP: 85, PSM: 78, FR: 65, ECO: 60 },
-        { period: "2021Q1", EP: 86, PSM: 79, FR: 66, ECO: 61 },
-        { period: "2021Q3", EP: 88, PSM: 80, FR: 68, ECO: 63 },
-        { period: "2022Q1", EP: 89, PSM: 81, FR: 69, ECO: 64 },
-        { period: "2022Q3", EP: 90, PSM: 83, FR: 70, ECO: 66 },
-        { period: "2023Q1", EP: 91, PSM: 84, FR: 72, ECO: 68 },
-        { period: "2023Q3", EP: 92, PSM: 85, FR: 74, ECO: 70 },
-        { period: "2024Q1", EP: 93, PSM: 86, FR: 75, ECO: 71 },
-        { period: "2024Q3", EP: 94, PSM: 87, FR: 77, ECO: 73 },
-        { period: "2025Q1", EP: 95, PSM: 88, FR: 78, ECO: 75 },
-        { period: "2025Q3", EP: 96, PSM: 89, FR: 80, ECO: 77 },
-        { period: "2026Q1", EP: 97, PSM: 90, FR: 82, ECO: 78 },
-        { period: "2026Q3", EP: 98, PSM: 91, FR: 83, ECO: 80 },
-    ];
+interface KpiReportStatDto {
+    field: string;
+    year: number;
+    period: string;
+    totalCount: number;
+    metCount: number;
 }
 
-export default function LineExample() {
-    const [startPeriod, setStartPeriod] = useState("2019Q1"); // 預設開始
-    const [endPeriod, setEndPeriod] = useState("2025Q3"); // 預設結束
+interface ChartData {
+    period: string;
+    [field: string]: number | string;
+}
 
-    const data = getData(); // 獲取數據
+interface KpiTrendLineChartProps {
+    organizationId?: string;
+    organizationName?: string;
+}
 
-    // 篩選符合範圍的數據
+export default function KpiTrendLineChart({ organizationId }: KpiTrendLineChartProps) {
+    const [data, setData] = useState<ChartData[]>([]);
+    const [startPeriod, setStartPeriod] = useState("");
+    const [endPeriod, setEndPeriod] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true); // ⏳開始載入
+            try {
+                const res = await api.get<KpiReportStatDto[]>("/Report/kpi-trend", {
+                    params: organizationId ? { organizationId } : {}
+                });
+
+                const raw = res.data;
+
+                // ✨ 轉換為 period + field 對應的達成率
+                const grouped: Record<string, ChartData> = {};
+
+                raw.forEach(item => {
+                    const { year, period, field, totalCount, metCount } = item;
+                    const key = `${year}${period}`;
+                    const percentage = totalCount > 0 ? Math.round(((totalCount-metCount) / totalCount) * 10000) / 100 : 0;
+
+                    if (!grouped[key]) grouped[key] = { period: key };
+                    grouped[key][field] = percentage;
+                });
+
+                const chartData = Object.values(grouped).sort((a, b) =>
+                    String(a.period).localeCompare(String(b.period), undefined, { numeric: true })
+                );
+
+                setData(chartData);
+
+                if (chartData.length > 0) {
+                    setStartPeriod(chartData[0].period as string);
+                    setEndPeriod(chartData[chartData.length - 1].period as string);
+                }
+            } catch (err) {
+                console.error("❌ 無法取得趨勢資料", err);
+            } finally {
+                setIsLoading(false); // ✅ 結束載入
+            }
+        };
+
+        fetchData();
+    }, [organizationId]);
+
     const filteredData = useMemo(() => {
         const startIndex = data.findIndex(d => d.period === startPeriod);
         const endIndex = data.findIndex(d => d.period === endPeriod);
         return data.slice(startIndex, endIndex + 1);
-    }, [startPeriod, endPeriod, data]);
+    }, [data, startPeriod, endPeriod]);
+
+    // 根據所有出現的欄位自動產生 series（不寫死 PSM/EP/FR）
+    const allFields = useMemo(() => {
+        const fieldSet = new Set<string>();
+        data.forEach(d => {
+            Object.keys(d).forEach(key => {
+                if (key !== "period") fieldSet.add(key);
+            });
+        });
+        return Array.from(fieldSet);
+    }, [data]);
 
     const options: AgChartOptions = useMemo(() => ({
         data: filteredData,
         title: { text: "公司達成率趨勢圖" },
-        series: [
-            { type: "line", xKey: "period", yKey: "PSM", stroke: "#3398FF", marker: { enabled: true }, yName: "製成安全管理(PSM)" },
-            { type: "line", xKey: "period", yKey: "EP", stroke: "#FF5733", marker: { enabled: true }, yName: "環保管理(EP)" },
-            { type: "line", xKey: "period", yKey: "FR", stroke: "#33FF57", marker: { enabled: true }, yName: "消防管理(FR)" },
-            { type: "line", xKey: "period", yKey: "ECO", stroke: "#FF33A1", marker: { enabled: true }, yName: "能源管理(ECO)" },
-        ],
+        series: allFields.map(field => ({
+            type: "line",
+            xKey: "period",
+            yKey: field,
+            yName: field,
+            marker: { enabled: true }
+        })),
         axes: [
-            { type: "category", position: "bottom", title: { text: "時間 (季度)" } },
-            { type: "number", position: "left", title: { text: "達成率 (%)" }, min: 50, max: 100 },
+            { type: "category", position: "bottom", title: { text: "時間" } },
+            { type: "number", position: "left", title: { text: "達成率 (%)" }, min: 0, max: 100 }
         ],
-        legend: { position: "right" },
-    }), [filteredData]);
+        legend: { position: "right" }
+    }), [filteredData, allFields]);
 
     return (
         <>
-            <h2 id="trend-chart-label" className="sr-only">公司達成率趨勢圖表</h2>
-            <div
-                role="img"
-                aria-label={`公司達成率趨勢圖表，顯示從 ${startPeriod} 到 ${endPeriod} 的變化`}
-            >
-                {/* 篩選選單 */}
-                <div className="flex justify-between mb-4 text-gray-800">
-                    <label>
-                        開始時間：
-                        <select value={startPeriod} onChange={(e) => setStartPeriod(e.target.value)}>
-                            {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
-                        </select>
-                    </label>
-                    <label>
-                        結束時間：
-                        <select value={endPeriod} onChange={(e) => setEndPeriod(e.target.value)}>
-                            {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
-                        </select>
-                    </label>
-                </div>
+            <h2 className="sr-only">公司達成率趨勢圖表</h2>
+            <div role="img" aria-label={`公司達成率趨勢圖，從 ${startPeriod} 到 ${endPeriod}`}>
+                {isLoading ? (
+                    // 🎨 Skeleton 畫面
+                    <div className="animate-pulse space-y-4">
 
-                {/* 圖表 */}
-                <AgCharts options={options}/>
+                        <div className="skeleton h-6 rounded w-1/3"/>
+                        <div className="skeleton h-[300px] rounded-md"/>
+                    </div>
+                ) : (
+                    <>
+                    <div className="flex justify-between mb-4 text-gray-800">
+                            <label>
+                                開始時間：
+                                <select value={startPeriod} onChange={(e) => setStartPeriod(e.target.value)}>
+                                    {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
+                                </select>
+                            </label>
+                            <label>
+                                結束時間：
+                                <select value={endPeriod} onChange={(e) => setEndPeriod(e.target.value)}>
+                                    {data.map(d => <option key={d.period} value={d.period}>{d.period}</option>)}
+                                </select>
+                            </label>
+                        </div>
+                        <AgCharts options={options} />
+                    </>
+                )}
             </div>
         </>
     );
-};
+}

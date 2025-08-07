@@ -13,11 +13,11 @@ import api from "@/services/apiService"
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const categories = [
-    { id: "tab_all", name: "全部類別", icon: "📊" },
-    { id: "製程安全管理", name: "製程安全管理(PSM)", icon: "🔒" },
-    { id: "環保管理", name: "環保管理(EP)", icon: "🌱" },
-    { id: "消防管理", name: "消防管理(FR)", icon: "🚨" },
-    { id: "能源管理", name: "能源管理(ECO)", icon: "⚡" }
+    { id: "tab_all", name: "全部類別"},
+    { id: "製程安全管理", name: "製程安全管理(PSM)"},
+    { id: "環保管理", name: "環保管理(EP)"},
+    { id: "消防管理", name: "消防管理(FR)"},
+    { id: "能源管理", name: "能源管理(ECO)"}
 ];
 
 const columnTitleMap: Record<string, string> = {
@@ -60,7 +60,7 @@ export default function KPI() {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [keyword, setKeyword] = useState("");
-    const [quickFilterText, setQuickFilterText] = useState('');
+
     const [exportMode, setExportMode] = useState<'all' | 'failed'>('all');
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
@@ -271,7 +271,6 @@ export default function KPI() {
                                                 }`}
                                                 onClick={() => setActiveTab(category.id)}
                                             >
-                                                <span className="text-base">{category.icon}</span>
                                                 <span className="truncate">{category.name}</span>
                                             </button>
                                         ))}
@@ -447,8 +446,9 @@ export default function KPI() {
                                         activeType={activeType}
                                         columnTitleMap={columnTitleMap}
                                         isLoading={isLoading}
-                                        quickFilterText={quickFilterText}
+                                        quickFilterText={keyword}
                                         onExportData={exportData}
+
                                     />
                                 </div>
                             )}

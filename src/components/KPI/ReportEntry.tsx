@@ -2,7 +2,7 @@
 import React from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { motion } from "framer-motion"
-import { CheckCircle, XCircle, Clock, Upload, FileUp, Calendar, User, TrendingUp, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Upload, FileUp, TrendingUp } from 'lucide-react';
 import Link from "next/link";
 import { useUploadOptionModalState } from "@/hooks/useUploadOptionModalState";
 import {UploadOptionModal} from "@/hooks/UploadOptionModal";
@@ -117,7 +117,7 @@ export default function Report(){
     return (
         <>
             {/* Header Section */}
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -141,89 +141,89 @@ export default function Report(){
                         animate="visible"
                     >
                         {/* Status Overview */}
-                        <motion.div
-                            variants={itemVariants}
-                            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-                        >
-                            {/* User Info Card */}
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <div className="flex items-center mb-4">
-                                    <div
-                                        className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <User className="w-6 h-6 text-indigo-600"/>
-                                    </div>
-                                    <div className="ml-4">
-                                        <h3 className="text-lg font-semibold text-gray-900">用戶資訊</h3>
-                                        <p className="text-gray-600">{userData.name}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {/*<motion.div*/}
+                        {/*    variants={itemVariants}*/}
+                        {/*    className="grid grid-cols-1 lg:grid-cols-3 gap-6"*/}
+                        {/*>*/}
+                        {/*    /!* User Info Card *!/*/}
+                        {/*    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">*/}
+                        {/*        <div className="flex items-center mb-4">*/}
+                        {/*            <div*/}
+                        {/*                className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">*/}
+                        {/*                <User className="w-6 h-6 text-indigo-600"/>*/}
+                        {/*            </div>*/}
+                        {/*            <div className="ml-4">*/}
+                        {/*                <h3 className="text-lg font-semibold text-gray-900">用戶資訊</h3>*/}
+                        {/*                <p className="text-gray-600">{userData.name}</p>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
 
-                            {/* Last Upload Card */}
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <div className="flex items-center mb-4">
-                                    <div
-                                        className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <Calendar className="w-6 h-6 text-blue-600"/>
-                                    </div>
-                                    <div className="ml-4">
-                                        <h3 className="text-lg font-semibold text-gray-900">上次上傳</h3>
-                                        <p className="text-gray-600">{userData.lastUploadDate}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {/*    /!* Last Upload Card *!/*/}
+                        {/*    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">*/}
+                        {/*        <div className="flex items-center mb-4">*/}
+                        {/*            <div*/}
+                        {/*                className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">*/}
+                        {/*                <Calendar className="w-6 h-6 text-blue-600"/>*/}
+                        {/*            </div>*/}
+                        {/*            <div className="ml-4">*/}
+                        {/*                <h3 className="text-lg font-semibold text-gray-900">上次上傳</h3>*/}
+                        {/*                <p className="text-gray-600">{userData.lastUploadDate}</p>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
 
-                            {/* Next Deadline Card */}
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <div className="flex items-center mb-4">
-                                    <div
-                                        className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                                        <AlertCircle className="w-6 h-6 text-amber-600"/>
-                                    </div>
-                                    <div className="ml-4">
-                                        <h3 className="text-lg font-semibold text-gray-900">下次截止</h3>
-                                        <p className="text-gray-600">{userData.nextDeadline}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
+                        {/*    /!* Next Deadline Card *!/*/}
+                        {/*    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">*/}
+                        {/*        <div className="flex items-center mb-4">*/}
+                        {/*            <div*/}
+                        {/*                className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">*/}
+                        {/*                <AlertCircle className="w-6 h-6 text-amber-600"/>*/}
+                        {/*            </div>*/}
+                        {/*            <div className="ml-4">*/}
+                        {/*                <h3 className="text-lg font-semibold text-gray-900">下次截止</h3>*/}
+                        {/*                <p className="text-gray-600">{userData.nextDeadline}</p>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*</motion.div>*/}
 
-                        {/* Status Card */}
-                        <motion.div
-                            variants={itemVariants}
-                            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
-                        >
-                            <div className="flex items-center mb-6">
-                                <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
-                                <h2 className="text-xl font-semibold text-gray-800">半年度追蹤狀態</h2>
-                                <span
-                                    className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${status.badgeColor}`}>
-                                {status.badge}
-                            </span>
-                            </div>
+                        {/*/!* Status Card *!/*/}
+                        {/*<motion.div*/}
+                        {/*    variants={itemVariants}*/}
+                        {/*    className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"*/}
+                        {/*>*/}
+                        {/*    <div className="flex items-center mb-6">*/}
+                        {/*        <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>*/}
+                        {/*        <h2 className="text-xl font-semibold text-gray-800">半年度追蹤狀態</h2>*/}
+                        {/*        <span*/}
+                        {/*            className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${status.badgeColor}`}>*/}
+                        {/*        {status.badge}*/}
+                        {/*    </span>*/}
+                        {/*    </div>*/}
 
-                            <div className={`flex items-center p-6 rounded-xl border-2 ${status.color}`}>
-                                <div className="mr-6">
-                                    {status.icon}
-                                </div>
-                                <div className="flex-1">
-                                    <p className={`font-semibold text-lg mb-2 ${status.textColor}`}>
-                                        {status.message}
-                                    </p>
-                                    <div
-                                        className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                                        <div className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-2"/>
-                                            上次上傳: {userData.lastUploadDate}
-                                        </div>
-                                        <div className="flex items-center">
-                                            <Clock className="w-4 h-4 mr-2"/>
-                                            截止日期: {userData.nextDeadline}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
+                        {/*    <div className={`flex items-center p-6 rounded-xl border-2 ${status.color}`}>*/}
+                        {/*        <div className="mr-6">*/}
+                        {/*            {status.icon}*/}
+                        {/*        </div>*/}
+                        {/*        <div className="flex-1">*/}
+                        {/*            <p className={`font-semibold text-lg mb-2 ${status.textColor}`}>*/}
+                        {/*                {status.message}*/}
+                        {/*            </p>*/}
+                        {/*            <div*/}
+                        {/*                className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">*/}
+                        {/*                <div className="flex items-center">*/}
+                        {/*                    <Calendar className="w-4 h-4 mr-2"/>*/}
+                        {/*                    上次上傳: {userData.lastUploadDate}*/}
+                        {/*                </div>*/}
+                        {/*                <div className="flex items-center">*/}
+                        {/*                    <Clock className="w-4 h-4 mr-2"/>*/}
+                        {/*                    截止日期: {userData.nextDeadline}*/}
+                        {/*                </div>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*</motion.div>*/}
 
                         {/* Action Buttons */}
                         <motion.div

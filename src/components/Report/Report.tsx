@@ -152,7 +152,7 @@ export default function Report() {
                                 <div className="flex items-center">
                                     <div className="w-2 h-6 bg-blue-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">
-                                        各類型改善完成率
+                                        各類型改善建議完成率
                                         <span
                                             className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                                             {selection.orgName || "所有公司"}
@@ -226,7 +226,7 @@ export default function Report() {
                                 className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                 <div className="flex items-center mb-4">
                                     <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
-                                    <h2 className="text-xl font-semibold text-gray-800">建議分布圖</h2>
+                                    <h2 className="text-xl font-semibold text-gray-800">改善建議分佈圖</h2>
                                 </div>
                                 <div className="h-[450px]">
                                     <SuggestionPieChart
@@ -239,10 +239,13 @@ export default function Report() {
                                 className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
                                 <div className="flex items-center mb-4">
                                     <div className="w-2 h-6 bg-green-500 rounded-full mr-3"></div>
-                                    <h2 className="text-xl font-semibold text-gray-800">趨勢分析</h2>
+                                    <h2 className="text-xl font-semibold text-gray-800">KPI趨勢分析</h2>
                                 </div>
                                 <div className="h-[450px]">
-                                    <Aggridline/>
+                                    <Aggridline
+                                        organizationId={selection.orgId}
+                                        organizationName={selection.orgName || "所有公司"}
+                                    />
                                 </div>
                             </div>
                         </div>

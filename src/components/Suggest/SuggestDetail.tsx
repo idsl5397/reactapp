@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry } from 'ag-grid-community';
@@ -59,11 +59,6 @@ export default function SuggestDetailPage() {
         { label: "詳情" },
     ];
 
-    const filteredReports = useMemo(() => {
-        return reports.filter((r) =>
-            Object.values(r).filter(Boolean).some((val) => val?.toString().toLowerCase().includes(keyword.toLowerCase()))
-        );
-    }, [reports, keyword]);
 
     const exportData = (type: 'excel' | 'csv') => {
         const api = gridRef.current?.api;
@@ -273,7 +268,7 @@ export default function SuggestDetailPage() {
                                     </div>
                                     <div>
                                         <h2 className="text-2xl font-bold text-gray-800">對應建議列表</h2>
-                                        <p className="text-sm text-gray-600 mt-1">共 {filteredReports.length} 筆建議</p>
+                                        <p className="text-sm text-gray-600 mt-1">共 {reports.length} 筆建議</p>
                                     </div>
                                 </div>
                             </div>
@@ -345,7 +340,7 @@ export default function SuggestDetailPage() {
                         </div>
 
                         <div className="p-6">
-                            {filteredReports.length === 0 ? (
+                            {reports.length === 0 ? (
                                 <div className="text-center py-12">
                                     <div className="text-6xl mb-4">🔍</div>
                                     <p className="text-gray-500 text-lg">查無符合條件的建議</p>
@@ -357,7 +352,8 @@ export default function SuggestDetailPage() {
                                     <AgGridReact
                                         ref={gridRef}
                                         localeText={AG_GRID_LOCALE_TW}
-                                        rowData={filteredReports}
+                                        rowData={reports}
+                                        quickFilterText={keyword}
                                         columnDefs={columnDefs}
                                         rowSelection="multiple"
                                         sideBar={{

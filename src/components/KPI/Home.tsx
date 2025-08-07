@@ -5,6 +5,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon, ClipboardDocumentCheckIcon, DocumentChartBarIcon, PencilSquareIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useauthStore } from '@/Stores/authStore';
+import { AnimatedTooltip, TooltipStyles } from "@/components/AnimatedTooltip";
 
 export default function Home() {
 
@@ -92,18 +93,27 @@ export default function Home() {
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
-
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-8 lg:px-8">
                 <div className="space-y-12 w-full max-w-7xl mx-auto">
 
                     {/* 標題區塊 */}
                     <div className="text-center space-y-6">
+                        <TooltipStyles />
                         <div className="space-y-4">
-                            <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-900 z-10">
+                            <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-900 z-10 flex items-center justify-center gap-2">
                                 績效指標資料庫平台
+
+                                <AnimatedTooltip content="本平台用於追蹤與分析企業績效指標達成情況">
+                                  <span
+                                      className="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-600 text-white text-sm font-bold cursor-pointer hover:bg-blue-700 transition"
+                                      title="說明"
+                                  >
+                                    ?
+                                  </span>
+                                </AnimatedTooltip>
                             </h1>
-                            <div
-                                className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-blue-500 mx-auto rounded-full"></div>
+
+                            <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-blue-500 mx-auto rounded-full"></div>
                         </div>
 
                     </div>

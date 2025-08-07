@@ -272,7 +272,7 @@ const RankingKpiAg: React.FC = () => {
                                 </thead>
                                 <tbody>
                                 {unmetList.map(item => (
-                                    <tr key={item.id} className="border-b">
+                                    <tr key={item.id} className="border-b text-gray-800">
                                         <td>{item.year}</td>
                                         <td>{item.period}</td>
                                         <td>{item.field}</td>
