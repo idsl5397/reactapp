@@ -133,8 +133,6 @@ export default function Login() {
                 setIsLoggedIn(true); // 再設定登入狀態
                 setErrorMessage("");
 
-
-
                 // 修正 3: 延遲導航，確保狀態已更新
                 setTimeout(() => {
                     router.push("/home");

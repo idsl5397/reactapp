@@ -38,7 +38,6 @@ export default function AvatarMenu(props: AvatarMenuProps) {
 
     // 檢查 cookies 中是否有 JWT
     useEffect(() => {
-
         getAccessToken().then((token)=>{
             setIsLoggedIn(!!token); // 如果有 token，設置 isLoggedIn 為 true
         });

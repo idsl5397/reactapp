@@ -146,9 +146,7 @@ export default function Header() {
                         <AutoRefresh/>
                     )}
                     {isLoggedIn && hasMenu ? (
-
                             menu.map((item) => (
-
                                 <React.Fragment key={item.id}>
                                     {item.children && item.children.length > 0 ? (
                                         <Popover className="relative">
