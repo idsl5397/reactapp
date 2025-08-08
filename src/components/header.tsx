@@ -62,9 +62,9 @@ export default function Header() {
     const basePath = process.env.BASE_PATH || '';
     const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
     //先檢查登入狀態
-    useEffect(() => {
-        checkIsLoggedIn(); // 單純檢查登入狀態
-    }, [checkIsLoggedIn]);
+    // useEffect(() => {
+    //     checkIsLoggedIn(); // 單純檢查登入狀態
+    // }, [checkIsLoggedIn]);
 
     useEffect(() => {
         if (isLoggedIn) {
