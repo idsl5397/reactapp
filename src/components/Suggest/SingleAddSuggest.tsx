@@ -49,7 +49,7 @@ export default function SingleAddSuggest() {
 
     return (
         <>
-            <div className="card bg-base-100 shadow-xl p-6 mr-4 mb-6">
+            <div className="card bg-white shadow-xl p-6 mr-4 mb-6">
                 <SelectAddSuggest ref={formRef} />
             </div>
             <div className="flex justify-end gap-x-8">

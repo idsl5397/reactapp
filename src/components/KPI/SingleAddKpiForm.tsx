@@ -47,7 +47,7 @@ export default function SingleAddKpiForm() {
 
     return (
         <>
-            <div className="card bg-base-100 shadow-xl p-6">
+            <div className="card bg-white shadow-xl p-6">
                 <SelectAddKpi ref={formRef} />
             </div>
             <div className="flex justify-end mt-4">

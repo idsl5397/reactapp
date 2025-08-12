@@ -202,17 +202,17 @@ const RankingKpiAg: React.FC = () => {
             ) : (
                 <>
                     <div className="flex flex-wrap gap-4 mb-4 text-gray-800">
-                        <select className="select select-sm select-bordered" value={fieldFilter} onChange={e => setFieldFilter(e.target.value)}>
+                        <select className="select select-sm border border-blue-500 bg-white text-gray-900" value={fieldFilter} onChange={e => setFieldFilter(e.target.value)}>
                             <option value="">全部類別</option>
                             {fieldOptions.map(f => (
                                 <option key={f.id} value={f.field}>{f.field}</option>
                             ))}
                         </select>
-                        <select className="select select-sm select-bordered" value={yearFilter} onChange={e => setYearFilter(e.target.value)}>
+                        <select className="select select-sm border border-blue-500 bg-white text-gray-900" value={yearFilter} onChange={e => setYearFilter(e.target.value)}>
                             <option value="">全部年度</option>
                             {years.map(y => <option key={y} value={y.toString()}>{y}</option>)}
                         </select>
-                        <select className="select select-sm select-bordered" value={quarterFilter} onChange={e => setQuarterFilter(e.target.value)}>
+                        <select className="select select-sm border border-blue-500 bg-white text-gray-900" value={quarterFilter} onChange={e => setQuarterFilter(e.target.value)}>
                             <option value="">全部季度</option>
                             {quarters.map(q => <option key={q} value={q}>{q}</option>)}
                         </select>

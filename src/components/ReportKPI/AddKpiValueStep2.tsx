@@ -164,7 +164,7 @@ export default function AddKpiValueStep2({ onSaveDraft }: Step2Props) {
                                             {kpis.map((kpi) => (
                                                 <div
                                                     key={kpi.kpiDataId}
-                                                    className="card bg-base-100 shadow-md p-4 border border-gray-200"
+                                                    className="card bg-gradient-to-br shadow-md p-4 border border-gray-200"
                                                 >
                                                     <div className="text-base font-semibold text-primary">
                                                         {kpi.indicatorName} - {kpi.detailItemName}

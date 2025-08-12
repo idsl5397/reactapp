@@ -356,7 +356,7 @@ export function StepCard({
 }: StepCardProps) {
   return (
     <div className={`card w-full bg-base-200 shadow-md text-base-content ${className}`}>
-      <div className="card-body">
+      <div className="card-body bg-white">
         {title && (
           typeof title === 'string'
             ? <h3 className="card-title text-primary">{title}</h3>
