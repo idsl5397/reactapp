@@ -196,7 +196,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     {/* 階層 1~3 與日期 */}
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="enterprise"
@@ -218,7 +218,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="company"
@@ -241,7 +241,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層3（工廠）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="factory"
@@ -264,13 +264,13 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">年月日</label>
+                        <label className="block text-sm font-medium text-gray-900">年月日 (必填的)</label>
                         <input type="date" value={formData.date ?? ""} id="date" name="date" aria-label="日期"
                                onChange={(e) => handleChange("date", e.target.value)}
                                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2"/>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">會議/活動</label>
+                        <label className="block text-sm font-medium text-gray-900">會議/活動 (必填的)</label>
                         <select id="eventType" name="eventType" aria-label="會議/活動" value={formData.eventType} onChange={(e) => handleChange("eventType", e.target.value)}
                                 className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select">
                             <option value="">請選擇</option>
@@ -291,7 +291,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-900">
-                            類別（可搜尋或新增）
+                            類別（可搜尋或新增）(必填的)
                         </label>
                         <CreatableSelect
                             aria-label="類別"
@@ -367,7 +367,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                     )}
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-900">
-                            委員（可搜尋或新增）
+                            委員（可搜尋或新增）(必填的)
                         </label>
                         <CreatableSelect
                             aria-label="委員"
@@ -385,7 +385,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         />
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">建議</label>
+                        <label className="block text-sm font-medium text-gray-900">建議 (必填的)</label>
                         <textarea
                             placeholder="請輸入建議"
                             value={formData.suggestion}
@@ -395,7 +395,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         />
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">建議類別</label>
+                        <label className="block text-sm font-medium text-gray-900">建議類別 (必填的)</label>
                         <select value={formData.suggestionType} id="suggestionType" name="suggestionType" aria-label="建議類別"
                                 onChange={(e) => handleChange("suggestionType", e.target.value)}
                                 className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select">

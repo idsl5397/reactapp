@@ -124,6 +124,7 @@ export default function Header() {
 
     return (
         <header id="top" className="bg-white shadow-md">
+
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
                 {/* Logo */}
                 <div className="flex flex-1">
@@ -142,7 +143,7 @@ export default function Header() {
                 {/* Desktop Menu */}
                 <PopoverGroup className="hidden md:flex md:gap-x-3 lg:gap-x-5">
                     {/*登入刷新foy版*/}
-                    {isLoggedIn &&(
+                    {isLoggedIn && (
                         <AutoRefresh/>
                     )}
                     {isLoggedIn && hasMenu ? (
@@ -249,11 +250,12 @@ export default function Header() {
 
             {/* Mobile Menu */}
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                <DialogContent className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right">
+                <DialogContent
+                    className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right">
                     <div className="flex items-center justify-between">
                         <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
-                            <Image alt="Logo" src={logo} className="h-11 w-auto" width={100} height={40} />
+                            <Image alt="Logo" src={logo} className="h-11 w-auto" width={100} height={40}/>
                         </Link>
                         <button
                             type="button"
@@ -261,7 +263,7 @@ export default function Header() {
                             className="-m-2.5 rounded-md p-2.5 text-gray-700 hover:bg-gray-50"
                         >
                             <span className="sr-only">Close menu</span>
-                            <XMarkIcon aria-hidden="true" className="size-6" />
+                            <XMarkIcon aria-hidden="true" className="size-6"/>
                         </button>
                     </div>
                     <div className="mt-6 flow-root">
@@ -271,9 +273,11 @@ export default function Header() {
                                     <React.Fragment key={item.id}>
                                         {item.children && item.children.length > 0 ? (
                                             <Disclosure as="div" className="-mx-3">
-                                                <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                                                <DisclosureButton
+                                                    className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
                                                     {item.label}
-                                                    <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-[open]:rotate-180" />
+                                                    <ChevronDownIcon aria-hidden="true"
+                                                                     className="size-5 flex-none group-data-[open]:rotate-180"/>
                                                 </DisclosureButton>
                                                 <DisclosurePanel className="mt-2 space-y-2">
                                                     {item.children.map((child) => (
@@ -301,9 +305,11 @@ export default function Header() {
                                     </React.Fragment>
                                 ))}
                                 <Disclosure as="div" className="-mx-3">
-                                    <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                                    <DisclosureButton
+                                        className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
                                         說明
-                                        <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-[open]:rotate-180" />
+                                        <ChevronDownIcon aria-hidden="true"
+                                                         className="size-5 flex-none group-data-[open]:rotate-180"/>
                                     </DisclosureButton>
                                     <DisclosurePanel className="mt-2 space-y-2">
                                         {illustrate.map((item) => (

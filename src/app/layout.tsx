@@ -96,29 +96,40 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             <meta name="description" content={appMetadata.description}/>
         </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <a
+            href="#main-content"
+            title="跳到主要內容區"
+            className="
+            absolute left-2 top-2 -translate-y-full
+            focus:translate-y-0
+            bg-white text-blue-700 font-semibold px-4 py-2 rounded shadow
+            focus:outline-none focus:ring-2 focus:ring-blue-500
+            z-[9999]
+          "
+                >
+            跳到主要內容
+        </a>
         <div ref={headerRef}
-            className="fixed top-0 left-0 w-full z-50">
+             className="fixed top-0 left-0 w-full z-50">
             <Header/>
         </div>
-        <div className="flex flex-col min-h-screen" style={{ paddingTop: headerHeight }}>
+        <div className="flex flex-col min-h-screen" style={{paddingTop: headerHeight}}>
             <a
                 href="#top"
                 accessKey="U"
                 tabIndex={0}
                 title="上方功能服務選項區"
                 className="invisible absolute"
-                // onFocus={(e) => e.target.classList.remove("invisible")}
-                // onBlur={(e) => e.target.classList.add("invisible")}
             >
                 :::
             </a>
 
             <a
                 id="skip-to-content"
-                href="#center"
+                href="#main-content"
                 accessKey="C"
-                tabIndex={0}
-                title="跳轉到中央內容區塊"
+                tabIndex={-1}
+                title="跳到主要內容區"
                 className="invisible absolute"
             >
                 :::
@@ -142,8 +153,10 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-base-content flex items-center gap-2">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-.1066z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-.1066z"/>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 開發環境變數
                             </h3>
@@ -158,7 +171,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                                 <div className="card-body p-4">
                                     <h4 className="card-title text-sm text-accent flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
                                         </svg>
                                         API 設定
                                     </h4>
@@ -178,7 +192,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                                 <div className="card-body p-4">
                                     <h4 className="card-title text-sm text-secondary flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"/>
                                         </svg>
                                         域名設定
                                     </h4>
@@ -199,7 +214,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                                 <div className="card-body p-4">
                                     <h4 className="card-title text-sm text-warning flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                         </svg>
                                         運行環境
                                     </h4>
@@ -210,7 +226,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                                                 <code className="bg-base-100 px-2 py-1 rounded text-warning font-mono">
                                                     {NODE_ENV}
                                                 </code>
-                                                <div className={`w-2 h-2 rounded-full ${NODE_ENV === 'development' ? 'bg-warning' : NODE_ENV === 'production' ? 'bg-error' : 'bg-info'}`}></div>
+                                                <div
+                                                    className={`w-2 h-2 rounded-full ${NODE_ENV === 'development' ? 'bg-warning' : NODE_ENV === 'production' ? 'bg-error' : 'bg-info'}`}></div>
                                             </div>
                                         </div>
                                     </div>
@@ -222,7 +239,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                                 <div className="card-body p-4">
                                     <h4 className="card-title text-sm text-primary flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z"/>
                                         </svg>
                                         主題狀態
                                     </h4>
@@ -251,10 +269,9 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     </div>
                 </Drawer>
             )}
-            <main id="center" className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-
+            <main id="main-content" className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <ConfirmDialogProvider>
-                {children}
+                    {children}
                 </ConfirmDialogProvider>
             </main>
             <a

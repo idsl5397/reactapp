@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRightIcon, ClipboardDocumentCheckIcon, DocumentChartBarIcon, PencilSquareIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useauthStore } from '@/Stores/authStore';
 import { AnimatedTooltip, TooltipStyles } from "@/components/AnimatedTooltip";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -23,24 +24,24 @@ export default function Home() {
 
     useEffect(() => {
         const warning = localStorage.getItem("login-warning");
-        if (warning) {
-            toast.custom((t) => (
-                <div className="bg-white shadow-lg rounded-lg border border-gray-200 px-4 py-3 max-w-sm">
-                    <div className="flex justify-between items-start">
-                        <span className="text-sm text-gray-700">{warning}</span>
-                        <button
-                            onClick={() => {
-                                toast.dismiss(t.id);
-                                localStorage.removeItem("login-warning");
-                            }}
-                            className="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                        >
-                            知道了
-                        </button>
-                    </div>
+        if (!warning) return;
+
+        // 先清掉，避免 StrictMode 再執行時又讀到
+        localStorage.removeItem("login-warning");
+
+        toast.custom((t) => (
+            <div className="bg-white shadow-lg rounded-lg border border-gray-200 px-4 py-3 max-w-sm">
+                <div className="flex justify-between items-start">
+                    <span className="text-sm text-gray-700">{warning}</span>
+                    <button
+                        onClick={() => toast.dismiss(t.id)}
+                        className="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                    >
+                        知道了
+                    </button>
                 </div>
-            ), { duration: Infinity });
-        }
+            </div>
+        ), { duration: Infinity });
     }, []);
 
     const menuItems = [
@@ -121,25 +122,36 @@ export default function Home() {
                     {/* 主要功能選單 */}
                     <div className="space-y-6">
                         <h2 className="text-2xl font-semibold text-gray-800 text-center">選擇功能模組</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6" role="list">
                             {menuItems.map((item, index) => (
-                                <div
+                                <Link
                                     key={index}
-                                    className={`group relative overflow-hidden bg-gradient-to-br ${item.bgGradient} rounded-2xl border border-gray-200 hover:border-${item.color}-300 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-xl ${item.hoverShadow} active:scale-95`}
-                                    onClick={() => router.push(item.href)}
+                                    href={item.href}
+                                    aria-label={`${item.title}：${item.description}，前往`}
+                                    className={`
+                                                group relative overflow-hidden bg-gradient-to-br ${item.bgGradient}
+                                                rounded-2xl border border-gray-200
+                                                transition-all cursor-pointer
+                                                motion-safe:hover:scale-105 hover:shadow-xl active:scale-95
+                                                focus-visible:ring-${item.color}-500
+                                              `}
+                                    role="listitem"
                                 >
-                                    {/* 背景裝飾 */}
+                                    {/* 背景裝飾（純裝飾，隱藏給螢幕閱讀器） */}
                                     <div
-                                        className={`absolute -top-10 -right-10 w-20 h-20 bg-${item.color}-100 rounded-full opacity-20 group-hover:opacity-30 transition-opacity`}/>
+                                        aria-hidden="true"
+                                        className={`absolute -top-10 -right-10 w-20 h-20 bg-${item.color}-100 rounded-full opacity-20 group-hover:opacity-30 transition-opacity`}
+                                    />
 
                                     <div className="relative p-8 flex flex-col items-start gap-4 h-full">
-                                        {/* 圖標 */}
+                                        {/* 圖標（純裝飾就 aria-hidden） */}
                                         <div
-                                            className={`${item.iconBg} rounded-xl p-3 group-hover:scale-110 transition-transform duration-300`}>
+                                            aria-hidden="true"
+                                            className={`${item.iconBg} rounded-xl p-3 group-hover:scale-110 transition-transform duration-300`}
+                                        >
                                             {item.icon}
                                         </div>
 
-                                        {/* 內容 */}
                                         <div className="space-y-2 flex-1">
                                             <h3 className="text-xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
                                                 {item.title}
@@ -149,15 +161,17 @@ export default function Home() {
                                             </p>
                                         </div>
 
-                                        {/* 前往按鈕 */}
+                                        {/* 前往按鈕（視覺用，實際整卡都是連結） */}
                                         <div
-                                            className={`mt-auto flex items-center gap-2 text-${item.color}-600 font-medium text-sm group-hover:text-${item.color}-700 transition-colors`}>
+                                            className={`mt-auto flex items-center gap-2 text-${item.color}-600 font-medium text-sm group-hover:text-${item.color}-700 transition-colors`}
+                                        >
                                             <span>前往</span>
                                             <ArrowRightIcon
-                                                className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+                                                className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                                aria-hidden="true"/>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     </div>
@@ -165,7 +179,7 @@ export default function Home() {
                     <div className="flex justify-center gap-8 pt-4">
                         <button
                             onClick={() => router.push('/about')}
-                            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group"
+                            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group focus:outline-4 focus:outline-dashed focus:outline-[#ff1493] focus:outline-offset-2"
                         >
                             <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none"
                                  stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +190,7 @@ export default function Home() {
                         </button>
                         <button
                             onClick={() => router.push('/direction')}
-                            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group"
+                            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium group focus:outline-4 focus:outline-dashed focus:outline-[#ff1493] focus:outline-offset-2"
                         >
                             <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none"
                                  stroke="currentColor" viewBox="0 0 24 24">

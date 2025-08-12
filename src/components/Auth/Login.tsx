@@ -92,63 +92,67 @@ export default function Login() {
             //     return;
             // }
 
-            const response = await userService.Login(usermail, password);
+            const resp = await userService.Login(usermail, password);
+            console.log("login resp:", resp);
 
-            if (response.success && response.nickname && response.email && response.token && response.refreshToken) {
-                if (response.message?.includes("密碼將於")) {
-                    toast.custom((t) => (
-                        <div className="bg-white shadow-md rounded px-4 py-3 text-gray-800 max-w-md w-full">
-                            <div className="flex justify-between items-start">
-                                <div className="text-sm">{response.message}</div>
-                                <button
-                                    type="button"
-                                    onClick={() => toast.dismiss(t.id)}
-                                    className="ml-4 text-indigo-600 underline text-sm"
-                                >
-                                    知道了
-                                </button>
-                            </div>
-                        </div>
-                    ), {
-                        duration: Infinity,
-                        position: "top-center"
-                    });
-                }
-                if (response.warningMessage) {
-                    localStorage.setItem("login-warning", response.warningMessage);
-                    console.log("warningMessage:", response.warningMessage);
-                }
+            // A) 密碼已過期 → 導去變更密碼頁
+            if (resp.forceChangePassword) {
+                setErrorMessage(resp.message || "密碼已過期，請重設密碼");
+                // 你有 Profile 頁的強制改密碼 UX
+                router.push("/profile?forceChangePassword=1");
+                return;
+            }
 
+            // B) 其他登入失敗
+            if (!resp.success) {
+                setErrorMessage(resp.message || "登入失敗，請稍後再試");
+                return;
+            }
+
+            // C) 進入到期警示區間（當天後端只提醒一次）
+            if (resp.warningMessage || resp.passwordExpiryAt) {
+                const text =
+                    resp.warningMessage ??
+                    (() => {
+                        const dt = new Date(resp.passwordExpiryAt!);
+                        const ts = dt.toLocaleString("zh-TW", { hour12: false });
+                        return `密碼將於 ${ts} 過期（剩餘 ${resp.daysUntilExpiry ?? ""} 天），將會強制變更密碼`;
+                    })();
+                localStorage.setItem("login-warning", text);
+            }
+
+            // D) 正常登入流程
+            if (resp.nickname && resp.email && resp.token && resp.refreshToken) {
                 setUserData({
-                    nickname: response.nickname,
-                    email: response.email,
-                    token: response.token
+                    nickname: resp.nickname,
+                    email: resp.email,
+                    token: resp.token,
                 });
-                await storeAuthTokens(response.token,response.refreshToken);
-                const token = await getAccessToken();
-                console.log('Access Token', token?.value);
 
-                // 修正 2: 優化狀態更新順序，避免重複呼叫
-                await checkAuthStatus(); // 先更新認證狀態
-                setIsLoggedIn(true); // 再設定登入狀態
+                await storeAuthTokens(resp.token, resp.refreshToken);
+
+                await checkAuthStatus();
+                setIsLoggedIn(true);
                 setErrorMessage("");
 
-                // 修正 3: 延遲導航，確保狀態已更新
                 setTimeout(() => {
                     router.push("/home");
                 }, 100);
-
             } else {
-
-                setErrorMessage(response.message || "登入失敗，請稍後再試");
+                setErrorMessage(resp.message || "登入失敗，請稍後再試");
             }
 
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setErrorMessage(error.response.data?.message || '登入失敗');
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const data = error.response.data as any;
+                if (data?.forceChangePassword) {
+                    router.push("/profile?forceChangePassword=1");
+                    return;
+                }
+                setErrorMessage(data?.message || "登入失敗");
             } else {
                 console.error("非預期錯誤:", error);
-                setErrorMessage('網路錯誤，請稍後再試');
+                setErrorMessage("網路錯誤，請稍後再試");
             }
         } finally {
             setIsVerifying(false);
@@ -181,7 +185,7 @@ export default function Login() {
                         登入
                     </h1>
                 </div>
-                <div className="card bg-base-100 shadow-xl w-full sm:w-96 p-6 mr-4">
+                <div className="card bg-white shadow-xl w-full sm:w-96 p-6 mr-4">
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit}>
                             <h2 id="login-form-title" className="sr-only">

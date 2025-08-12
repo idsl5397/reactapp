@@ -192,7 +192,7 @@ export default function SuggestDetailPage() {
     return (
         <>
             <Toaster position="top-right" reverseOrder={false}/>
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

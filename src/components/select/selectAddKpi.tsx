@@ -49,15 +49,15 @@ const SelectAddKpi = forwardRef((_, ref) => {
     const [kpiCycles, setKpiCycles] = useState<KpiCycle[]>([]);
     const { userRole, userOrgId } = useauthStore();
     const fields = [
-        { label: "指標項目", name: "indicatorName", type: "text" },
-        { label: "指標細項", name: "detailItemName", type: "text" },
-        { label: "指標/計算項目", name: "isIndicator", type: "select" },
-        { label: "單位", name: "unit", type: "text" },
-        { label: "基線值數據年限", name: "baselineYear", type: "number" },
-        { label: "基線值", name: "baselineValue", type: "number" },
-        { label: "公式", name: "comparisonOperator", type: "text" },
-        { label: "目標值", name: "targetValue", type: "number" },
-        { label: "備註 (非必填)", name: "remarks", type: "text" },
+        { label: "指標項目 (必填的)", name: "indicatorName", type: "text" },
+        { label: "指標細項 (必填的)", name: "detailItemName", type: "text" },
+        { label: "指標/計算項目 (必填的)", name: "isIndicator", type: "select" },
+        { label: "單位 (必填的)", name: "unit", type: "text" },
+        { label: "基線值數據年限 (必填的)", name: "baselineYear", type: "number" },
+        { label: "基線值 (必填的)", name: "baselineValue", type: "number" },
+        { label: "公式 (必填的)", name: "comparisonOperator", type: "text" },
+        { label: "目標值 (必填的)", name: "targetValue", type: "number" },
+        { label: "備註", name: "remarks", type: "text" },
     ];
 
     useEffect(() => {
@@ -151,6 +151,14 @@ const SelectAddKpi = forwardRef((_, ref) => {
         setSelectedOrgId(factoryId || selectedCompany || selectedEnterprise);
     };
     const isCompany = userRole === 'company';
+
+
+    // 小工具：取得不含括號的純標籤文字
+    const getPlainLabel = (label: string) =>
+        label.replace(/\s*[（(].*?[）)]/g, '').trim();
+
+    // 小工具：依 label 是否含「必要的/必填的」推斷 required
+    const isRequiredLabel = (label: string) => /必[要|填]的/.test(label);
     return (
         <>
             <Toaster position="top-right" reverseOrder={false} />
@@ -158,7 +166,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                 <legend className="text-base font-semibold text-gray-700">📌 基本資料</legend>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層1（企業/公司）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="enterprise"
@@ -181,7 +189,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層2（公司/工廠）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="company"
@@ -204,7 +212,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">階層3（工廠）</label>
+                        <label className="block text-sm font-medium text-gray-900">階層3（工廠）(必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="factory"
@@ -227,7 +235,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">工場/製程區 (非必填)</label>
+                        <label className="block text-sm font-medium text-gray-900">工場/製程區</label>
                         <div className="mt-2">
 
                             <input
@@ -246,7 +254,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                 <legend className="text-base font-semibold text-gray-700">🧾 績效指標內容</legend>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">KPI 循環</label>
+                        <label className="block text-sm font-medium text-gray-900">KPI 循環 (必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="kpiCycleId"
@@ -269,7 +277,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">指標類型</label>
+                        <label className="block text-sm font-medium text-gray-900">指標類型 (必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="category"
@@ -289,7 +297,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-900">領域</label>
+                        <label className="block text-sm font-medium text-gray-900">領域 (必填的)</label>
                         <div className="mt-2 grid grid-cols-1">
                             <select
                                 id="field"
@@ -335,7 +343,7 @@ const SelectAddKpi = forwardRef((_, ref) => {
                                 ) : (
                                     <input
                                         name={name}
-                                        placeholder={type === "number" ? "請填寫數值" : `請填寫${label}`}
+                                        placeholder={type === "number" ? "請填寫數值" : `請填寫${getPlainLabel(label)}`}
                                         type={type}
                                         aria-label={label}
                                         step="any"

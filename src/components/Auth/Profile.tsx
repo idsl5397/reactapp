@@ -140,9 +140,13 @@ const UserProfilePage = ({ isPasswordExpired = false }) => {
 
         } catch (error: any) {
             console.error('密碼修改錯誤:', error);
-
-            if (error?.response?.status === 400) {
+            const code = error?.response?.data?.code;
+            if (error?.response?.status === 400 && code === 'OLD_PASSWORD_INCORRECT') {
                 toast.error('舊密碼錯誤，請重新輸入');
+            } else if (error?.response?.status === 409 && (code === 'PASSWORD_REUSE_LAST3' || code === 'PASSWORD_REUSE_CURRENT')) {
+                toast.error('新密碼不得與最近三次或目前使用中的密碼相同');
+            } else if (error?.response?.status === 422 && code === 'PASSWORD_POLICY_NOT_MET') {
+                toast.error('新密碼不符合安全要求');
             } else {
                 toast.error('密碼修改失敗，請稍後再試');
             }

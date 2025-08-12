@@ -123,7 +123,7 @@ export default function Step2() {
                         {renderSelects()}
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
-                        請選擇你所在層級，其餘可留空（例如只選企業）。
+                        請選擇您所屬的廠區
                     </p>
                     {(stepData as any).userInfoError && (
                         <div className="text-red-500 text-sm mt-2">
@@ -131,74 +131,74 @@ export default function Step2() {
                         </div>
                     )}
                 </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <fieldset>
-                        <h2 className="text-sm/6 font-semibold text-gray-900">身分權限</h2>
-                        <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6">
-                            <div className="flex items-center gap-x-3">
-                                <input
-                                    defaultChecked
-                                    id="audit-admin"
-                                    name="audit"
-                                    type="radio"
-                                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                                />
-                                <label htmlFor="audit-admin"
-                                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">
-                                    員工
-                                </label>
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <input
-                                    id="audit-power"
-                                    name="audit"
-                                    type="radio"
-                                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                                />
-                                <label htmlFor="audit-power"
-                                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">
-                                    工廠主管
-                                </label>
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <input
-                                    id="audit-operator"
-                                    name="audit"
-                                    type="radio"
-                                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                                />
-                                <label htmlFor="audit-operator"
-                                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">
-                                    公司主管
-                                </label>
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <input
-                                    id="audit-none"
-                                    name="audit"
-                                    type="radio"
-                                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                                />
-                                <label htmlFor="audit-none"
-                                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">
-                                    政府監管者
-                                </label>
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <input
-                                    id="audit-none"
-                                    name="audit"
-                                    type="radio"
-                                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                                />
-                                <label htmlFor="audit-none"
-                                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">
-                                    審查委員
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
+                {/*<div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">*/}
+                {/*    <fieldset>*/}
+                {/*        <h2 className="text-sm/6 font-semibold text-gray-900">身分權限</h2>*/}
+                {/*        <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6">*/}
+                {/*            <div className="flex items-center gap-x-3">*/}
+                {/*                <input*/}
+                {/*                    defaultChecked*/}
+                {/*                    id="audit-admin"*/}
+                {/*                    name="audit"*/}
+                {/*                    type="radio"*/}
+                {/*                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"*/}
+                {/*                />*/}
+                {/*                <label htmlFor="audit-admin"*/}
+                {/*                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">*/}
+                {/*                    員工*/}
+                {/*                </label>*/}
+                {/*            </div>*/}
+                {/*            <div className="flex items-center gap-x-3">*/}
+                {/*                <input*/}
+                {/*                    id="audit-power"*/}
+                {/*                    name="audit"*/}
+                {/*                    type="radio"*/}
+                {/*                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"*/}
+                {/*                />*/}
+                {/*                <label htmlFor="audit-power"*/}
+                {/*                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">*/}
+                {/*                    工廠主管*/}
+                {/*                </label>*/}
+                {/*            </div>*/}
+                {/*            <div className="flex items-center gap-x-3">*/}
+                {/*                <input*/}
+                {/*                    id="audit-operator"*/}
+                {/*                    name="audit"*/}
+                {/*                    type="radio"*/}
+                {/*                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"*/}
+                {/*                />*/}
+                {/*                <label htmlFor="audit-operator"*/}
+                {/*                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">*/}
+                {/*                    公司主管*/}
+                {/*                </label>*/}
+                {/*            </div>*/}
+                {/*            <div className="flex items-center gap-x-3">*/}
+                {/*                <input*/}
+                {/*                    id="audit-none"*/}
+                {/*                    name="audit"*/}
+                {/*                    type="radio"*/}
+                {/*                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"*/}
+                {/*                />*/}
+                {/*                <label htmlFor="audit-none"*/}
+                {/*                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">*/}
+                {/*                    政府監管者*/}
+                {/*                </label>*/}
+                {/*            </div>*/}
+                {/*            <div className="flex items-center gap-x-3">*/}
+                {/*                <input*/}
+                {/*                    id="audit-none"*/}
+                {/*                    name="audit"*/}
+                {/*                    type="radio"*/}
+                {/*                    className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"*/}
+                {/*                />*/}
+                {/*                <label htmlFor="audit-none"*/}
+                {/*                       className="block text-sm/6 font-medium text-gray-900 whitespace-nowrap">*/}
+                {/*                    審查委員*/}
+                {/*                </label>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
+                {/*    </fieldset>*/}
+                {/*</div>*/}
             </div>
         </div>
     );
