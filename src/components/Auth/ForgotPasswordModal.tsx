@@ -5,9 +5,15 @@ import {toast, Toaster} from 'react-hot-toast';
 interface Props {
     isOpen: boolean;
     onClose: () => void;
+    modol? : "changepassword" | "forgotPassword";
 }
 
-export default function ForgotPasswordModal({ isOpen, onClose }: Props) {
+export default function ForgotPasswordModal({
+                                                isOpen,
+                                                onClose,
+    modol = "forgotPassword",
+
+}: Props) {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -126,7 +132,16 @@ export default function ForgotPasswordModal({ isOpen, onClose }: Props) {
             <Toaster position="top-right" reverseOrder={false}/>
             <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-center text-black">
                 <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-                    <h2 className="text-lg font-semibold mb-4 text-black">🔐 忘記密碼</h2>
+                    {
+                        modol == "forgotPassword" ? (
+                            <h2 className="text-lg font-semibold mb-4 text-black">🔐 忘記密碼</h2>
+                        ):(
+
+                        <h2 className="text-lg font-semibold mb-4 text-black">🔐 更改密碼</h2>
+                        )
+
+                    }
+
 
                     <input
                         type="email"

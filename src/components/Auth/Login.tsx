@@ -12,6 +12,7 @@ import { useMenuStore } from "@/Stores/menuStore";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
 import ForgotPasswordModal from './ForgotPasswordModal';
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 
@@ -26,12 +27,16 @@ export default function Login() {
     const turnstile = useRef<any>(null);
     const { setIsLoggedIn, checkIsLoggedIn, isLoggedIn, checkAuthStatus } = useauthStore();
     const [showForgotModal, setShowForgotModal] = useState(false);
+    const [modelType,setModelType] = useState<"forgotPassword"|"changepassword">("forgotPassword");
+    const { confirm } = useConfirmDialog();
+
 
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "登入" }
     ];
     const router = useRouter();
+
 
     // 修正 1: 正確設定依賴項，避免無限迴圈
     useEffect(() => {
@@ -98,8 +103,18 @@ export default function Login() {
             // A) 密碼已過期 → 導去變更密碼頁
             if (resp.forceChangePassword) {
                 setErrorMessage(resp.message || "密碼已過期，請重設密碼");
-                // 你有 Profile 頁的強制改密碼 UX
-                router.push("/profile?forceChangePassword=1");
+                const confirmed = await confirm({
+                    title: "更改密碼",
+                    message: "密碼已過期，請重設密碼，是否繼續進入重設密碼流程?"
+                });
+
+                if (!confirmed) {
+                    toast("已取消送出");
+                    return;
+                }
+                // 開啟ForgotPasswordModal
+                setModelType("changepassword");
+                setShowForgotModal(true);
                 return;
             }
 
@@ -146,7 +161,9 @@ export default function Login() {
             if (axios.isAxiosError(error) && error.response?.data) {
                 const data = error.response.data as any;
                 if (data?.forceChangePassword) {
-                    router.push("/profile?forceChangePassword=1");
+
+                    // 開啟ForgotPasswordModal
+                    setShowForgotModal(true);
                     return;
                 }
                 setErrorMessage(data?.message || "登入失敗");
@@ -175,6 +192,7 @@ export default function Login() {
 
     return (
         <>
+
             <Toaster position="top-right" reverseOrder={false}/>
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
@@ -217,7 +235,7 @@ export default function Login() {
                                     <div className="text-sm">
                                         <a
                                             href="#"
-                                            onClick={() => setShowForgotModal(true)}
+                                            onClick={() => {setShowForgotModal(true) ;setModelType("forgotPassword")}}
                                             className="font-semibold text-indigo-600 hover:text-indigo-500"
                                         >
                                             忘記密碼?
@@ -274,9 +292,11 @@ export default function Login() {
             </div>
             {/* 彈出視窗 */}
             <ForgotPasswordModal
+                modol={modelType}
                 isOpen={showForgotModal}
                 onClose={() => setShowForgotModal(false)}
             />
+
         </>
     );
 };
