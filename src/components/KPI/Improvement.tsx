@@ -3,7 +3,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectOnlyEnterprise";
 import { getAccessToken } from "@/services/serverAuthService";
-import {TrashIcon, DocumentArrowUpIcon, ClockIcon, CheckCircleIcon, ExclamationCircleIcon} from "@heroicons/react/16/solid";
+import {
+    TrashIcon,
+    DocumentArrowUpIcon,
+    ClockIcon,
+    CheckCircleIcon,
+    ExclamationCircleIcon,
+    ChevronDownIcon
+} from "@heroicons/react/16/solid";
 import {CloudArrowUpIcon, DocumentTextIcon, CalendarDaysIcon, BuildingOfficeIcon} from "@heroicons/react/24/outline";
 import axios from "axios";
 import { Toaster, toast } from 'react-hot-toast';
@@ -194,21 +201,21 @@ export default function Improvement(){
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${orgId ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
                                     {orgId ? <CheckCircleIcon className="w-5 h-5" /> : '1'}
                                 </div>
-                                <span className="text-sm font-medium">選擇公司</span>
+                                <span className="text-sm font-medium text-gray-900">選擇公司</span>
                             </div>
                             <div className="flex-1 h-px bg-gray-200 mx-4"></div>
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${uploadedFiles.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
                                     {uploadedFiles.length > 0 ? <CheckCircleIcon className="w-5 h-5" /> : '2'}
                                 </div>
-                                <span className="text-sm font-medium">上傳檔案</span>
+                                <span className="text-sm font-medium text-gray-900">上傳檔案</span>
                             </div>
                             <div className="flex-1 h-px bg-gray-200 mx-4"></div>
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${canSubmit ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
                                     3
                                 </div>
-                                <span className="text-sm font-medium">確認送出</span>
+                                <span className="text-sm font-medium text-gray-900">確認送出</span>
                             </div>
                         </div>
                     </div>
@@ -229,44 +236,56 @@ export default function Improvement(){
                             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <CalendarDaysIcon className="w-4 h-4 inline mr-1" />
+                                        <CalendarDaysIcon className="w-4 h-4 inline mr-1"/>
                                         民國年度
                                     </label>
-                                    <select
-                                        id="year"
-                                        name="year"
-                                        aria-label="選擇年度(民國)"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        value={selectedYear}
-                                        onChange={(e) => handleSelectChange("year", e.target.value)}
-                                    >
-                                        {yearOptions.map((year) => (
-                                            <option key={year} value={year}>
-                                                民國 {year} 年
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="mt-2 grid grid-cols-1">
+                                        <select
+                                            id="year"
+                                            name="year"
+                                            aria-label="選擇年度(民國)"
+                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                            value={selectedYear}
+                                            onChange={(e) => handleSelectChange("year", e.target.value)}
+                                        >
+                                            {yearOptions.map((year) => (
+                                                <option key={year} value={year}>
+                                                    民國 {year} 年
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDownIcon
+                                            aria-hidden="true"
+                                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <ClockIcon className="w-4 h-4 inline mr-1" />
+                                        <ClockIcon className="w-4 h-4 inline mr-1"/>
                                         報告季度
                                     </label>
-                                    <select
-                                        id="quarter"
-                                        name="quarter"
-                                        aria-label="選擇季度"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        value={selectedQuarter}
-                                        onChange={(e) => handleSelectChange("quarter", e.target.value)}
-                                    >
-                                        {quarters.map((q) => (
-                                            <option key={q.value} value={q.value}>
-                                                {q.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="mt-2 grid grid-cols-1">
+                                        <select
+                                            id="quarter"
+                                            name="quarter"
+                                            aria-label="選擇季度"
+                                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                            value={selectedQuarter}
+                                            onChange={(e) => handleSelectChange("quarter", e.target.value)}
+                                        >
+                                            {quarters.map((q) => (
+                                                <option key={q.value} value={q.value}>
+                                                    {q.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDownIcon
+                                            aria-hidden="true"
+                                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

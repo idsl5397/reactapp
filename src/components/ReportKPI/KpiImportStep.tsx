@@ -9,6 +9,7 @@ import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
 import {getAccessToken} from "@/services/serverAuthService";
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import {ChevronDownIcon} from "@heroicons/react/16/solid";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function BulkImportPage() {
@@ -189,51 +190,64 @@ export default function BulkImportPage() {
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
             <div className="max-w-5xl mx-auto p-6 space-y-8">
-                <h1 className="text-2xl font-bold text-center mb-8 text-base-content">批次上傳績效指標報告</h1>
+                <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">批次上傳績效指標報告</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <SelectEnterprise onSelectionChange={handleSelectionChange} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">民國年度</label>
-                            <select
-                                id="selectedYear"
-                                name="selectedYear"
-                                aria-label="選擇年度(民國)"
-                                className="select select-bordered w-full"
-                                value={selectedYear}
-                                onChange={(e) => handleSelectChange("year", e.target.value)}
-                            >
-                                {yearOptions.map((year) => (
-                                    <option key={year} value={year}>
-                                        民國 {year} 年
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="mt-2 grid grid-cols-1">
+                                <select
+                                    id="selectedYear"
+                                    name="selectedYear"
+                                    aria-label="選擇年度(民國)"
+                                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                    value={selectedYear}
+                                    onChange={(e) => handleSelectChange("year", e.target.value)}
+                                >
+                                    {yearOptions.map((year) => (
+                                        <option key={year} value={year}>
+                                            民國 {year} 年
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                />
+                            </div>
+
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">季度</label>
-                            <select
-                                id="selectedQuarter"
-                                name="selectedQuarter"
-                                aria-label="季度"
-                                className="select select-bordered w-full"
-                                value={selectedQuarter}
-                                onChange={(e) => handleSelectChange("quarter", e.target.value)}
-                            >
-                                {quarters.map((q) => (
-                                    <option key={q.value} value={q.value}>
-                                        {q.label}
-                                    </option>
-                                ))}
-                            </select>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">季度</label>
+                            <div className="mt-2 grid grid-cols-1">
+                                <select
+                                    id="selectedQuarter"
+                                    name="selectedQuarter"
+                                    aria-label="季度"
+                                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
+                                    value={selectedQuarter}
+                                    onChange={(e) => handleSelectChange("quarter", e.target.value)}
+                                >
+                                    {quarters.map((q) => (
+                                        <option key={q.value} value={q.value}>
+                                            {q.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📥 下載目前資料</h2>
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📥 下載目前資料</h2>
                     <p className="text-sm text-gray-600 mb-4">
                         請下載您目前的資料，於 Excel 中進行更新或補充後再上傳。
                     </p>
@@ -243,8 +257,8 @@ export default function BulkImportPage() {
                     </button>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📄 填寫注意事項</h2>
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📄 填寫注意事項</h2>
                     <ul className="text-sm list-disc list-inside text-gray-700 space-y-1">
                         <li>請勿更動模板中的欄位名稱與順序</li>
                         <li>請填寫填報值(僅填寫數值)，若無資料請輸入備註</li>
@@ -252,15 +266,27 @@ export default function BulkImportPage() {
                     </ul>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📤 上傳檔案</h2>
-                    <input id="file" name="file" aria-label="上傳檔案" type="file" accept=".xlsx" onChange={handleFileChange} className="file-input file-input-bordered w-full max-w-md" />
-                    {file && <p className="mt-2 text-sm text-gray-600">已選擇檔案：{file.name}</p>}
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📤 上傳檔案</h2>
+                    <input
+                        id="file"
+                        name="file"
+                        aria-label="上傳檔案"
+                        type="file"
+                        accept=".xlsx"
+                        onChange={handleFileChange}
+                        className="file-input file-input-bordered w-full max-w-md text-black border-black bg-white hover:bg-white hover:text-black hover:border-black"
+                    />
+                    {file && (
+                        <p className="mt-2 text-sm text-gray-600">
+                            已選擇檔案：{file.name}
+                        </p>
+                    )}
                 </div>
 
                 {file && (
-                    <div className="card border bg-base-100 shadow-md p-4">
-                        <h2 className="text-lg font-semibold mb-2">✅ 預覽與匯入確認</h2>
+                    <div className="card border bg-white shadow-md p-4">
+                        <h2 className="text-lg font-semibold mb-2 text-gray-900">✅ 預覽與匯入確認</h2>
                         <p className="text-sm text-gray-600 mb-2">
                             以下為您上傳的資料預覽，請再次確認內容是否正確。
                         </p>

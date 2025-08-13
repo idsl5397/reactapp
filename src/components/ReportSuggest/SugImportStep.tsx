@@ -117,7 +117,7 @@ export default function SugImportPage() {
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
             <div className="max-w-5xl mx-auto p-6 space-y-8">
-                <h1 className="text-2xl font-bold text-center mb-8 text-base-content">批次上傳委員建議報告</h1>
+                <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">批次上傳委員建議報告</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <SelectEnterprise onSelectionChange={handleSelectionChange} />
@@ -126,36 +126,51 @@ export default function SugImportPage() {
                     </div>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📥 下載目前資料</h2>
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📥 下載目前資料</h2>
                     <p className="text-sm text-gray-600 mb-4">
                         請下載您目前的資料，於 Excel 中進行更新或補充後再上傳。
                     </p>
-                    <button className="btn btn-outline btn-sm" onClick={() => handleDownloadTemplate(orgId)}>
-                        <Download className="w-4 h-4 mr-2" />
+                    <button
+                        className="btn btn-outline btn-sm text-black border-black bg-white hover:bg-white hover:text-black hover:border-black"
+                        onClick={() => handleDownloadTemplate(orgId)}
+                    >
+                        <Download className="w-4 h-4 mr-2"/>
                         下載資料
                     </button>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📄 填寫注意事項</h2>
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📄 填寫注意事項</h2>
                     <ul className="text-sm list-disc list-inside text-gray-700 space-y-1">
-                        <li>請勿更動模板中的欄位名稱與順序</li>
+                    <li>請勿更動模板中的欄位名稱與順序</li>
                         <li>請直接對欄位進行修改/填寫</li>
                         <li>僅能修改欄位: 是否參採、改善對策/辦理情形、預估人力投入、預估經費投入、是否完成改善/辦理、預估完成年份、預估完成月份、平行展開、展開計畫、備註</li>
                         <li>請確認填寫內容後送出，避免匯入失敗</li>
                     </ul>
                 </div>
 
-                <div className="card border bg-base-100 shadow-md p-4">
-                    <h2 className="text-lg font-semibold mb-2">📤 上傳檔案</h2>
-                    <input id="file" name="file" aria-label="上傳檔案" type="file" accept=".xlsx" onChange={handleFileChange} className="file-input file-input-bordered w-full max-w-md" />
-                    {file && <p className="mt-2 text-sm text-gray-600">已選擇檔案：{file.name}</p>}
+                <div className="card border bg-white shadow-md p-4">
+                    <h2 className="text-lg font-semibold mb-2 text-gray-900">📤 上傳檔案</h2>
+                    <input
+                        id="file"
+                        name="file"
+                        aria-label="上傳檔案"
+                        type="file"
+                        accept=".xlsx"
+                        onChange={handleFileChange}
+                        className="file-input file-input-bordered w-full max-w-md text-black border-black bg-white hover:bg-white hover:text-black hover:border-black"
+                    />
+                    {file && (
+                        <p className="mt-2 text-sm text-gray-600">
+                            已選擇檔案：{file.name}
+                        </p>
+                    )}
                 </div>
 
                 {file && (
-                    <div className="card border bg-base-100 shadow-md p-4">
-                        <h2 className="text-lg font-semibold mb-2">✅ 預覽與匯入確認</h2>
+                    <div className="card border bg-white shadow-md p-4">
+                        <h2 className="text-lg font-semibold mb-2 text-gray-900">✅ 預覽與匯入確認</h2>
                         <p className="text-sm text-gray-600 mb-2">
                             以下為您上傳的資料預覽，請再次確認內容是否正確。
                         </p>
