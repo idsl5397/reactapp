@@ -81,7 +81,7 @@ export default {
         },
       },
     ],
-    darkTheme: "fantasydark", // 🌙 深色模式自動切換主題
+    darkTheme: "fantasy",
     base: true,
     styled: true,
     utils: true,
