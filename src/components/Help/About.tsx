@@ -16,7 +16,7 @@ export default function Direction(){
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
-            <div className="flex min-h-full bg-base-100 flex-1 flex-col items-center px-6 py-12 lg:px-8">
+            <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
                 <div className="space-y-8 w-full mx-auto">
                     <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         關於我們
