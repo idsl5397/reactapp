@@ -146,7 +146,7 @@ export default function ForgotPasswordModal({
                     <input
                         type="email"
                         placeholder="請輸入您的信箱"
-                        className="input input-bordered w-full mb-3"
+                        className="input input-bordered w-full mb-3 bg-white"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={status !== 'idle'}
