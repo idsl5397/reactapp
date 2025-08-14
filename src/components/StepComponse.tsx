@@ -232,7 +232,7 @@ export function Step({
 
   return (
     <li
-      className={`step text-neutral-content ${statusClass} ${className} ${disabled ? 'opacity-100' : 'cursor-pointer'}`}
+      className={`step text-black ${statusClass} ${className} ${disabled ? 'opacity-100' : 'cursor-pointer'}`}
       onClick={disabled ? undefined : onClick}
     >
       {children}
