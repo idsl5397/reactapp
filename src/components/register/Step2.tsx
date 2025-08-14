@@ -70,7 +70,7 @@ export default function Step2() {
                         {`階層${level}`}{level > 1 ? '（可選）' : ''}
                     </label>
                     <select
-                        className="w-full border rounded-md p-2 custom-outline-pink"
+                        className="w-full border rounded-md p-2 custom-outline-pink text-gray-800"
                         value={selected?.data.id || ''}
                         onChange={(e) => handleSelectChange(level, Number(e.target.value))}
                     >

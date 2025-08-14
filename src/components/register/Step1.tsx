@@ -25,17 +25,17 @@ export default function Step1() {
 
     return (
         <div className="card w-full bg-white shadow-md rounded-lg">
-            <div className="card-header p-4 border-b font-medium text-lg">請輸入電子信箱</div>
+            <div className="card-header p-4 border-b font-medium text-lg text-gray-800">請輸入電子信箱</div>
             <div className="card-body p-6">
                 <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium mb-2">電子郵件</label>
+                    <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-800">電子郵件</label>
                     <input
                         id="email"
                         name="email"
                         type="email"
                         value={((stepData.EmailVerificationForm as EmailVerificationFormData)?.email) || ''}
                         onChange={handleonChange}
-                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
                         placeholder="Email"
                     />
                     {(stepData as any).verificationError && (

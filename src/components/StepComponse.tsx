@@ -317,7 +317,7 @@ export function StepNavigation({
     <div className="flex justify-between w-full mt-6">
       {!hidePrev && currentStep > 0 && (
         <button
-          className="btn btn-outline"
+          className="btn btn-outline-primary"
           onClick={handlePrev}
           disabled={isPrevLoading}
         >
@@ -514,7 +514,7 @@ function StepNavigationWrapper({
       <div className="flex justify-between w-full mt-6">
         {!hidePrev && currentStep > 0 && (
           <button
-            className="btn btn-outline"
+            className="btn btn-outline-primary"
             onClick={handlePrev}
             disabled={isPrevButtonDisabled()}
           >

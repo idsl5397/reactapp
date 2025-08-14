@@ -12,6 +12,7 @@ const license = "Using_this_{AG_Charts_and_AG_Grid}_Enterprise_key_{AG-067721}_i
 import {ConfirmDialogProvider, useConfirmDialog} from "@/hooks/useConfirmDialog";
 import Drawer from "@/components/Drawer";
 import IOSGlassButton from "@/components/IOSGlassButton";
+import BubbleChatComponent from "@/components/BubbleChat/BubbleChatComponent";
 
 
 GridLicenseManager.setLicenseKey(license);
@@ -55,7 +56,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     const API_URL = process.env.API  || "http://kpibackend:8080";
     const NODE_ENV = process.env.NODE_ENV || "development";
     const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
+    const {isLoggedIn} =useauthStore();
     useEffect(() => {
         const saved = localStorage.getItem("theme");
         const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -275,6 +276,9 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     {children}
                 </ConfirmDialogProvider>
             </main>
+
+            {isLoggedIn&&  <BubbleChatComponent/> }
+
             <a
                 id="skip-to-footer"
                 href="#footer"
