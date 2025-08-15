@@ -17,17 +17,17 @@ interface Message {
   avatar?: string;
 }
 
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY?.replace(/^=+/, '');
 
 if (!GEMINI_API_KEY) {
-  console.error('Gemini API Key 未設定');
-  console.warn('NEXT_PUBLIC_GEMINI_API_KEY 未設定（build/SSR）');
-
+  console.warn('Gemini API Key 未設定');
 }
+let ai:GoogleGenAI
 
-const ai = new GoogleGenAI({
+if(GEMINI_API_KEY) ai = new GoogleGenAI({
   apiKey: GEMINI_API_KEY
 });
+
 
 const base_path = process.env.NEXT_PUBLIC_BASE_PATH || '/';
 const avatarImage = base_path? (`${base_path}/user.svg`):(`/user.svg`);
