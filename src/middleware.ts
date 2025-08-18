@@ -11,7 +11,9 @@ const PUBLIC_PATHS = [
     "/api/auth",
     "/_next",
     "/favicon.ico",
-    "/proxy"  // 保持這個
+    "/proxy",  // 保持這個
+    "/api",
+    "/api/verify"
 ];
 
 export async function middleware(req: NextRequest) {

@@ -24,6 +24,7 @@ interface SuggestDto {
     date: string;
     organizationName: string;
     suggestEventTypeName: string;
+    organizationId?: number;
 }
 
 const Modal = ({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) => (
@@ -67,7 +68,9 @@ export default function Suggest() {
     const [selectedOrgData, setSelectedOrgData] = useState<SuggestDto[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
-
+    const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null); // 👈 新增
+    // 檢視模式：all = 全部(總表)、byDate = 依日期、byEvent = 依會議/活動
+    const [viewMode, setViewMode] = useState<'all' | 'byDate' | 'byEvent'>('all');
     const gridRef = useRef<AgGridReact>(null);
     const router = useRouter();
 
@@ -111,10 +114,16 @@ export default function Suggest() {
         return Object.values(grouped).map(group => _.orderBy(group, 'date', 'desc')[0]);
     }, [rowData]);
 
-    const handleOpenOrgHistory = (orgName: string) => {
+    const handleOpenOrgHistory = (orgName: string, orgId?: number) => {
         const all = rowData.filter(r => r.organizationName === orgName);
         setSelectedOrgData(_.orderBy(all, 'date', 'desc'));
+
+        // 如果沒有 orgId，從篩選的資料中找第一個有效的 organizationId
+        const finalOrgId = orgId ?? all.find(item => item.organizationId)?.organizationId ?? null;
+        setSelectedOrgId(finalOrgId);
+
         setModalTitle(orgName);
+        setViewMode('all');
         setModalOpen(true);
     };
 
@@ -128,7 +137,7 @@ export default function Suggest() {
             cellRenderer: (params: any) => (
                 <button
                     className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors"
-                    onClick={() => handleOpenOrgHistory(params.data.organizationName)}
+                    onClick={() => handleOpenOrgHistory(params.data.organizationName, params.data.organizationId)}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -155,6 +164,23 @@ export default function Suggest() {
         document.addEventListener("click", listener);
         return () => document.removeEventListener("click", listener);
     }, []);
+
+
+    const groupedByDate = useMemo(() => {
+        const map = _.groupBy(selectedOrgData, x => x.date); // 若含時間，建議改成日期字串
+        return Object.entries(map).map(([key, items]) => ({
+            key,
+            items: _.orderBy(items, 'date', 'desc'),
+        })).sort((a, b) => (a.key < b.key ? 1 : -1));
+    }, [selectedOrgData]);
+
+    const groupedByEvent = useMemo(() => {
+        const map = _.groupBy(selectedOrgData, x => x.suggestEventTypeName || '未分類');
+        return Object.entries(map).map(([key, items]) => ({
+            key,
+            items: _.orderBy(items, 'date', 'desc'),
+        })).sort((a, b) => a.key.localeCompare(b.key, 'zh-Hant'));
+    }, [selectedOrgData]);
 
     return (
         <>
@@ -217,8 +243,13 @@ export default function Suggest() {
                                     <p className="text-sm text-gray-600 mt-1">顯示各組織的最新建議記錄</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span className="text-sm text-gray-600">即時更新</span>
+                                    <button
+                                        onClick={() => router.push('/suggest/all')}
+                                        className="btn inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium shadow-sm hover:shadow-md"
+                                        title="不分廠、不分日期、不分會議的總表"
+                                    >
+                                        總表
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -226,7 +257,7 @@ export default function Suggest() {
                         <div className="p-6">
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center py-16">
-                                    <svg className="animate-spin h-12 w-12 text-blue-500 mb-4" fill="none" viewBox="0 0 24 24">
+                                <svg className="animate-spin h-12 w-12 text-blue-500 mb-4" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -246,44 +277,164 @@ export default function Suggest() {
             {/* Enhanced Modal */}
             {modalOpen && (
                 <Modal title={`${modalTitle} 歷史建議`} onClose={() => setModalOpen(false)}>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-gray-600 mb-4">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-sm">共 {selectedOrgData.length} 筆歷史記錄</span>
+                    <div className="space-y-6">
+                        {/* 頂部操作區 */}
+                        <div className="flex items-center justify-between">
+                            {/* 左側：計數資訊 */}
+                            <div className="flex items-center gap-2 text-gray-600">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span className="text-sm font-medium">共 {selectedOrgData.length} 筆歷史記錄</span>
+                            </div>
+
+                            {/* 右側：全部資料按鈕 */}
+                            <button
+                                onClick={() => {
+                                    if (!selectedOrgId) {
+                                        toast.error('找不到組織代碼');
+                                        return;
+                                    }
+                                    router.push(`/suggest/all?orgId=${selectedOrgId}`);
+                                }}
+                                className="btn inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium shadow-sm hover:shadow-md"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                                </svg>
+                                查看全部資料
+                            </button>
                         </div>
 
-                        <div className="bg-gray-50 rounded-xl overflow-hidden">
-                            <table className="w-full">
-                                <thead className="bg-gray-100">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">會議/活動</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                                </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                {selectedOrgData.map((item, index) => (
-                                    <tr key={item.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.date}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.suggestEventTypeName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <button
-                                                className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors"
-                                                data-id={item.id}
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                                查看建議
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                        {/* 檢視切換 */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600 font-medium">檢視模式：</span>
+                            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                                <button
+                                    onClick={() => setViewMode('all')}
+                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all
+                        ${viewMode === 'all'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'}`}
+                                >
+                                    全部
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('byDate')}
+                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all
+                        ${viewMode === 'byDate'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'}`}
+                                >
+                                    依日期
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('byEvent')}
+                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all
+                        ${viewMode === 'byEvent'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'}`}
+                                >
+                                    依會議/活動
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* 視圖內容 */}
+                        <div>
+                            {/* 視圖：全部（不分組） */}
+                            {viewMode === 'all' && (
+                                <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                                    <table className="w-full">
+                                        <thead className="bg-gradient-to-r from-gray-100 to-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">日期</th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">會議/活動</th>
+                                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        {selectedOrgData.map((item, index) => (
+                                            <tr key={item.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors`}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{item.date}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.suggestEventTypeName}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <button
+                                                        className="btn inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors shadow-sm hover:shadow"
+                                                        data-id={item.id}
+                                                    >
+                                                        查看建議
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* 視圖：依日期分組 */}
+                            {viewMode === 'byDate' && (
+                                <div className="space-y-4">
+                                    {groupedByDate.map(({key, items}) => (
+                                        <div key={key} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                            <div className="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                                                <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                                                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    {key}
+                                                </h4>
+                                            </div>
+                                            <ul className="divide-y divide-gray-100">
+                                                {items.map((item) => (
+                                                    <li key={item.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                        <div className="text-sm text-gray-800 font-medium">{item.suggestEventTypeName}</div>
+                                                        <button
+                                                            className="btn inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                                                            data-id={item.id}
+                                                        >
+                                                            查看建議
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* 視圖：依會議/活動分組 */}
+                            {viewMode === 'byEvent' && (
+                                <div className="space-y-4">
+                                    {groupedByEvent.map(({key, items}) => (
+                                        <div key={key} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                            <div className="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                                                <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                                                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                    </svg>
+                                                    {key}
+                                                </h4>
+                                            </div>
+                                            <ul className="divide-y divide-gray-100">
+                                                {items.map((item) => (
+                                                    <li key={item.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                        <div className="text-sm text-gray-800 font-medium">{item.date}</div>
+                                                        <button
+                                                            className="btn inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                                                            data-id={item.id}
+                                                        >
+                                                            查看建議
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </Modal>

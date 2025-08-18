@@ -297,7 +297,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isUser, timestamp }) =
                 </div>
             </div>
             <div className={`chat-header ${isUser ? 'text-right' : 'text-left'} mb-1`}>
-                <span className="text-xs sm:text-sm text-base-content">{isUser ? userName : '石化小幫手'}</span>
+                <span className="text-xs sm:text-sm text-base-content">{isUser ? userName : '績效指標小幫手'}</span>
                 <time className="text-xs opacity-50 ml-1 text-base-content">{timestamp}</time>
             </div>
             <div className={`chat-bubble ${isUser ? 'chat-bubble-primary' : 'chat-bubble-secondary'} 

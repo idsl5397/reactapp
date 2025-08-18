@@ -7,6 +7,7 @@ import FloatingChatButton from "@/components/BubbleChat/FloatingChatButton";
 import ChatBubble from "@/components/BubbleChat/ChatBubble";
 import QuickReply from "@/components/BubbleChat/QuickReply";
 import {GoogleGenAI} from "@google/genai";
+import axios from "axios";
 
 interface Message {
   id: number;
@@ -17,18 +18,6 @@ interface Message {
   avatar?: string;
 }
 
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY?.replace(/^=+/, '');
-
-if (!GEMINI_API_KEY) {
-  console.warn('Gemini API Key 未設定');
-}
-let ai:GoogleGenAI
-
-if(GEMINI_API_KEY) ai = new GoogleGenAI({
-  apiKey: GEMINI_API_KEY
-});
-
-
 const base_path = process.env.NEXT_PUBLIC_BASE_PATH || '/';
 const avatarImage = base_path? (`${base_path}/user.svg`):(`/user.svg`);
 
@@ -38,7 +27,7 @@ const TypingIndicator = () => {
       <div className="chat-image avatar">
         <div className="w-8 sm:w-10 md:w-12 rounded-full">
           <Image
-            alt="石化小幫手"
+            alt="績效指標小幫手"
             src={avatarImage}
             width={48}
             height={48}
@@ -60,7 +49,7 @@ const BubbleChatComponent = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      message: '您好！歡迎來到大型石化督導資料庫，我是您的AI小幫手。請問有什麼可以協助您的嗎？',
+      message: '您好！歡迎來到績效指標資料庫，我是您的AI小幫手。請問有什麼可以協助您的嗎？',
       isUser: false,
       timestamp: '12:30',
       isRead: false,
@@ -133,21 +122,19 @@ const handleSendMessage = async () => {
   setIsTyping(true);
 
   try {
-    // 呼叫 Gemini AI API
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: `你是一個專業的石化產業客服助手。請針對以下問題提供專業且友善的回覆：${userMessage}` }]
-        }
-      ],
+    const basepath = process.env.NEXT_PUBLIC_BASE_PATH || '/';
+    // ✅ 修正：正確的 axios POST 請求格式
+    const response = await axios.post(`${basepath}/api/gemini`, {
+      text: userMessage  // 或者 message: userMessage，取決於你的 API 設計
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
-
     setIsTyping(false);
 
     // 處理 AI 回覆
-    const aiReplyText = response.text || '抱歉，目前無法處理您的問題，請稍後再試或聯繫人工客服。';
+    const aiReplyText = response.data.response || '抱歉，目前無法處理您的問題，請稍後再試或聯繫人工客服。';
 
     const replyMessage: Message = {
       id: Date.now() + 1,
@@ -237,18 +224,18 @@ const handleQuickReply = async (reply: string): Promise<void> => {
   setIsTyping(true);
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: `你是一個專業的石化產業客服助手。請針對以下問題提供專業且友善的回覆：${reply}` }]
-        }
-      ]
+    const basepath = process.env.NEXT_PUBLIC_BASE_PATH || '/';
+    // ✅ 修正：正確的 axios POST 請求格式
+    const response = await axios.post(`${basepath}/api/gemini`, {
+      text: reply  // 或者 message: userMessage，取決於你的 API 設計
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
 
     setIsTyping(false);
-    const aiReplyText = response.text || '抱歉，目前無法處理您的問題。';
+    const aiReplyText = response.data.response || '抱歉，目前無法處理您的問題。';
 
     const replyMessage: Message = {
       id: Date.now() + 1,
@@ -396,10 +383,10 @@ const handleQuickReply = async (reply: string): Promise<void> => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm sm:text-lg">績效指標資料庫平台小幫手</h3>
+                  <h3 className="font-bold text-sm sm:text-lg">績效指標資料庫小幫手</h3>
                   <p className="text-xs sm:text-sm opacity-90 flex items-center gap-1">
                     <FlaskConical className="w-3 h-3 sm:w-4 sm:h-4" />
-                    AI 回覆可能有誤，請查證後在使用
+                    AI 回覆可能有誤，請查證後再使用
                   </p>
                 </div>
               </div>

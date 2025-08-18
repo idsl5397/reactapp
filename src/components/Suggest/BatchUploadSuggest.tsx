@@ -4,20 +4,32 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import api from "@/services/apiService"
+import SelectEnterprise, {SelectionPayload} from "@/components/select/selectOnlyEnterprise";
 
 export default function BatchUploadSuggest() {
     const [file, setFile] = useState<File | null>(null);
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const { confirm } = useConfirmDialog();
-
+    const [orgId, setOrgId] = useState<string>("");
+    const handleSelectionChange = (payload: SelectionPayload) => {
+        console.log("✅ 已選擇公司 ID：", payload.orgId); // ← 加這行
+        setOrgId(payload.orgId);
+    };
     // 上傳Excel，取得預覽資料
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const uploadedFile = e.target.files?.[0];
         if (!uploadedFile) return;
 
+        if (!orgId) {
+            toast.error("請先選擇公司，再上傳檔案");
+            e.target.value = "";
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('file', uploadedFile);
+        formData.append("file", uploadedFile);
+        formData.append("organizationId", orgId);
         setFile(uploadedFile);
 
         setIsLoading(true);
@@ -44,10 +56,15 @@ export default function BatchUploadSuggest() {
 
     // 送出預覽資料
     const handleBatchSubmit = async () => {
+        if (!orgId) {
+            toast.error('請先選擇公司');
+            return;
+        }
         if (previewData.length === 0) {
             toast.error('請先上傳並確認預覽資料');
             return;
         }
+
         const confirmed = await confirm({
             title: "確認送出",
             message: `即將匯入 ${previewData.length} 筆資料，是否確認？`
@@ -57,10 +74,15 @@ export default function BatchUploadSuggest() {
             toast("已取消送出");
             return;
         }
+
         setIsLoading(true);
         try {
-            const res = await api.post('/suggest/import-confirm', previewData);
-            toast.success(res.data.message + res.data.successCount || '批次匯入成功');
+            const payload = {
+                organizationId: orgId,
+                rows: previewData,
+            };
+            const res = await api.post('/suggest/import-confirm', payload);
+            toast.success(res.data.message || '批次匯入成功');
             setFile(null);
             setPreviewData([]);
         } catch (err: any) {
@@ -79,9 +101,16 @@ export default function BatchUploadSuggest() {
             <div className="max-w-7xl mx-auto">
                 {/* 上傳區域 */}
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <SelectEnterprise onSelectionChange={handleSelectionChange}/>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        </div>
+                    </div>
                     <div className="space-y-6">
                         {/* 下載模板區 */}
-                        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-6 border border-emerald-100">
+                        <div
+                            className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-6 border border-emerald-100">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900 mb-2">📄 Excel 範本下載</h3>
@@ -95,7 +124,7 @@ export default function BatchUploadSuggest() {
                                 >
                                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                     下載範本
                                 </a>
@@ -141,18 +170,20 @@ export default function BatchUploadSuggest() {
                                 <div className="mx-auto flex flex-col items-center">
                                     {file ? (
                                         <>
-                                            <svg className="w-12 h-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-12 h-12 text-green-500 mb-4" fill="none"
+                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                             <p className="text-lg font-semibold text-green-700 mb-2">檔案上傳成功</p>
                                             <p className="text-sm text-green-600">{file.name}</p>
                                         </>
                                     ) : (
                                         <>
-                                            <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-12 h-12 text-gray-400 mb-4" fill="none"
+                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                             </svg>
                                             <p className="text-lg font-semibold text-gray-700 mb-2">選擇 Excel 檔案</p>
                                             <p className="text-sm text-gray-500">支援 .xlsx, .xls 格式</p>
@@ -168,7 +199,7 @@ export default function BatchUploadSuggest() {
                 {isLoading && (
                     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-12 mb-8">
                         <div className="flex flex-col items-center justify-center">
-                            <div className="relative">
+                        <div className="relative">
                                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200"></div>
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-emerald-600 absolute top-0 left-0"></div>
                             </div>

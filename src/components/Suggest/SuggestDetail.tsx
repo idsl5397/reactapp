@@ -105,16 +105,16 @@ export default function SuggestDetailPage() {
         { field: 'suggestion', headerName: '建議內容', flex: 2 },
         { field: 'suggestionType', headerName: '建議類別' },
         { field: 'respDept', headerName: '責任部門' },
-        { field: 'improveDetails', headerName: '改善對策' },
+        { field: 'improveDetails', headerName: '改善對策' , flex: 2},
         { field: 'isAdopted', headerName: '是否參採' },
         { field: 'completed', headerName: '是否完成' },
         { field: 'doneYear', headerName: '完成年' },
         { field: 'doneMonth', headerName: '完成月' },
-        { field: 'parallelExec', headerName: '平行展開' },
-        { field: 'execPlan', headerName: '執行計畫' },
-        { field: 'manpower', headerName: '投入人力' },
-        { field: 'budget', headerName: '投入經費' },
-        { field: 'remark', headerName: '備註', flex: 1 },
+        { field: 'parallelExec', headerName: '平行展開', hide: true },
+        { field: 'execPlan', headerName: '平行展開執行計畫', hide: true },
+        { field: 'manpower', headerName: '投入人力', hide: true },
+        { field: 'budget', headerName: '投入經費', hide: true },
+        { field: 'remark', headerName: '備註', flex: 1 , hide: true},
     ];
 
     useEffect(() => {
@@ -251,7 +251,8 @@ export default function SuggestDetailPage() {
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                         {/* Section Header */}
                         <div

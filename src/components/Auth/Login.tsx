@@ -13,6 +13,7 @@ import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
 import ForgotPasswordModal from './ForgotPasswordModal';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
+import {Turnstile} from "@marsidev/react-turnstile";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 
@@ -76,26 +77,26 @@ export default function Login() {
         setErrorMessage('');
 
         // 暫時略過驗證
-        // if (!captchaToken) {
-        //     setErrorMessage("請先完成驗證");
-        //     return;
-        // }
+        if (!captchaToken) {
+            setErrorMessage("請先完成驗證");
+            return;
+        }
 
         try {
             setIsVerifying(true);
-
+            const basepath = process.env.NEXT_PUBLIC_BASE_PATH || '/';
             // 暫時跳過 captcha 檢查
-            // const captchaResponse = await axios.post(
-            //     "/api/verify",
-            //     { token: captchaToken },
-            //     { headers: { "Content-Type": "application/json" } }
-            // );
-            //
-            // if (!captchaResponse.data.success) {
-            //     setErrorMessage("驗證失敗，請重新嘗試");
-            //     setIsVerifying(false);
-            //     return;
-            // }
+            const captchaResponse = await axios.post(
+                `${basepath}/api/verify`,
+                { token: captchaToken },
+                { headers: { "Content-Type": "application/json" } }
+            );
+
+            if (!captchaResponse.data.success) {
+                setErrorMessage("驗證失敗，請重新嘗試");
+                setIsVerifying(false);
+                return;
+            }
 
             const resp = await userService.Login(usermail, password);
             console.log("login resp:", resp);
@@ -174,7 +175,7 @@ export default function Login() {
         } finally {
             setIsVerifying(false);
             // 暫時跳過 captcha 檢查
-            // turnstile.current?.reset();
+            turnstile.current?.reset();
         }
     };
 
@@ -257,14 +258,14 @@ export default function Login() {
                             </div>
                             <div className="mt-4 flex justify-center">
                                 {/* 暫時移除 Turnstile */}
-                                {/* <Turnstile
+                                <Turnstile
                                     options={{ language: "zh-tw" }}
                                     ref={turnstile}
                                     siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"
                                     onSuccess={(token) => setCaptchaToken(token)}
                                     onError={() => setErrorMessage("驗證失敗，請重試")}
                                     onExpire={() => setCaptchaToken(null)}
-                                /> */}
+                                />
                             </div>
                             <div className="grid gap-x-8">
                                 <button
