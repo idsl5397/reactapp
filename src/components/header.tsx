@@ -255,7 +255,7 @@ export default function Header() {
                     <div className="flex items-center justify-between">
                         <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
-                            <Image alt="Logo" src={logo} className="h-11 w-auto" width={100} height={40}/>
+                            <Image alt="經濟部產業園區管理局績效指標資料庫暨資訊平台Logo" src={logo} className="h-11 w-auto" width={100} height={40}/>
                         </Link>
                         <button
                             type="button"

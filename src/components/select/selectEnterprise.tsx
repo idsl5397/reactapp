@@ -166,6 +166,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
                         id="enterprise"
                         name="enterprise"
                         aria-label="請選擇階層 1"
+                        required
                         value={selectedEnterprise}
                         onChange={handleEnterpriseChange}
                         disabled={isCompany}
@@ -193,6 +194,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
                         id="company"
                         name="company"
                         aria-label="請選擇階層 2"
+                        required
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"
@@ -220,6 +222,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
                         id="factory"
                         name="factory"
                         aria-label="請選擇階層 3"
+                        required
                         value={selectedFactory}
                         onChange={handleFactoryChange}
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 custom-select"

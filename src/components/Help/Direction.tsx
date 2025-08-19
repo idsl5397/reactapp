@@ -34,9 +34,9 @@ export default function Direction(){
 
                             <h2 className="mt-6 text-lg font-semibold text-gray-800">快速鍵（Accesskey）設定：</h2>
                             <ul className="list-disc pl-6 space-y-2 text-gray-800">
-                                <li><strong>Alt+U</strong>：右上方功能區塊（回首頁、網站導覽、網站搜尋等）</li>
+                                <li><strong>Alt+U</strong>：上方功能區塊（首頁、說明、登入等）</li>
                                 <li><strong>Alt+C</strong>：中央內容區塊（本頁主要內容區）</li>
-                                <li><strong>Alt+B</strong>：下方功能區塊</li>
+                                <li><strong>Alt+B</strong>：下方功能區塊（本頁頁尾區）</li>
                             </ul>
 
                             <p className="mt-4 text-gray-800">

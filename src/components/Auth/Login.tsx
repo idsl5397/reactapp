@@ -31,6 +31,7 @@ export default function Login() {
     const [modelType,setModelType] = useState<"forgotPassword"|"changepassword">("forgotPassword");
     const { confirm } = useConfirmDialog();
 
+    const forgotTriggerRef = useRef<HTMLButtonElement>(null);
 
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
@@ -234,14 +235,27 @@ export default function Login() {
                                         輸入密碼
                                     </label>
                                     <div className="text-sm">
-                                        <a
-                                            href="#"
-                                            onClick={() => {setShowForgotModal(true) ;setModelType("forgotPassword")}}
-                                            className="font-semibold text-indigo-600 hover:text-indigo-500"
+                                        {/* ⬇️ 改成 button；加上 aria 屬性；綁定 ref */}
+                                        <button
+                                            ref={forgotTriggerRef}
+                                            type="button"
+                                            aria-haspopup="dialog"
+                                            aria-controls="forgot-password-modal"
+                                            onClick={() => {
+                                                setModelType("forgotPassword");
+                                                setShowForgotModal(true);
+                                            }}
+                                            className="custom-select font-semibold text-indigo-600 hover:text-indigo-500 underline"
                                         >
                                             忘記密碼?
-                                        </a>
+                                        </button>
                                     </div>
+                                    {/* 彈出視窗 */}
+                                    <ForgotPasswordModal
+                                        modol={modelType}
+                                        isOpen={showForgotModal}
+                                        onClose={() => setShowForgotModal(false)}
+                                    />
                                 </div>
                                 <div className="mt-2">
                                     <input
@@ -291,12 +305,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-            {/* 彈出視窗 */}
-            <ForgotPasswordModal
-                modol={modelType}
-                isOpen={showForgotModal}
-                onClose={() => setShowForgotModal(false)}
-            />
+
 
         </>
     );

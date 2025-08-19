@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, {useRef} from 'react';
 import {
     FormDataType,
     MultiStepForm,
@@ -8,9 +8,9 @@ import {
     StepContent,
     StepIndicatorComponent, StepNavigationWrapper
 } from '@/components/StepComponse';
-import Step1 from '@/components/register/Step1';
+import Step1, { Step1Ref }from '@/components/register/Step1';
 import Step2,{ getLatestSelectedOrganization } from '@/components/register/Step2';
-import Step3 from '@/components/register/Step3';
+import Step3, { Step3Ref } from '@/components/register/Step3';
 import Step4 from '@/components/register/Step4';
 import api from "@/services/apiService"
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -106,6 +106,8 @@ export default function Register() {
         }
     };
 
+    const step1Ref = useRef<Step1Ref>(null);
+    const step3Ref = useRef<Step3Ref>(null);
 
     return (
         <>
@@ -130,18 +132,33 @@ export default function Register() {
                             {/* 步驟 1: 身分驗證 */}
                             <StepContent step={0}>
                                 <StepCard title="確認信箱">
-                                    <Step1/>
+                                    <Step1 ref={step1Ref} />
                                     <StepNavigationWrapper
                                         prevLabel="返回"
                                         nextLabel="確認並繼續"
                                         onSubmit={async (stepData, updateStepData) => {
+                                            const emailEl = step1Ref.current?.getEmailInput();
+
+                                            // 1) 原生驗證（空值 / 格式）
+                                            if (!emailEl) {
+                                                // 找不到 input（理論上不會發生）
+                                                updateStepData({ verificationError: "找不到電子郵件欄位" });
+                                                step1Ref.current?.focusEmail();
+                                                return false;
+                                            }
+
+                                            // 清掉舊訊息
+                                            emailEl.setCustomValidity("");
+
                                             const formData = (stepData.EmailVerificationForm as EmailVerificationFormData)?.email;
                                             console.log("輸入的 email 是：", formData);
                                             if (!formData) {
-                                                updateStepData({verificationError: "請輸入電子郵件和驗證碼"});
-
+                                                updateStepData({ verificationError: "請輸入電子郵件" });
+                                                emailEl.setCustomValidity("請輸入電子郵件");
+                                                emailEl.reportValidity(); // 顯示泡泡並自動聚焦
                                                 return false;
                                             }
+
                                             try {
                                                 // 假設有一個 API 可以驗證 email
                                                 const response = await api.post(
@@ -211,11 +228,13 @@ export default function Register() {
                             </StepContent>
                             <StepContent step={2}>
                                 <StepCard title="個人資料">
-                                    <Step3/>
+                                    <Step3 ref={step3Ref} />
                                     <StepNavigationWrapper
                                         prevLabel="返回"
                                         nextLabel="確認並繼續"
                                         onSubmit={(stepData, updateStepData) => {
+                                            const ok = step3Ref.current?.validateAndFocus();
+                                            if (!ok) return false;
                                             const baseInfo = (stepData.BaseUserInfo as BaseUserInfo)
                                             console.log(baseInfo);
 

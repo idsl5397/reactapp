@@ -11,7 +11,6 @@ interface StepsContainerProps {
     vertical?: boolean;
 }
 
-
 interface StepProps {
     children: ReactNode;
     status?: 'default' | 'primary' | 'secondary' | 'accent' | 'neutral' | 'error' | 'completed';
@@ -74,6 +73,7 @@ const Step1: React.FC<Step1Props> = ({ email, setEmail }) => {
                         name="email"
                         type="email"
                         value={email}
+                        required
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Email"

@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, {useRef} from 'react';
 import {
     FormDataType,
     MultiStepForm,
@@ -8,7 +8,7 @@ import {
     StepContent,
     StepIndicatorComponent, StepNavigationWrapper
 } from '@/components/StepComponse';
-import Step1 from '@/components/ReportKPI/AddKpiValueStep1';
+import Step1, {AddKpiStep1Ref} from '@/components/ReportKPI/AddKpiValueStep1';
 import Step2 from '@/components/ReportKPI/AddKpiValueStep2';
 import type { Kpi } from "@/components/ReportKPI/AddKpiValueStep2";
 import Step3 from '@/components/ReportKPI/AddKpiValueStep3';
@@ -145,6 +145,7 @@ export default function AddKPIvalue() {
         }
     };
 
+    const step1Ref = useRef<AddKpiStep1Ref>(null);
 
     return (
         <>
@@ -168,11 +169,17 @@ export default function AddKPIvalue() {
                         {/* 步驟 1: 選擇公司/工廠 */}
                         <StepContent step={0}>
                             <StepCard title="選擇公司/工廠">
-                                <Step1/>
+                                <Step1 ref={step1Ref} />
                                 <StepNavigationWrapper
                                     prevLabel="返回"
                                     nextLabel="確認並繼續"
                                     onSubmit={async (stepData, updateStepData) => {
+                                        // 先跑 Step1 的表單驗證與聚焦
+                                        if (!step1Ref.current?.validateAndFocus()) {
+                                            // 可視需要加上 toast 提示
+                                            // toast.error("請先完成必填欄位");
+                                            return false;
+                                        }
                                         const orgId = (stepData.SelectCompany as SelectCompany)?.organizationId;
                                         const year = (stepData.SelectCompany as SelectCompany)?.year;
                                         const quarter = (stepData.SelectCompany as SelectCompany)?.quarter;

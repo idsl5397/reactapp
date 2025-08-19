@@ -1,27 +1,37 @@
-import React from "react";
+import React, {forwardRef, useImperativeHandle, useRef} from "react";
 import { useStepContext} from "../StepComponse";
 import {EmailVerificationFormData} from "@/components/Auth/Register";
 
 
 
+export type Step1Ref = {
+    focusEmail: () => void;
+    getEmailInput: () => HTMLInputElement | null;
+};
 
-export default function Step1() {
+const Step1 = forwardRef<Step1Ref>((_props, ref) => {
     const { stepData, updateStepData } = useStepContext();
+    const emailInputRef = useRef<HTMLInputElement>(null);
 
-    const handleonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        //值
+    useImperativeHandle(ref, () => ({
+        focusEmail: () => {
+            emailInputRef.current?.focus();
+            emailInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        },
+        getEmailInput: () => emailInputRef.current
+    }));
 
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
         const currentFormValues = (stepData.EmailVerificationForm as EmailVerificationFormData) || {};
-
         updateStepData({
             EmailVerificationForm: {
                 ...currentFormValues,
                 [name]: value
             },
+            verificationError: null, // 清錯
         });
-    }
+    };
 
     return (
         <div className="card w-full bg-white shadow-md rounded-lg">
@@ -30,26 +40,27 @@ export default function Step1() {
                 <div className="mb-4">
                     <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-800">電子郵件</label>
                     <input
+                        ref={emailInputRef}
                         id="email"
                         name="email"
                         type="email"
-                        value={((stepData.EmailVerificationForm as EmailVerificationFormData)?.email) || ''}
-                        onChange={handleonChange}
-                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        required
+                        value={(stepData.EmailVerificationForm as EmailVerificationFormData)?.email || ""}
+                        onChange={handleOnChange}
+                        className="w-full p-3 border rounded-md focus:outline-nonetext-gray-800"
                         placeholder="Email"
+                        aria-invalid={!!(stepData as any).verificationError}
+                        aria-describedby={(stepData as any).verificationError ? "email-error" : undefined}
                     />
                     {(stepData as any).verificationError && (
-                        <div className="text-red-500 text-sm mt-2">
+                        <div id="email-error" className="text-red-500 text-sm mt-2">
                             {(stepData as any).verificationError}
                         </div>
                     )}
                 </div>
-
-                {/*<div className="text-sm text-gray-600 mb-4">*/}
-                {/*    我們將向此郵箱發送驗證碼，請確保能夠接收郵件。*/}
-                {/*</div>*/}
             </div>
         </div>
-
     );
-}
+});
+
+export default Step1;

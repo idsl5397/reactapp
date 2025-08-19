@@ -46,7 +46,7 @@ const geistMono = Geist_Mono({
  * @property {string} description 應用的描述
  */
 const appMetadata = {
-    title: '績效指標平台',
+    title: '經濟部產業園區管理局績效指標資料庫暨資訊平台',
     description: '本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管的數位化工具。\n' +
         '透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。'
 };
@@ -120,7 +120,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                 href="#top"
                 accessKey="U"
                 tabIndex={0}
-                title="上方功能服務選項區"
+                title="上方功能區塊"
                 className="invisible absolute"
             >
                 :::
@@ -131,7 +131,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                 href="#main-content"
                 accessKey="C"
                 tabIndex={-1}
-                title="跳到主要內容區"
+                title="中央內容區塊"
                 className="invisible absolute"
             >
                 :::
@@ -284,7 +284,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                 href="#footer"
                 accessKey="B"
                 tabIndex={0}
-                title="跳轉到下方功能區塊"
+                title="下方功能區塊"
                 className="invisible absolute"
             >
                 :::

@@ -121,9 +121,8 @@ export default function SugImportPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <SelectEnterprise onSelectionChange={handleSelectionChange} />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" />
 
-                    </div>
                 </div>
 
                 <div className="card border bg-white shadow-md p-4">

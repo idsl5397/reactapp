@@ -359,7 +359,7 @@ export function StepCard({
       <div className="card-body bg-white">
         {title && (
           typeof title === 'string'
-            ? <h3 className="card-title text-primary">{title}</h3>
+            ? <h2 className="card-title text-primary">{title}</h2>
             : title
         )}
         {children}
