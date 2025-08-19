@@ -27,7 +27,7 @@ const TypingIndicator = () => {
       <div className="chat-image avatar">
         <div className="w-8 sm:w-10 md:w-12 rounded-full">
           <Image
-            alt="績效指標小幫手"
+            alt="績效指標小幫手頭像"
             src={avatarImage}
             width={48}
             height={48}
@@ -97,7 +97,6 @@ const BubbleChatComponent = () => {
 
   const simulateCustomerServiceReply = (userMessage: string): string => {
     const responses: Record<string, string> = {
-
       '轉接人工客服': '好的，我正在為您轉接到人工客服，請稍等片刻...',
     };
 
@@ -374,7 +373,7 @@ const handleQuickReply = async (reply: string): Promise<void> => {
                 <div className="avatar online">
                   <div className="w-8 sm:w-10 rounded-full">
                     <Image
-                      alt="客服頭像"
+                      alt="績效指標小幫手頭像"
                       src={avatarImage}
                       width={48}
                       height={48}

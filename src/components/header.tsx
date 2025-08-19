@@ -131,7 +131,7 @@ export default function Header() {
                     <Link href="/home" className="btn btn-ghost">
                         <span className="sr-only">首頁</span>
                         <Image
-                            alt="Logo"
+                            alt="經濟部產業園區管理局績效指標資料庫暨資訊平台Logo"
                             src={logo}
                             className="h-8 w-auto sm:h-11 md:h-9 lg:h-11"
                             width={100}

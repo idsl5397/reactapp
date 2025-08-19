@@ -288,7 +288,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isUser, timestamp }) =
             <div className="chat-image avatar">
                 <div className="w-8 sm:w-10 md:w-12 rounded-full">
                     <Image
-                        alt="頭像"
+                        alt="績效指標小幫手頭像"
                         src={avatarImage}
                         width={48}
                         height={48}
