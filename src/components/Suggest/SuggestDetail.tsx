@@ -56,7 +56,7 @@ export default function SuggestDetailPage() {
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "委員回覆及改善建議", href: `${NPbasePath}/suggest` },
-        { label: "詳情" },
+        { label: "委員回覆及改善建議詳情" },
     ];
 
 
@@ -170,33 +170,34 @@ export default function SuggestDetailPage() {
 
     if (!suggestData) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-                <div className="max-w-7xl mx-auto px-6 py-6">
-                    {/* Header Section */}
-                    <div className="bg-white shadow-sm border-b border-gray-200">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                            <Breadcrumbs items={breadcrumbItems}/>
-                        </div>
-                    </div>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <div className="text-center">
-                            <div className="text-6xl mb-4">❌</div>
-                            <p className="text-red-600 text-lg">找不到資料</p>
+            <>
+                <div className="w-full flex justify-start">
+                    <Breadcrumbs items={breadcrumbItems}/>
+                </div>
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+                    <div className="max-w-7xl mx-auto px-6 py-6">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                            <div className="text-center">
+                                <div className="text-6xl mb-4">❌</div>
+                                <p className="text-red-600 text-lg">找不到資料</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     return (
         <>
             <Toaster position="top-right" reverseOrder={false}/>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Breadcrumbs items={breadcrumbItems}/>
                         <div className="mt-6">
                             <h1 className="text-4xl font-bold text-gray-900 mb-2">
                                 委員回覆及改善建議詳情

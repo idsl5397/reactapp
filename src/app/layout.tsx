@@ -117,7 +117,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
         </div>
         <div className="flex flex-col min-h-screen" style={{paddingTop: headerHeight}}>
 
-            {NODE_ENV === "development" && (
+
+            {isLoggedIn && NODE_ENV === "development" && (
                 <Drawer
                     position="top-center"
                     autoHide={true}

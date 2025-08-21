@@ -108,7 +108,7 @@ export default function ForgotPasswordModal({
             if (e.key !== "Tab") return;
             const container = dialogRef.current;
             if (!container) return;
-            let nodes = Array.from(
+            const nodes = Array.from(
                 container.querySelectorAll<HTMLElement>(
                     'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
                 )

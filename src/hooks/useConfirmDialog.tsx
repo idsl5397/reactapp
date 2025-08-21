@@ -1,4 +1,3 @@
-// hooks/useConfirmDialog.tsx
 'use client'
 
 import React, {
@@ -54,13 +53,13 @@ export const ConfirmDialogProvider = ({ children }: { children: React.ReactNode 
         });
     }, []);
 
-    const closeAndResolve = (val: boolean) => {
+    const closeAndResolve = useCallback((val: boolean) => {
         setIsOpen(false);
         resolveFn?.(val);
-    };
+    }, [resolveFn]);
 
-    const handleConfirm = () => closeAndResolve(true);
-    const handleCancel = () => closeAndResolve(false);
+    const handleConfirm = useCallback(() => closeAndResolve(true), [closeAndResolve]);
+    const handleCancel  = useCallback(() => closeAndResolve(false), [closeAndResolve]);
 
     // 開啟時：鎖背景捲動 + 把焦點移到對話框內第一顆可操作按鈕
     useEffect(() => {
@@ -114,7 +113,7 @@ export const ConfirmDialogProvider = ({ children }: { children: React.ReactNode 
             const container = dialogRef.current;
             if (!container) return;
 
-            let nodes = Array.from(
+            const nodes = Array.from(
                 container.querySelectorAll<HTMLElement>(
                     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
                 )
@@ -141,7 +140,7 @@ export const ConfirmDialogProvider = ({ children }: { children: React.ReactNode 
 
         document.addEventListener("keydown", onKeyDown);
         return () => document.removeEventListener("keydown", onKeyDown);
-    }, [isOpen]);
+    }, [isOpen, handleCancel]);
 
     // 點遮罩關閉（等同取消）
     const onBackdropMouseDown: React.MouseEventHandler<HTMLDivElement> = (e) => {

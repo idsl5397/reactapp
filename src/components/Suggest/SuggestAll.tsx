@@ -52,7 +52,7 @@ export default function SuggestAllPage() {
     const sp = useSearchParams();
 
     // 只在第一次載入讀 URL orgId，避免後續 render 又把下拉重設為預設
-    const initialOrgId = useMemo(() => sp.get('orgId') ?? '', []);
+    const initialOrgId = useMemo(() => sp.get('orgId') ?? '', [sp]);
 
     const [loading, setLoading] = useState(true);
     const [rows, setRows] = useState<SuggestReport[]>([]);
@@ -73,7 +73,7 @@ export default function SuggestAllPage() {
     const breadcrumbItems = [
         { label: '首頁', href: `${NPbasePath}/home` },
         { label: '委員回覆及改善建議', href: `${NPbasePath}/suggest` },
-        { label: '詳情' },
+        { label: '委員回覆及改善建議詳情總表' },
     ];
 
     const cols: ColDef<SuggestReport>[] = [
@@ -120,8 +120,8 @@ export default function SuggestAllPage() {
     // 只用 keyword 做全文搜索
     const searchKeyword = useMemo(() => keyword.trim(), [keyword]);
 
-    // 組 API 參數：使用 currentSelection
-    const buildParams = () => {
+    // 2) 組 API 參數：用 useCallback 穩定參考
+    const buildParams = React.useCallback(() => {
         const params: Record<string, any> = {};
         if (currentSelection.orgId && currentSelection.orgId !== '') {
             params.organizationId = currentSelection.orgId;
@@ -132,9 +132,16 @@ export default function SuggestAllPage() {
         if (currentSelection.endQuarter) params.endQuarter = currentSelection.endQuarter;
         if (searchKeyword) params.keyword = searchKeyword;
         return params;
-    };
+    }, [
+        currentSelection.orgId,
+        currentSelection.startYear,
+        currentSelection.endYear,
+        currentSelection.startQuarter,
+        currentSelection.endQuarter,
+        searchKeyword,
+    ]);
 
-    // 查詢（只有 currentSelection 或搜尋關鍵字變化時）
+    // 3) 查詢 effect：依賴 buildParams（其內已正確列出所有依賴）
     useEffect(() => {
         const controller = new AbortController();
         const { signal } = controller;
@@ -163,14 +170,7 @@ export default function SuggestAllPage() {
 
         const t = setTimeout(fetchData, 300);
         return () => { clearTimeout(t); controller.abort(); };
-    }, [
-        currentSelection.orgId,
-        currentSelection.startYear,
-        currentSelection.endYear,
-        currentSelection.startQuarter,
-        currentSelection.endQuarter,
-        searchKeyword
-    ]);
+    }, [buildParams]);
 
     // 類別前端篩選
     const filteredRows = useMemo(() => {
@@ -252,14 +252,17 @@ export default function SuggestAllPage() {
 
     return (
         <>
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster position="top-right" reverseOrder={false}/>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Breadcrumbs items={breadcrumbItems} />
                         <div className="mt-6">
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">委員回覆及改善建議詳情</h1>
-                            <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">委員回覆及改善建議詳情總表</h1>
+                            <div
+                                className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
                         </div>
                     </div>
                 </div>
@@ -276,19 +279,26 @@ export default function SuggestAllPage() {
                                         <div className="w-2 h-6 bg-indigo-500 rounded-full mr-3"></div>
                                         篩選條件
                                     </h3>
-                                    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div
+                                        className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                         <details className="group" open>
-                                            <summary className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-gray-50 rounded-lg transition-colors duration-200 custom-select">
-                                                <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
-                                                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                            <summary
+                                                className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-gray-50 rounded-lg transition-colors duration-200 custom-select">
+                                                <span
+                                                    className="text-sm font-medium text-gray-800 flex items-center gap-2">
+                                                    <svg className="w-4 h-4 text-gray-500" fill="none"
+                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                                              strokeWidth={2}
                                                               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                                     </svg>
                                                     選擇日期與公司條件
                                                 </span>
-                                                <svg className="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform duration-200"
-                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                                                <svg
+                                                    className="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform duration-200"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                          d="M19 9l-7 7-7-7"/>
                                                 </svg>
                                             </summary>
                                             <div className="px-4 pb-4 pt-2 border-t border-gray-100">
@@ -362,7 +372,8 @@ export default function SuggestAllPage() {
                                             onClick={handleSyncSelection}
                                             title="重新顯示當前篩選條件"
                                         >
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                             </svg>
@@ -374,7 +385,8 @@ export default function SuggestAllPage() {
                                             onClick={handleReset}
                                             disabled={loading}
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                             </svg>
@@ -421,10 +433,13 @@ export default function SuggestAllPage() {
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                         {/* 控制列 */}
                         <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                            <div
+                                className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                                 <div className="relative flex-1 max-w-md">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div
+                                        className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                             stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                         </svg>
@@ -468,7 +483,8 @@ export default function SuggestAllPage() {
 
                         {/* 表格 */}
                         <div className="p-6">
-                            <div className="ag-theme-quartz rounded-xl overflow-hidden shadow-sm border border-gray-200" style={{height: 700}}>
+                            <div className="ag-theme-quartz rounded-xl overflow-hidden shadow-sm border border-gray-200"
+                                 style={{height: 700}}>
                                 <AgGridReact
                                     ref={gridRef}
                                     localeText={AG_GRID_LOCALE_TW}
@@ -478,8 +494,20 @@ export default function SuggestAllPage() {
                                     rowSelection="multiple"
                                     sideBar={{
                                         toolPanels: [
-                                            { id: 'columns', labelDefault: '欄位', labelKey: 'columns', iconKey: 'columns', toolPanel: 'agColumnsToolPanel' },
-                                            { id: 'filters', labelDefault: '篩選', labelKey: 'filters', iconKey: 'filter', toolPanel: 'agFiltersToolPanel' }
+                                            {
+                                                id: 'columns',
+                                                labelDefault: '欄位',
+                                                labelKey: 'columns',
+                                                iconKey: 'columns',
+                                                toolPanel: 'agColumnsToolPanel'
+                                            },
+                                            {
+                                                id: 'filters',
+                                                labelDefault: '篩選',
+                                                labelKey: 'filters',
+                                                iconKey: 'filter',
+                                                toolPanel: 'agFiltersToolPanel'
+                                            }
                                         ],
                                         defaultToolPanel: '',
                                     }}

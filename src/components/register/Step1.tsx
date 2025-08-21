@@ -80,5 +80,5 @@ const Step1 = forwardRef<Step1Ref>((_props, ref) => {
         </div>
     );
 });
-
+Step1.displayName = "Step1";
 export default Step1;
