@@ -24,6 +24,10 @@
 .report-page {
   font-size: 1rem;
 }
+:focus-visible {
+  outline: 4px dashed #ff1493 !important;
+  outline-offset: 2px !important;
+}
 
 .outline-dashed-pink:focus-visible {
   outline: 4px dashed #ff1493 !important;

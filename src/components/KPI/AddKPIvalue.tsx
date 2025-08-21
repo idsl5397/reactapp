@@ -65,7 +65,7 @@ export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "填報資料" , href: `${NPbasePath}/reportEntry` },
-        { label: "新增績效指標報告"}
+        { label: "上傳績效指標報告"}
     ];
 
     // 處理表單完成
@@ -154,7 +154,7 @@ export default function AddKPIvalue() {
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
             <div className="max-w-4xl mx-auto p-4">
-                <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">上傳績效指標報告步驟</h1>
+                <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">上傳績效指標報告</h1>
 
                 <MultiStepForm
                     initialData={{} as ExtendedFormData}

@@ -112,7 +112,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                         <div className="w-10 rounded-full">
                             <Image
                                 src={userlogo}
-                                alt={`${name}'s avatar`}
+                                alt={`${name}頭像`}
                                 width={200}
                                 height={200}
                                 priority={userlogo}

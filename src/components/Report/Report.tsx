@@ -109,14 +109,16 @@ export default function Report() {
 
     return (
         <>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Breadcrumbs items={breadcrumbItems}/>
                         <div className="mt-6">
                             <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                                數據分析報表
+                                報表
                             </h1>
                             <div
                                 className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>

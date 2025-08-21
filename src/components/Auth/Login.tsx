@@ -14,6 +14,8 @@ import api from "@/services/apiService"
 import ForgotPasswordModal from './ForgotPasswordModal';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import {Turnstile} from "@marsidev/react-turnstile";
+// import {useConfirm} from "@/hooks/FoyDialog/useConfirm";
+
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 
@@ -30,6 +32,7 @@ export default function Login() {
     const [showForgotModal, setShowForgotModal] = useState(false);
     const [modelType,setModelType] = useState<"forgotPassword"|"changepassword">("forgotPassword");
     const { confirm } = useConfirmDialog();
+    // const { confirmDialog, ConfirmComponent } = useConfirm();
 
     const forgotTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -105,6 +108,14 @@ export default function Login() {
             // A) 密碼已過期 → 導去變更密碼頁
             if (resp.forceChangePassword) {
                 setErrorMessage(resp.message || "密碼已過期，請重設密碼");
+               // const confirmed =  await confirmDialog({
+               //     cardTitle: "⚠️密碼已過期",
+               //     message: errorMessage,
+               //     buttonConfirm: "確定",
+               //     buttonCancel:"取消",
+               //     confirmStyle: "bg-primary",
+               // });
+
                 const confirmed = await confirm({
                     title: "更改密碼",
                     message: "密碼已過期，請重設密碼，是否繼續進入重設密碼流程?"
@@ -194,7 +205,7 @@ export default function Login() {
 
     return (
         <>
-
+            {/*{ConfirmComponent}*/}
             <Toaster position="top-right" reverseOrder={false}/>
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
@@ -250,12 +261,7 @@ export default function Login() {
                                             忘記密碼?
                                         </button>
                                     </div>
-                                    {/* 彈出視窗 */}
-                                    <ForgotPasswordModal
-                                        modol={modelType}
-                                        isOpen={showForgotModal}
-                                        onClose={() => setShowForgotModal(false)}
-                                    />
+
                                 </div>
                                 <div className="mt-2">
                                     <input
@@ -305,7 +311,13 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-
+            {/* 彈出視窗 */}
+            <ForgotPasswordModal
+                modol={modelType}
+                isOpen={showForgotModal}
+                onClose={() => setShowForgotModal(false)}
+                triggerRef={forgotTriggerRef}
+            />
 
         </>
     );

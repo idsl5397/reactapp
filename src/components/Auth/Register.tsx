@@ -138,17 +138,21 @@ export default function Register() {
                                         nextLabel="確認並繼續"
                                         onSubmit={async (stepData, updateStepData) => {
                                             const emailEl = step1Ref.current?.getEmailInput();
-
-                                            // 1) 原生驗證（空值 / 格式）
                                             if (!emailEl) {
-                                                // 找不到 input（理論上不會發生）
                                                 updateStepData({ verificationError: "找不到電子郵件欄位" });
-                                                step1Ref.current?.focusEmail();
                                                 return false;
                                             }
 
-                                            // 清掉舊訊息
+                                            // 清掉舊錯誤
+                                            updateStepData({ verificationError: null });
                                             emailEl.setCustomValidity("");
+
+                                            // 先跑原生驗證（必填 / 格式）
+                                            if (!emailEl.checkValidity()) {
+                                                // 這裡也可以不呼叫 reportValidity，交給 Step1 effect；但為了立即回饋可以保留：
+                                                emailEl.reportValidity();
+                                                return false;
+                                            }
 
                                             const formData = (stepData.EmailVerificationForm as EmailVerificationFormData)?.email;
                                             console.log("輸入的 email 是：", formData);

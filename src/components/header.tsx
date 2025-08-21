@@ -146,12 +146,16 @@ export default function Header() {
                     {isLoggedIn && (
                         <AutoRefresh/>
                     )}
+                    <a accessKey="u" href="#U" title="右上方功能區塊"
+                       className="bg-white text-white flex items-center justify-center focus:text-base-content">
+                        :::
+                    </a>
                     {isLoggedIn && hasMenu ? (
                             menu.map((item) => (
                                 <React.Fragment key={item.id}>
                                     {item.children && item.children.length > 0 ? (
                                         <Popover className="relative">
-                                            {({open, close}) => (
+                                        {({open, close}) => (
                                                 <div
                                                     onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()} // 避免按鈕焦點黏住
                                                 >

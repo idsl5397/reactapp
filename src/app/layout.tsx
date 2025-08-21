@@ -116,26 +116,6 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             <Header/>
         </div>
         <div className="flex flex-col min-h-screen" style={{paddingTop: headerHeight}}>
-            <a
-                href="#top"
-                accessKey="U"
-                tabIndex={0}
-                title="上方功能區塊"
-                className="invisible absolute"
-            >
-                :::
-            </a>
-
-            <a
-                id="skip-to-content"
-                href="#main-content"
-                accessKey="C"
-                tabIndex={-1}
-                title="中央內容區塊"
-                className="invisible absolute"
-            >
-                :::
-            </a>
 
             {NODE_ENV === "development" && (
                 <Drawer
@@ -271,24 +251,16 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     </div>
                 </Drawer>
             )}
-            <main id="main-content" className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <ConfirmDialogProvider>
+
+
+            <ConfirmDialogProvider>
+                <main id="main-content" className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                     {children}
-                </ConfirmDialogProvider>
-            </main>
+                </main>
+            </ConfirmDialogProvider>
 
-            {isLoggedIn&&  <BubbleChatComponent/> }
+            {isLoggedIn && <BubbleChatComponent/>}
 
-            <a
-                id="skip-to-footer"
-                href="#footer"
-                accessKey="B"
-                tabIndex={0}
-                title="下方功能區塊"
-                className="invisible absolute"
-            >
-                :::
-            </a>
             <footer id="footer">
                 <Footer/>
             </footer>

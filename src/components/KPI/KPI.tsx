@@ -181,18 +181,20 @@ export default function KPI() {
                     },
                 }}
             />
-
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             {/* Background with gradient */}
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Breadcrumbs items={breadcrumbItems}/>
                         <div className="mt-6">
                             <h1 className="text-4xl font-bold text-gray-900 mb-2">
                                 績效指標儀表板
                             </h1>
-                            <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
+                            <div
+                                className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
                         </div>
 
                     </div>
@@ -208,9 +210,11 @@ export default function KPI() {
                         </div>
 
                         <Link href="/kpi/newKpi" tabIndex={-1}>
-                            <button type="button" className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
+                            <button type="button"
+                                    className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                                 新增指標
                             </button>
@@ -232,7 +236,8 @@ export default function KPI() {
                                             className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-gray-50 rounded-lg transition-colors duration-200 custom-select">
                                             <span
                                                 className="text-sm font-medium text-gray-800 flex items-center gap-2">
-                                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                                 </svg>
@@ -365,7 +370,8 @@ export default function KPI() {
                             </div>
                         </div>
                         <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                            <div
+                                className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                                 {/* 搜尋欄位 */}
                                 <div className="relative flex-1 max-w-md">
                                     <div

@@ -8,18 +8,12 @@ export default function Component() {
         <>
 
             <footer className="footer footer-center bg-primary text-primary-content p-10 relative">
-                {/*<a*/}
-                {/*    id="skip-to-content"*/}
-                {/*    href="#mainContent"*/}
-                {/*    accessKey="C"*/}
-                {/*    tabIndex={0}*/}
-                {/*    title="跳轉到中央內容區塊"*/}
-                {/*    className="invisible absolute"*/}
-                {/*>*/}
-                {/*    :::*/}
-                {/*</a>*/}
 
                 <nav className="grid grid-flow-col gap-4">
+                    <a accessKey="H" href="#H" title="下方功能區塊"
+                       className="bg-primary text-primary focus:text-white">
+                        :::
+                    </a>
                     <Link href="/about">關於我們</Link>
                     <span>|</span>
                     <Link href="/direction">網站導覽</Link>

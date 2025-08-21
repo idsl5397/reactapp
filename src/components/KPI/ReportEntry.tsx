@@ -43,7 +43,7 @@ export default function Report(){
     const sugModalState = useUploadOptionModalState();
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
-        { label: "填報資料" }
+        { label: "資料填報" }
     ];
 
     // Sample data - this would come from your actual data source
@@ -116,15 +116,17 @@ export default function Report(){
 
     return (
         <>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             {/* Header Section */}
             <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-slate-50 border-b border-gray-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <Breadcrumbs items={breadcrumbItems}/>
                         <div className="mt-6">
                             <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                                資料填報系統
+                                資料填報
                             </h1>
                             <div
                                 className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mt-4"></div>
@@ -269,8 +271,8 @@ export default function Report(){
                                             className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                             <Upload className="w-6 h-6"/>
                                         </div>
-                                        <h3 className="text-lg font-semibold mb-2">上傳改善建議</h3>
-                                        <p className="text-sm text-emerald-100">提交改善建議與解決方案</p>
+                                        <h3 className="text-lg font-semibold mb-2">更新改善建議</h3>
+                                        <p className="text-sm text-emerald-100">填報改善建議執行情況</p>
                                     </div>
                                 </motion.button>
 
@@ -288,7 +290,7 @@ export default function Report(){
                                                 className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                                 <FileUp className="w-6 h-6"/>
                                             </div>
-                                            <h3 className="text-lg font-semibold mb-2">上傳改善報告</h3>
+                                            <h3 className="text-lg font-semibold mb-2">上傳改善報告書</h3>
                                             <p className="text-sm text-amber-100">提交完整的改善報告書</p>
                                         </div>
                                     </motion.div>

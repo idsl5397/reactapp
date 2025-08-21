@@ -29,7 +29,9 @@ export default function AddSuggestPage() {
     return (
         <>
             <Toaster position="top-right" reverseOrder={false}/>
-            <Breadcrumbs items={breadcrumbItems}/>
+            <div className="w-full flex justify-start">
+                <Breadcrumbs items={breadcrumbItems}/>
+            </div>
             <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                 新增委員建議
             </h1>

@@ -29,6 +29,7 @@
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "flowbite-react": "^0.10.2",
+    "focus-trap-react": "^11.0.4",
     "form-data": "4.0.4",
     "jose": "^6.0.12",
     "jwt-decode": "^4.0.0",
