@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useMemo } from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectEnterprise, { SelectionPayload } from "@/components/select/selectOnlyEnterprise";
 import { getAccessToken } from "@/services/serverAuthService";
@@ -15,36 +15,48 @@ import {CloudArrowUpIcon, DocumentTextIcon, CalendarDaysIcon, BuildingOfficeIcon
 import axios from "axios";
 import { Toaster, toast } from 'react-hot-toast';
 import api from "@/services/apiService"
+import {FileUpload, UploadResponse} from "@/components/File/FileUpload";
+import {FileService} from "@/services/FileService";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+
+interface getlist{
+    year:string;
+    quarter:string;
+    filePath:string;
+    oriName:string;
+}
 export default function Improvement(){
     const [orgId, setOrgId] = useState<string>("");
-    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [uploadedFiles, setUploadedFiles] = useState<UploadResponse[]>([]);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [historicalFiles, setHistoricalFiles] = useState<string[]>([]);
+    const [file, setFile] = useState<File | null>(null);
+    const [historicalFiles, setHistoricalFiles] = useState<getlist[]>([]);
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
+    const [uploadKey, setUploadKey] = useState(0);
+
+    const uploadedFilePathRef = useRef<string | null>(null);
 
     const fetchFiles = async (orgIdParam?: string) => {
         try {
+            const token = await getAccessToken();
             const response = await api.get("/Improvement/list-files", {
-                params: {
-                    orgId: orgIdParam || orgId,
-                },
+                params: { orgId: orgIdParam || orgId },
+                headers: token ? { Authorization: `Bearer ${token.value}` } : {},
             });
-            setHistoricalFiles(response.data.files);
+            setHistoricalFiles(response.data.files ?? []);
         } catch (error) {
             console.error("取得檔案失敗：", error);
+            toast.error("取得歷史檔案失敗");
         }
     };
 
     const historicalFilesByPeriod = useMemo(() => {
-        const grouped: { [key: string]: string[] } = {};
+        const grouped: { [key: string]: typeof historicalFiles } = {};
+
         historicalFiles.forEach((file) => {
-            const match = file.match(/-(\d{3})年-Q(\d)/);
-            if (match) {
-                const year = match[1];
-                const quarter = match[2];
-                const periodKey = `${year}_Q${quarter}`;
+            if (file.year && file.quarter) {
+                const periodKey = `${file.year}_Q${file.quarter}`;
                 if (!grouped[periodKey]) grouped[periodKey] = [];
                 grouped[periodKey].push(file);
             } else {
@@ -52,8 +64,10 @@ export default function Improvement(){
                 grouped["其他"].push(file);
             }
         });
+
         return grouped;
     }, [historicalFiles]);
+
 
     useEffect(() => {
         if (!orgId) return;
@@ -97,14 +111,7 @@ export default function Improvement(){
         setIsDragOver(false);
     };
 
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragOver(false);
-        const files = e.dataTransfer.files;
-        if (files && files.length > 0) {
-            setUploadedFiles(Array.from(files));
-        }
-    };
+
 
     const handleSubmit = async () => {
         if (!orgId) {
@@ -112,11 +119,10 @@ export default function Improvement(){
             return;
         }
 
-        if (uploadedFiles.length === 0) {
+        if (uploadedFiles.length === 0 || !uploadedFiles[0]?.data?.filePath) {
             toast.error("請先上傳檔案");
             return;
         }
-
         setIsSubmitting(true);
 
         try {
@@ -124,8 +130,9 @@ export default function Improvement(){
             formData.append("orgId", orgId);
             formData.append("year", selectedYear.toString());
             formData.append("quarter", selectedQuarter.toString());
+            formData.append("filepath",uploadedFiles[0].data.filePath );
 
-            formData.append("file", uploadedFiles[0], uploadedFiles[0].name);
+
             const token = await getAccessToken();
             const response = await api.post("/Improvement/submit-report", formData, {
                 headers: {
@@ -141,6 +148,13 @@ export default function Improvement(){
             } else {
                 toast.error("提交失敗：", response.data.message);
             }
+            setUploadedFiles([]);
+            setFile(null);
+            uploadedFilePathRef.current = null;
+            setIsDragOver(false);
+            // 讓 FileUpload 重新掛載
+            setUploadKey(k => k + 1);
+
         } catch (error) {
             console.error("提交失敗：", error);
             toast.error("提交失敗，請稍後再試");
@@ -151,20 +165,42 @@ export default function Improvement(){
 
     const canSubmit = orgId && uploadedFiles.length > 0;
 
-    const handleDeleteFile = async (period: string, fileName: string) => {
+
+    const handleDownloadFile = async (filePath?: string, fileName?: string) => {
+        // 提前验证参数
+        if (!filePath || !fileName) {
+            toast.error("無此檔案");
+            return;
+        }
+
+
         try {
+            await FileService.DownloadFile(filePath, fileName);
+            // 可选：显示成功消息
+            // toast.success("下載成功");
+        } catch (error) {
+            console.error('下载失败:', error);
+            toast.error("下載失敗，請稍後再試");
+        } finally {
+
+        }
+    };
+
+// 刪除（以 filePath 為準）
+    const handleDeleteFile = async (filePath: string) => {
+        try {
+            const token = await getAccessToken();
             await api.delete('/Improvement/delete-file', {
-                params: { fileName },
+                params: { filePath, orgId },
+                headers: token ? { Authorization: `Bearer ${token.value}` } : {},
             });
             await fetchFiles();
             toast.success("檔案已成功刪除");
         } catch (err) {
             console.error("刪除失敗：", err);
-
             const message = axios.isAxiosError(err)
                 ? err.response?.data?.message || "伺服器錯誤"
                 : "未知錯誤";
-
             toast.error(`刪除失敗：${message}`);
         }
     };
@@ -311,29 +347,26 @@ export default function Improvement(){
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
                                             <h3 className="text-lg font-semibold text-gray-800">
-                                                {period === "其他" ? "其他檔案" : `民國 ${period.replace('_', ' 年 ')}`}
+                                                {period === "其他" ? "其他檔案" : `民國 ${period.replace('_', ' 年 第 ')} 季`}
                                             </h3>
                                             <span className="text-sm text-gray-500">({files.length} 個檔案)</span>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {files.map((file, idx) => (
+                                            {files.map((f, idx) => (
                                                 <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                                         <DocumentArrowUpIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                                                        <a
-                                                            href={`/uploads/${file}`}
-                                                            target="_blank"
-                                                            download={file}
-                                                            rel="noopener noreferrer"
+                                                        <button
+                                                            onClick={() => handleDownloadFile(f.filePath, f.oriName)}
                                                             className="text-blue-600 hover:text-blue-800 font-medium truncate"
-                                                            title={file}
+                                                            title={f.oriName}
                                                         >
-                                                            {file}
-                                                        </a>
+                                                            {f.oriName}
+                                                        </button>
                                                     </div>
                                                     <button
-                                                        onClick={() => handleDeleteFile(period, file)}
+                                                        onClick={() => handleDeleteFile(f.filePath)}
                                                         className="ml-3 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                                                         title="刪除檔案"
                                                     >
@@ -344,6 +377,7 @@ export default function Improvement(){
                                         </div>
                                     </div>
                                 ))}
+
                             </div>
                         )}
                     </div>
@@ -356,80 +390,80 @@ export default function Improvement(){
                         </div>
 
                         <div className="space-y-6">
-                            <div
-                                className={`relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-200 ${
-                                    isDragOver
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : uploadedFiles.length > 0
-                                            ? 'border-green-500 bg-green-50'
-                                            : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/50'
-                                }`}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                            >
-                                <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        {uploadedFiles.length > 0 ? (
-                                            <>
-                                                <CheckCircleIcon className="w-12 h-12 text-green-500 mb-3" />
-                                                <p className="text-lg font-medium text-green-700">
-                                                    檔案已選擇
-                                                </p>
-                                                <p className="text-sm text-green-600 mt-1">
-                                                    {uploadedFiles[0].name}
-                                                </p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <CloudArrowUpIcon className="w-12 h-12 text-gray-400 mb-3" />
-                                                <p className="text-lg font-medium text-gray-700">
-                                                    拖放檔案到此處或點擊選擇
-                                                </p>
-                                                <p className="text-sm text-gray-500 mt-1">
-                                                    支援 PDF、Word、Excel 等格式
-                                                </p>
-                                            </>
-                                        )}
-                                    </div>
-                                    <input
-                                        id="file"
-                                        name="file"
-                                        aria-label="上傳檔案"
-                                        type="file"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            const files = e.target.files;
-                                            if (files && files.length > 0) {
-                                                setUploadedFiles(Array.from(files));
-                                            }
-                                        }}
-                                    />
+                                <label className="label">
+                                    <span className="label-text">選擇檔案 (必填)</span>
                                 </label>
-                            </div>
+                                <FileUpload
+                                    key={uploadKey}
+                                    endpoints={{
+                                        singleFileUrl: '/Files/UploadFile',
+                                        removeFileUrl: '/Files/DeleteItem',
+                                    }}
+                                    targetPath={"/Files/Reports/"}
+                                    multiple={false}
+                                    maxSize={100 * 1024 * 1024}
+                                    maxFiles={1}
 
-                            {uploadedFiles.length > 0 && (
-                                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircleIcon className="w-5 h-5 text-green-600" />
-                                        <span className="text-green-800 font-medium">已選擇檔案：</span>
-                                        <span className="text-green-700">{uploadedFiles[0].name}</span>
-                                        <button
-                                            onClick={() => setUploadedFiles([])}
-                                            className="ml-auto text-green-600 hover:text-green-800"
-                                        >
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                    acceptedFileTypes={[
+                                        "application/pdf",
+                                        "application/msword",
+                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                        "application/vnd.ms-excel",
+                                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                        "application/vnd.ms-powerpoint",
+                                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                        "text/plain",
+                                        "image/jpeg",
+                                        "image/png",
+                                        "image/gif"
+                                    ]}
+                                    uploadOptions={{
+                                        overwrite: true,
+                                        createDirectory: true,
+                                        validateIntegrity: false,
+                                        expectedHash: "0",
+                                        scanForVirus: false,
+                                        customFileName: "",
+                                        description: "",
+                                        startWatchingAfterUpload: false,
+                                    }}
+                                    labels={{
+                                        dropzone: '拖曳檔案至此',
+                                        browse: '或點擊上傳',
+                                        maxFiles: '最多上傳',
+                                        maxSize: '檔案大小上限',
+                                        uploading: '上傳中...'
+                                    }}
+                                    onSuccess={(response: UploadResponse, _fileId: string) => {
+                                        console.log('上傳成功:', response);
+                                        // 儲存檔案路徑，以便取消時刪除
+                                        if (response.data?.filePath) {
+                                            uploadedFilePathRef.current = response.data.filePath;
+                                        }
+
+                                        // 創建一個虛擬檔案物件來滿足表單驗證
+                                        if (response.data?.originalFileName) {
+                                            const virtualFile = new File([''], response.data.originalFileName, {type: 'application/octet-stream'});
+                                            setFile(virtualFile);
+                                        }
+                                        setUploadedFiles([response])
+
+                                    }}
+                                    onError={(error: Error, _fileId: string) => {
+                                        console.error('上傳失敗:', error);
+                                        toast.error(`上傳失敗: ${error.message}`);
+                                    }}
+                                />
+
+
+
                         </div>
                     </div>
 
                     {/* 確認送出 */}
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-100">
                         <div className="flex items-center gap-3 mb-6">
-                            <ExclamationCircleIcon className="w-6 h-6 text-amber-600" />
+                            <ExclamationCircleIcon className="w-6 h-6 text-amber-600"/>
                             <h2 className="text-xl font-semibold text-gray-800">確認送出</h2>
                         </div>
 
@@ -438,7 +472,8 @@ export default function Improvement(){
                                 <h3 className="font-medium text-gray-800 mb-4">提交資訊確認</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-3 h-3 rounded-full ${orgId ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                        <div
+                                            className={`w-3 h-3 rounded-full ${orgId ? 'bg-green-500' : 'bg-red-500'}`}></div>
                                         <span className="text-gray-700">選擇公司：</span>
                                         <span className={orgId ? 'text-green-700 font-medium' : 'text-red-700'}>
                                             {orgId ? '已選擇' : '未選擇'}
@@ -451,11 +486,12 @@ export default function Improvement(){
                                             民國 {selectedYear} 年 第{selectedQuarter}季
                                         </span>
                                     </div>
+
                                     <div className="flex items-center gap-3 md:col-span-2">
-                                        <div className={`w-3 h-3 rounded-full ${uploadedFiles.length > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                        <div className={`w-3 h-3 rounded-full ${file?.name ? 'bg-green-500' : 'bg-red-500'}`}></div>
                                         <span className="text-gray-700">上傳檔案：</span>
-                                        <span className={uploadedFiles.length > 0 ? 'text-green-700 font-medium' : 'text-red-700'}>
-                                            {uploadedFiles.length > 0 ? uploadedFiles[0].name : '未選擇檔案'}
+                                        <span className={file?.name ? 'text-green-700 font-medium' : 'text-red-700'}>
+                                            {file?.name? file?.name: '未選擇檔案'}
                                         </span>
                                     </div>
                                 </div>

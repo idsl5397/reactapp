@@ -10,6 +10,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
 import type { RowNode } from 'ag-grid-community';
 import api from "@/services/apiService"
+import {getAccessToken} from "@/services/serverAuthService";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const categories = [
@@ -83,7 +84,11 @@ export default function KPI() {
         };
 
         try {
-            const response = await api.get("/Kpi/display", { params, timeout: 10000,});
+            const token = await getAccessToken();
+            const response = await api.get("/Kpi/display", {
+                headers: {Authorization: `Bearer ${token?.value}`},
+                params, timeout: 10000,
+            });
 
             if (response.data?.success) {
                 const raw = response.data.data;

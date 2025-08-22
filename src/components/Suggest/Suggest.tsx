@@ -69,7 +69,7 @@ export default function Suggest() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null); // 👈 新增
-    // 檢視模式：all = 全部(總表)、byDate = 依日期、byEvent = 依會議/活動
+    // 檢視模式：allCompany = 全部(總表)、byDate = 依日期、byEvent = 依會議/活動
     const [viewMode, setViewMode] = useState<'all' | 'byDate' | 'byEvent'>('all');
     const gridRef = useRef<AgGridReact>(null);
     const router = useRouter();
@@ -247,13 +247,15 @@ export default function Suggest() {
                                     <p className="text-sm text-gray-600 mt-1">顯示各組織的最新建議記錄</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => router.push('/suggest/all')}
-                                        className="btn inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium shadow-sm hover:shadow-md"
-                                        title="不分廠、不分日期、不分會議的總表"
-                                    >
-                                        總表
-                                    </button>
+                                    {userRole === 'admin' && (
+                                        <button
+                                            onClick={() => router.push('/suggest/allCompany')}
+                                            className="btn inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium shadow-sm hover:shadow-md"
+                                            title="不分廠、不分日期、不分會議的總表"
+                                        >
+                                            總表
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
