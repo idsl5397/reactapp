@@ -155,10 +155,10 @@ export default function Report() {
                                     <div className="w-2 h-6 bg-blue-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">
                                         各類型改善建議完成率
-                                        <span
-                                            className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                                            {selection.orgName || "所有公司"}
-                                        </span>
+                                        {/*<span*/}
+                                        {/*    className="ml-2 text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">*/}
+                                        {/*    {selection.orgName || "所有公司"}*/}
+                                        {/*</span>*/}
                                     </h2>
                                 </div>
                                 {isLoading && (

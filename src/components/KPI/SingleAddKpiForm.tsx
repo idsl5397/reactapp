@@ -33,9 +33,9 @@ export default function SingleAddKpiForm() {
             try {
                 const token = await getAccessToken();
                 const res = await api.post('/Kpi/import-single', payload, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    // headers: {
+                    //     Authorization: `Bearer ${token}`
+                    // }
                 });
                 toast.success(res.data.message);
             } catch (err: any) {

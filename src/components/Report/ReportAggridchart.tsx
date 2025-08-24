@@ -38,7 +38,8 @@ export default function SuggestionPieChart({ organizationId, organizationName }:
         const total = data.reduce((sum, item) => sum + item.count, 0);
         return {
             data,
-            title: { text: `各建議佔比（${organizationName || '所有公司'}）`, },
+            // title: { text: `各建議佔比（${organizationName || '所有公司'}）`, },
+            title: { text: `各建議佔比`, },
             series: [
                 {
                     type: "pie",
