@@ -63,8 +63,18 @@ export default function AddSugValueStep2() {
                 maxLength: 100
             }
         },
-        { headerName: "預估人力投入", field: "manpower", editable: true },
-        { headerName: "預估經費投入", field: "budget", editable: true },
+        {
+            headerName: "預估人力投入",
+            field: "manpower",
+            editable: true,
+            cellEditor: 'agNumberCellEditor'
+        },
+        {
+            headerName: "預估經費投入",
+            field: "budget",
+            editable: true,
+            cellEditor: 'agNumberCellEditor'
+        },
         {
             headerName: "是否完成改善/辦理",
             field: "completed",
@@ -74,8 +84,18 @@ export default function AddSugValueStep2() {
                 values: ['是', '否']
             }
         },
-        { headerName: "預估完成年份", field: "doneYear", editable: true },
-        { headerName: "預估完成月份", field: "doneMonth", editable: true },
+        {
+            headerName: "預估完成年份",
+            field: "doneYear",
+            editable: true,
+            cellEditor: 'agNumberCellEditor'
+        },
+        {
+            headerName: "預估完成月份",
+            field: "doneMonth",
+            editable: true,
+            cellEditor: 'agNumberCellEditor'
+        },
         {
             headerName: "平行展開",
             field: "parallelExec",

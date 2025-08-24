@@ -10,7 +10,7 @@ import {Toaster, toast} from 'react-hot-toast';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import {getAccessToken} from '@/services/serverAuthService';
 import api from '@/services/apiService';
-import SelectKpiEntriesByDate from "@/components/select/selectKpiEntriesByDate";
+import SelectOnlyEnterprise from "@/components/select/selectOnlyEnterprise";
 import {IRow} from "@/components/KpiAggrid";
 
 ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -56,7 +56,7 @@ export default function SuggestAllCompany() {
     const [rows, setRows] = useState<SuggestReport[]>([]);
     const [keyword, setKeyword] = useState('');
     const [activeTab, setActiveTab] = useState<string>('cat_all');
-    const [exportMode, setExportMode] = useState<'all' | 'failed'>('all');
+    const [exportMode, setExportMode] = useState<'all' | 'incomplete'>('all');
 
     // 「查詢條件」：tempSelection 為草稿（表單當下），currentSelection 為已提交的條件（真正打 API 用）
     const [tempSelection, setTempSelection] = useState<SelectionPayload>({
@@ -165,59 +165,57 @@ export default function SuggestAllCompany() {
         const api = gridRef.current?.api;
         if (!api) return;
 
-        const fileNamePrefix = exportMode === 'failed' ? '未達標資料' : '指標資料';
-        const fileName = `${fileNamePrefix}_${new Date().toISOString().slice(0, 10)}`;
+        const prefix = exportMode === 'incomplete' ? '未完成資料' : '建議清單';
+        const fileName = `${prefix}_${new Date().toISOString().slice(0, 10)}`;
 
+        // 匯出「全部」（尊重目前欄位顯示與 quick filter / 類別分頁）
         if (exportMode === 'all') {
             if (type === 'excel') {
-                api.exportDataAsExcel({fileName: `${fileName}.xlsx`});
+                api.exportDataAsExcel({ fileName: `${fileName}.xlsx` });
             } else {
-                api.exportDataAsCsv({fileName: `${fileName}.csv`, bom: true} as any);
+                // 建議帶 BOM，Excel 開啟才不會亂碼
+                const csv = api.getDataAsCsv({});
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', `${fileName}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
             return;
         }
 
-        const failedNodes: RowNode<IRow>[] = [];
+        // 匯出「未完成」（isAdopted === '是' && completed === '否'）
+        const incompleteNodes: RowNode<SuggestReport>[] = [];
         api.forEachNodeAfterFilterAndSort((node: any) => {
-            const data = node.data;
-            if (!data?.isIndicator) return;
-
-            const {lastReportValue: actual, lastTargetValue: target, lastComparisonOperator: operator} = data;
-            let meets = true;
-            if (typeof actual === 'number' && typeof target === 'number') {
-                switch (operator) {
-                    case '>=':
-                        meets = actual >= target;
-                        break;
-                    case '<=':
-                        meets = actual <= target;
-                        break;
-                    case '>':
-                        meets = actual > target;
-                        break;
-                    case '<':
-                        meets = actual < target;
-                        break;
-                    case '=':
-                    case '==':
-                        meets = actual === target;
-                        break;
-                }
+            const d = node.data as SuggestReport | undefined;
+            if (!d) return;
+            const adopted = (d.isAdopted ?? '').trim() === '是';
+            const notCompleted = (d.completed ?? '').trim() === '否';
+            if (adopted && notCompleted) {
+                incompleteNodes.push(node);
             }
-            if (!meets) failedNodes.push(node);
         });
 
+        // 沒資料就提示
+        if (incompleteNodes.length === 0) {
+            toast('目前視圖沒有「未完成」資料');
+            return;
+        }
+
+        // 用「只匯出已選取列」的方式輸出
         api.deselectAll();
-        failedNodes.forEach((node: any) => node.setSelected(true));
+        incompleteNodes.forEach((n) => n.setSelected(true));
 
         if (type === 'excel') {
-            api.exportDataAsExcel({fileName: `${fileName}.xlsx`, onlySelected: true});
+            api.exportDataAsExcel({ fileName: `${fileName}.xlsx`, onlySelected: true });
         } else {
-            const csv = api.getDataAsCsv({onlySelected: true});
-            const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8;"});
-            const link = document.createElement("a");
+            const csv = api.getDataAsCsv({ onlySelected: true });
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `${fileName}.csv`);
+            link.setAttribute('download', `${fileName}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -282,7 +280,7 @@ export default function SuggestAllCompany() {
                                                 </svg>
                                             </summary>
                                             <div className="px-4 pb-4 pt-2 border-t border-gray-100">
-                                                <SelectKpiEntriesByDate onSelectionChange={(s) => setSelection(s)}/>
+                                                <SelectOnlyEnterprise onSelectionChange={(s) => setSelection(s)}/>
                                             </div>
                                         </details>
                                     </div>
@@ -395,7 +393,7 @@ export default function SuggestAllCompany() {
                                         aria-label="匯出選項"
                                         className="px-4 py-3 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
                                         value={exportMode}
-                                        onChange={(e) => setExportMode(e.target.value as any)}
+                                        onChange={(e) => setExportMode(e.target.value as 'all' | 'incomplete')}
                                     >
                                         <option value="all">匯出全部</option>
                                         <option value="incomplete">匯出未完成</option>
