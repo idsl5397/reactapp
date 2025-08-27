@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import {ColDef, ModuleRegistry} from "ag-grid-community";
 import type { CellClassParams, CellStyle } from "ag-grid-community"; // ⚠️ 確保你已經有 import
-import { AllEnterpriseModule } from "ag-grid-enterprise";
+import { AllEnterpriseModule } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReact as AgGridReactType } from "ag-grid-react";
 import { AG_GRID_LOCALE_TW } from "@ag-grid-community/locale";
 import {
@@ -21,7 +21,7 @@ import {
     ReferenceLine,
 } from "recharts";
 import {Toaster,toast} from "react-hot-toast";
-ModuleRegistry.registerModules([AllEnterpriseModule]);
+ModuleRegistry. registerModules([ AllEnterpriseModule ]);
 
 interface KpiReport {
     year: number;
