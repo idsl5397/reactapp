@@ -576,7 +576,7 @@ export default function Steps() {
             </div>
             <div className="flex min-h-full flex-1 flex-col space-y-6 w-full p-4 max-w-3xl mx-auto">
                 <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
-                    註冊步驟
+                    註冊
                 </h1>
 
                 {/* 步驟指示器 */}
