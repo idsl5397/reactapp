@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import SuggestAllCompany from "@/components/Suggest/SuggestAllCompany";
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "委員回覆及改善建議詳情總表" };
 
 function LoadingFallback() {
     return (

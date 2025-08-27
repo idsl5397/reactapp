@@ -308,7 +308,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 value={formData.date ?? ""}
                                 onChange={(e) => handleChange("date", e.target.value)}
                                 required
-                                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2"
+                                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-gray-500"
                             />
                         </div>
 
@@ -321,7 +321,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 value={formData.eventType ?? ""}
                                 onChange={(e) => handleChange("eventType", e.target.value)}
                                 required
-                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select"
+                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
                             >
                                 <option value="">請選擇</option>
                                 <option value="書面審查會議">書面審查會議</option>
@@ -454,7 +454,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 value={formData.suggestionType ?? ""}
                                 onChange={(e) => handleChange("suggestionType", e.target.value)}
                                 required
-                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select"
+                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
                             >
                                 <option value="">請選擇建議類別</option>
                                 <option value="改善建議">改善建議</option>
@@ -487,7 +487,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 <select
                                     value={formData.isAdopted ?? ""}
                                     onChange={(e) => handleChange("isAdopted", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select"
+                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
                                 >
                                     <option value="">請選擇</option>
                                     <option value="1">是</option>
@@ -533,7 +533,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 <select
                                     value={formData.isCompleted ?? ""}
                                     onChange={(e) => handleChange("isCompleted", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select"
+                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
                                 >
                                     <option value="">請選擇</option>
                                     <option value="1">是</option>
@@ -604,7 +604,7 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                 <select
                                     value={formData.isParallel ?? ""}
                                     onChange={(e) => handleChange("isParallel", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select"
+                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
                                 >
                                     <option value="">請選擇</option>
                                     <option value="1">是</option>

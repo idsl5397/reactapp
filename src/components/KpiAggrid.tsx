@@ -417,14 +417,14 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                 {selectedDetail && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-xl relative">
-                            <h2 className="text-xl font-semibold mb-4">指標詳情</h2>
-                            <p className="text-sm font-semibold mb-2">歷史執行情況：</p>
+                            <h2 className="text-xl font-semibold mb-4 text-primary">指標詳情</h2>
+                            <p className="text-sm font-semibold mb-2 text-base-content">歷史執行情況：</p>
 
                             <div className="mb-2 flex justify-between items-center">
                                 <span className="text-sm text-gray-500">KPI 趨勢圖</span>
                                 <select
                                     aria-label="篩選條件"
-                                    className="select select-sm select-bordered"
+                                    className="select select-sm select-bordered text-base-content"
                                     value={filterRange}
                                     onChange={(e) => setFilterRange(e.target.value)}
                                 >
@@ -436,7 +436,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                             <div className="h-64 mb-4 border rounded flex items-center justify-center bg-gray-50">
                                 {isChartLoading ? (
                                     <span
-                                        className="loading loading-spinner loading-md mb-2">指標趨勢圖載入中，請稍候…</span>
+                                        className="loading loading-spinner loading-md mb-2 text-base-content">指標趨勢圖載入中，請稍候…</span>
                                 ) : chartData.length === 0 ? (
                                     <div className="text-gray-400 text-sm">尚無執行資料</div>
                                 ) : (
@@ -494,7 +494,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
                                 {Object.entries(selectedDetail).map(([key, value]) => {
                                     if (key === "kpiDatas" && Array.isArray(value)) {
                                         return (
-                                            <li key={key}>
+                                            <li  className=" text-base-content" key={key}>
                                                 <strong>KPI 循環資料：</strong>
                                                 <ul className="list-disc list-inside ml-4 space-y-2">
                                                     {value.map((kpiData: any, idx: number) => (
@@ -526,7 +526,7 @@ const GridComponent = forwardRef<AgGridReactType<IRow> | null, GridComponentProp
 
                                     // 其他欄位照原本方式顯示
                                     return (
-                                        <li key={key}>
+                                        <li  className=" text-base-content" key={key}>
                                             <strong>{columnTitleMap[key] || key}：</strong>
                                             <span> {String(value ?? "-")}</span>
                                         </li>

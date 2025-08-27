@@ -2,13 +2,27 @@
 import React, { useEffect } from 'react';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { toast, Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import { ArrowRightIcon, ClipboardDocumentCheckIcon, DocumentChartBarIcon, PencilSquareIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useauthStore } from '@/Stores/authStore';
 import { AnimatedTooltip, TooltipStyles } from "@/components/AnimatedTooltip";
 import Link from "next/link";
+// import {OnboardingTour, makeStep, whenRole, whenPermAny, and, or} from '@/hooks/useDriverOnboarding';
+// import OnboardingFloatingLauncher from '@/components/OnboardingFloatingLauncher';
 
 export default function Home() {
+    const pathname = usePathname();
+    const { userRole, permissions } = useauthStore();
+    // const steps = [
+    //     makeStep('#kpi', '績效指標', '查看儀表板、指標管理與未達標清單。'),
+    //     makeStep('#suggest', '委員建議', '查看儀表板、指標管理與未達標清單。'),
+    //     // 只有 admin 或 company 才顯示「審查/設定」導覽
+    //     makeStep('#upload', '系統設定',
+    //         '僅管理者可見的設定功能。',
+    //         or(whenRole('admin'), whenRole('company'))
+    //     ),
+    //     makeStep('#report', '上傳/匯入', '支援單筆與批次匯入資料。',),
+    // ];
 
     const isLoggedIn = useauthStore(state => state.isLoggedIn);
 
@@ -46,6 +60,7 @@ export default function Home() {
 
     const menuItems = [
         {
+            id:"kpi",
             title: "績效指標檢視",
             description: "查看績效指標完成情況與趨勢分析",
             icon: <ClipboardDocumentCheckIcon className="w-8 h-8 text-rose-600" />,
@@ -56,6 +71,7 @@ export default function Home() {
             hoverShadow: "hover:shadow-rose-200/50"
         },
         {
+            id:"suggest",
             title: "委員建議檢視",
             description: "檢視委員提供之改善建議與追蹤回覆",
             icon: <EyeIcon className="w-8 h-8 text-emerald-600" />,
@@ -66,6 +82,7 @@ export default function Home() {
             hoverShadow: "hover:shadow-emerald-200/50"
         },
         {
+            id:"upload",
             title: "填報資料",
             description: "填寫與提交最新季度的績效或建議資料",
             icon: <PencilSquareIcon className="w-8 h-8 text-amber-600" />,
@@ -76,6 +93,7 @@ export default function Home() {
             hoverShadow: "hover:shadow-amber-200/50"
         },
         {
+            id:"report",
             title: "報表檢視",
             description: "檢視歷年執行報表與圖表資料分析",
             icon: <DocumentChartBarIcon className="w-8 h-8 text-fuchsia-600" />,
@@ -116,7 +134,6 @@ export default function Home() {
 
                             <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-blue-500 mx-auto rounded-full"></div>
                         </div>
-
                     </div>
 
                     {/* 主要功能選單 */}
@@ -143,7 +160,7 @@ export default function Home() {
                                         className={`absolute -top-10 -right-10 w-20 h-20 bg-${item.color}-100 rounded-full opacity-20 group-hover:opacity-30 transition-opacity`}
                                     />
 
-                                    <div className="relative p-8 flex flex-col items-start gap-4 h-full">
+                                    <div id={item.id} className="relative p-8 flex flex-col items-start gap-4 h-full">
                                         {/* 圖標（純裝飾就 aria-hidden） */}
                                         <div
                                             aria-hidden="true"
@@ -202,6 +219,22 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+
+            {/*<OnboardingFloatingLauncher*/}
+            {/*    steps={steps}*/}
+            {/*    options={{*/}
+            {/*        ctx: { role: userRole ?? null, permissions: permissions ?? [], pathname },*/}
+            {/*        scope: 'home',              // 這頁的識別；快取 key 會包含它*/}
+            {/*        version: '1.0.0',*/}
+            {/*        autoStartInProd: false,     // ⬅︎ 重要：手動啟動*/}
+            {/*        devAutoStart: false,        // ⬅︎ 重要：手動啟動*/}
+            {/*        // chainNext: '/kpi/dashboard', // （可選）導覽最後一步出現「下一頁」*/}
+            {/*        // forceChain: true,            // （可選）即使下一頁已看過也強制顯示*/}
+            {/*    }}*/}
+            {/*    label="啟用導覽"*/}
+            {/*    position="br"  // br | bl | tr | tl*/}
+            {/*    pulse           // 帶脈衝動畫吸引注意（可拿掉）*/}
+            {/*/>*/}
         </>
     );
 }
