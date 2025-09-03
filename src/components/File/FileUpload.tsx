@@ -700,7 +700,7 @@ export function FileUpload({
   // Default dropzone renderer (修改版，支援簡化顯示)
   const defaultDropzoneRenderer = () => (
     <label
-      className={`relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 
+      className={`relative flex flex-col items-center justify-center w-full h-50 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 
         ${isDragging ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100 hover:bg-base-200'}
         ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
     >

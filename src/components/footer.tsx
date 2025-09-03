@@ -1,6 +1,8 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import AA21 from "@/../public/AA21.png"
 
 export default function Component() {
     const basePath = process.env.BASE_PATH || '';
@@ -26,6 +28,10 @@ export default function Component() {
                         1024 x 768 視窗模式以上，IE 11.0含以上、Firefox、Chrome、safari 最新版本瀏覽器
                     </p>
                     <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
+                    <a href="https://accessibility.moda.gov.tw/Applications/Detail?category=20250811104030"
+                       title="無障礙網站">
+                        <Image src={AA21} width={88} height={33} alt="通過AA無障礙網頁檢測"/>
+                    </a>
                 </aside>
             </footer>
         </>

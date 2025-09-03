@@ -71,7 +71,7 @@ export default function SelectEnterprise({ onSelectionChange, showYearRange = tr
                 }
             }
         };
-        fetchData();
+        void fetchData();
     }, [userRole, userOrgId]);
 
     // 監聽 data 和 selectedOrgId，一旦都有值再 emit

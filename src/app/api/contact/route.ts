@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                     <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                        大型石化督導資訊平台 - 新訊息
+                        績效指標資料庫平台 - 新訊息
                     </h2>
                     
                     <div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
@@ -150,14 +150,14 @@ ${message}
                     </div>
 
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d; font-size: 12px;">
-                        <p>此郵件由大型石化督導資訊平台自動發送</p>
+                        <p>此郵件由績效指標資料庫平台自動發送</p>
                         <p>請勿直接回覆此郵件，如需回覆請直接聯絡 ${email}</p>
                     </div>
                 </div>
             `,
             // 也提供純文字版本
             text: `
-大型石化督導資訊平台 - 新訊息
+績效指標資料庫平台 - 新訊息
 
 聯絡資訊：
 姓名：${name}
@@ -171,7 +171,7 @@ ${message}
 ${message}
 
 ---
-此郵件由大型石化督導資訊平台自動發送
+此郵件由績效指標資料庫平台自動發送
 請勿直接回覆此郵件，如需回覆請直接聯絡 ${email}
             `
         };
@@ -184,7 +184,7 @@ ${message}
         const confirmationMailOptions = {
             from: `"${setting.FromName}" <${setting.FromEmail}>`,
             to: email,
-            subject: '感謝您的聯絡 - 大型石化督導資訊平台',
+            subject: '感謝您的聯絡 - 績效指標資料庫平台',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                     <h2 style="color: #333; border-bottom: 2px solid #28a745; padding-bottom: 10px;">
