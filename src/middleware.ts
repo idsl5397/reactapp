@@ -93,12 +93,18 @@ export async function middleware(req: NextRequest) {
 //     ]
 // };
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
-const MATCH_ROUTES = [
-    "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/reportEntry/newKpiValue"
-];
-const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
-
 export const config = {
-    matcher
+    matcher: [
+        // 根路徑
+        "/",
+        // iskpi 下的所有路徑
+        "/iskpi/:path*",
+        // 直接的路由路徑（如果沒有 basePath 的情況）
+        "/home/:path*",
+        "/kpi/:path*",
+        "/suggest/:path*",
+        "/improvement/:path*",
+        "/reportEntry/:path*",
+        "/report/:path*"
+    ]
 };

@@ -21,7 +21,10 @@ export default function FullImportKpi() {
         setIsLoading(true);
 
         try {
-            const res = await api.post('/kpi/full-import-preview', formData); // 新的預覽API
+            const res = await api.post("/kpi/full-import-preview", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
             setPreviewData(res.data);
             console.log(res.data);
             toast.success('檔案解析成功，請確認預覽');

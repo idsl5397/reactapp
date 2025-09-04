@@ -22,7 +22,6 @@ import {jwtDecode} from "jwt-decode";
 import logo from "@/../public/logo.svg"
 import AutoRefresh from "@/components/Auth/AutoRefresh";
 import api from "@/utils/api";
-import {DialogContent} from "next/dist/client/components/react-dev-overlay/ui/components/dialog";
 
 const illustrate = [
     { name: '關於我們', href: '/about', icon: InformationCircleIcon },
@@ -125,7 +124,7 @@ export default function Header() {
     return (
         <header id="top" className="bg-white shadow-md">
 
-            <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center p-6">
+            <nav aria-label="Global" className="flex items-center p-6">
                 {/* Logo */}
                 <div className="flex flex-1">
                     <Link href="/home" className="btn btn-ghost">
@@ -133,7 +132,7 @@ export default function Header() {
                         <Image
                             alt="經濟部產業園區管理局績效指標資料庫暨資訊平台Logo"
                             src={logo}
-                            className="h-8 w-auto sm:h-11 md:h-9 lg:h-11"
+                            className="h-8 w-auto sm:h-11 md:h-11 lg:h-11"
                             width={100}
                             height={40}
                         />
@@ -155,7 +154,7 @@ export default function Header() {
                                 <React.Fragment key={item.id}>
                                     {item.children && item.children.length > 0 ? (
                                         <Popover className="relative">
-                                        {({open, close}) => (
+                                            {({open, close}) => (
                                                 <div
                                                     onMouseEnter={() => !open && (document.activeElement as HTMLElement)?.blur()} // 避免按鈕焦點黏住
                                                 >
@@ -254,8 +253,8 @@ export default function Header() {
 
             {/* Mobile Menu */}
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                <DialogContent
-                    className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right">
+                <div className="fixed inset-0 z-50" />
+                <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div className="flex items-center justify-between">
                         <Link href="/home" className="-m-1.5 p-1.5 btn btn-ghost">
                             <span className="sr-only">首頁</span>
@@ -340,7 +339,7 @@ export default function Header() {
                             </div>
                         </div>
                     </div>
-                </DialogContent>
+                </DialogPanel>
             </Dialog>
         </header>
     );
