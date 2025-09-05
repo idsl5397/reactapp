@@ -98,19 +98,18 @@ export async function middleware(req: NextRequest) {
 //     "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/reportEntry/newKpiValue"
 // ];
 // const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
+//
+// export const config = {
+//     matcher
+// };
 
 export const config = {
     matcher: [
-        // 根路徑
-        "/iskpi/",
-        // iskpi 下的所有路徑
-        "/iskpi/:path*",
-        // 直接的路由路徑（如果沒有 basePath 的情況）
-        "/iskpi/home/:path*",
-        "/iskpi/kpi/:path*",
-        "/iskpi/suggest/:path*",
-        "/iskpi/improvement/:path*",
-        "/iskpi/reportEntry/:path*",
-        "/iskpi/report/:path*"
-    ]
+        // 方式 A：全站頁面（排除 _next / api / 檔案）
+        '/((?!_next/|api/|.*\\..*).*)',
+
+        // 或方式 B：指定受保護頁（不含 basePath）
+        // '/', '/home/:path*', '/kpi/:path*', '/suggest/:path*',
+        // '/improvement/:path*', '/reportEntry/:path*', '/report/:path*',
+    ],
 };
