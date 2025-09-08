@@ -109,7 +109,7 @@ export const config = {
         '/((?!_next/|api/|.*\\..*).*)',
 
         // 或方式 B：指定受保護頁（不含 basePath）
-        // '/', '/home/:path*', '/kpi/:path*', '/suggest/:path*',
-        // '/improvement/:path*', '/reportEntry/:path*', '/report/:path*',
+        '/', '/home/:path*', '/kpi/:path*', '/suggest/:path*',
+        '/improvement/:path*', '/reportEntry/:path*', '/report/:path*',
     ],
 };
