@@ -104,12 +104,5 @@ export async function middleware(req: NextRequest) {
 // };
 
 export const config = {
-    matcher: [
-        // 方式 A：全站頁面（排除 _next / api / 檔案）
-        '/((?!_next/|api/|.*\\..*).*)',
-
-        // 或方式 B：指定受保護頁（不含 basePath）
-        '/', '/home/:path*', '/kpi/:path*', '/suggest/:path*',
-        '/improvement/:path*', '/reportEntry/:path*', '/report/:path*',
-    ],
+    matcher: [`${(process.env.NEXT_PUBLIC_BASE_PATH || "/iskpi")}/:path*`],
 };
