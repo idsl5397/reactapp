@@ -93,16 +93,41 @@ export async function middleware(req: NextRequest) {
 //     ]
 // };
 
-// const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
-// const MATCH_ROUTES = [
-//     "/", "/home", "/kpi", "/kpi/newKpi", "/suggest", "/suggest/newSuggest", "/improvement", "/reportEntry", "/report", "/reportEntry/newKpiValue"
-// ];
-// const matcher = MATCH_ROUTES.map(route => `${BASE_PATH}${route}`);
-//
-// export const config = {
-//     matcher
-// };
-
 export const config = {
-    matcher: [`${(process.env.NEXT_PUBLIC_BASE_PATH || "/iskpi")}/:path*`],
+    matcher: [
+        // 有 basePath 版本
+        '/iskpi/',
+        '/iskpi/home',
+        '/iskpi/kpi',
+        '/iskpi/kpi/newKpi',
+        '/iskpi/suggest',
+        '/iskpi/suggest/newSuggest',
+        '/iskpi/improvement',
+        '/iskpi/reportEntry',
+        '/iskpi/report',
+        '/iskpi/reportEntry/newKpiValue',
+
+        // 無 basePath 版本（本機）
+        '/',
+        '/home',
+        '/kpi',
+        '/kpi/newKpi',
+        '/suggest',
+        '/suggest/newSuggest',
+        '/improvement',
+        '/reportEntry',
+        '/report',
+        '/reportEntry/newKpiValue',
+    ],
 };
+
+// export const config = {
+//     matcher: [
+//         // 方式 A：全站頁面（排除 _next / api / 檔案）
+//         '/((?!_next/|api/|.*\\..*).*)',
+//
+//         // 或方式 B：指定受保護頁（不含 basePath）
+//         '/', '/home/:path*', '/kpi/:path*', '/suggest/:path*',
+//         '/improvement/:path*', '/reportEntry/:path*', '/report/:path*',
+//     ],
+// };
