@@ -312,6 +312,6 @@ export const config = {
      * - _next 路由 (Next.js內部使用)
      * - 通常不需要額外安全頭的靜態資源
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|png|jpg|jpeg|gif|svg|webp|ico)$).*)',
+        "/:path*", "/iskpi/:path*",'/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|png|jpg|jpeg|gif|svg|webp|ico)$).*)',
     ],
 };
