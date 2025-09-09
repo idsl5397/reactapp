@@ -296,9 +296,10 @@ export async function middleware(req: NextRequest) {
 
     // 未登入且非公開路徑，重定向到登入頁
     if (!tokenValue && !isPublicPath) {
+        console.debug('不公開路由');
         return NextResponse.redirect(new URL(`${basePath}/login`, req.url));
     }
-
+    console.debug('偵測到公共路由或靜態資源，應用安全並透過: ', req.url, req.nextUrl);
     // 應用安全頭部並繼續
     return applySecurity(req);
 }
