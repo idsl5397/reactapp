@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import getAuthtoken from "@/services/serverAuthService";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || process.env.BASE_PATH || '';
 
 const PUBLIC_PATHS = [
     "/login",
@@ -19,8 +20,7 @@ const PUBLIC_PATHS = [
 export async function middleware(req: NextRequest) {
     const token = await getAuthtoken();
     const tokenValue = token?.value || "";
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-    const rootPath = basePath || "/";
+    const rootPath = BASE_PATH || "/";
 
     // 動態去除 basePath，取得純路徑
     const rawPath = req.nextUrl.pathname;
@@ -33,7 +33,7 @@ export async function middleware(req: NextRequest) {
 
     // 根路徑重定向
     if (req.nextUrl.pathname === rootPath || req.nextUrl.pathname === `${rootPath}/`) {
-        return NextResponse.redirect(new URL("/iskpi/login", req.url));
+        return NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
     }
 
     // 判斷是否是公開路徑
@@ -43,7 +43,7 @@ export async function middleware(req: NextRequest) {
 
     // Token 驗證邏輯...（保持原有邏輯）
     if (tokenValue && !/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(tokenValue)) {
-        const response = NextResponse.redirect(new URL("/iskpi/login", req.url));
+        const response = NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
         response.cookies.delete("token");
         return response;
     }
@@ -66,20 +66,20 @@ export async function middleware(req: NextRequest) {
             const expiry = payload.exp;
             const now = Math.floor(Date.now() / 1000);
             if (expiry && now > expiry) {
-                const response = NextResponse.redirect(new URL("/iskpi/login", req.url));
+                const response = NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
                 response.cookies.delete("token");
                 return response;
             }
         } catch (e) {
             console.error("解析 Token 時發生錯誤：", e);
-            const response = NextResponse.redirect(new URL("/iskpi/login", req.url));
+            const response = NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
             response.cookies.delete("token");
             return response;
         }
     }
 
     if (!tokenValue && !isPublicPath) {
-        return NextResponse.redirect(new URL("/iskpi/login", req.url));
+        return NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
     }
 
     return NextResponse.next();
@@ -87,7 +87,7 @@ export async function middleware(req: NextRequest) {
 
 //使用更寬泛的 matcher
 export const config = {
-    matcher: ['/:path*', '/iskpi/:path*'], // 兩邊都覆蓋
+    matcher: ['/:path*', `${BASE_PATH}/:path*`], // 兩邊都覆蓋
 };
 
 // const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
