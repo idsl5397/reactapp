@@ -71,7 +71,6 @@ export async function middleware(req: NextRequest) {
                 return response;
             }
         } catch (e) {
-            console.error("解析 Token 時發生錯誤：", e);
             const response = NextResponse.redirect(new URL(`${BASE_PATH}/login`, req.url));
             response.cookies.delete("token");
             return response;
