@@ -87,7 +87,7 @@ export async function middleware(req: NextRequest) {
 
 //使用更寬泛的 matcher
 export const config = {
-    matcher: ['/:path*', `${BASE_PATH}/:path*`], // 兩邊都覆蓋
+    matcher: ['/:path*', '/iskpi/:path*'], // 兩邊都覆蓋
 };
 
 // const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
