@@ -1,4 +1,4 @@
-//next.config.ts
+//next.config.js
 
 
 // 從環境變數取得 API 基本 URL
@@ -79,22 +79,20 @@ const nextConfig= {
             }
         ];
     },
-    // async rewrites() {
-    //     return [
-    //         {
-    //             source: `${basePath}/proxy/:path*`,  // 加上 basePath
-    //             destination: `${API_URL}/:path*`,
-    //             basePath: false,
-    //             locale: false
-    //         },
-    //         {
-    //             source: `${basePath}/app/:path*`,    // 加上 basePath
-    //             destination: `${RAG_API}/:path*`,
-    //             basePath: false,
-    //             locale: false
-    //         }
-    //     ];
-    // }
+    async rewrites() {
+        return [
+            {
+                source: "/proxy/:path*",  // 加上 basePath
+                destination: `${API_URL}/:path*`,
+                locale: false
+            },
+            {
+                source: "/app/:path*",    // 加上 basePath
+                destination: `${RAG_API}/:path*`,
+                locale: false
+            }
+        ];
+    }
 };
 
 module.exports = nextConfig;
