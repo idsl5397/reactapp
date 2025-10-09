@@ -14,6 +14,7 @@ import api from "@/services/apiService"
 import ForgotPasswordModal from './ForgotPasswordModal';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import {Turnstile} from "@marsidev/react-turnstile";
+import { Eye, EyeOff, Lock } from "lucide-react";
 // import {useConfirm} from "@/hooks/FoyDialog/useConfirm";
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -35,6 +36,7 @@ export default function Login() {
     // const { confirmDialog, ConfirmComponent } = useConfirm();
 
     const forgotTriggerRef = useRef<HTMLButtonElement>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
@@ -56,7 +58,7 @@ export default function Login() {
                 if (!isCancelled) {
                     const currentLoginState = useauthStore.getState().isLoggedIn;
                     if (currentLoginState) {
-                        router.push("/home");
+                        router.push("/platform");
                     }
                 }
             } catch (error) {
@@ -242,11 +244,13 @@ export default function Login() {
 
                             <div className="pb-12">
                                 <div className="flex items-center justify-between">
-                                    <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                                    <label
+                                        htmlFor="password"
+                                        className="block text-sm/6 font-medium text-gray-900"
+                                    >
                                         輸入密碼
                                     </label>
                                     <div className="text-sm">
-                                        {/* ⬇️ 改成 button；加上 aria 屬性；綁定 ref */}
                                         <button
                                             ref={forgotTriggerRef}
                                             type="button"
@@ -261,25 +265,38 @@ export default function Login() {
                                             忘記密碼?
                                         </button>
                                     </div>
-
                                 </div>
-                                <div className="mt-2">
+
+                                <div className="mt-2 relative">
+                                    {/* 密碼輸入框 */}
                                     <input
                                         id="password"
                                         name="password"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        autoComplete="current-password"
-                                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                        autoComplete="password"
+                                        className="block w-full rounded-md bg-white px-3 pr-12 py-1.5 text-base text-gray-900
+                                         outline outline-1 -outline-offset-1 outline-gray-300
+                                         placeholder:text-gray-400 focus:outline focus:outline-2
+                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                     />
+
+                                    {/* 右邊顯示/隱藏密碼按鈕 */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    >
+                                        {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+                                    </button>
                                 </div>
                             </div>
                             <div className="mt-4 flex justify-center">
                                 {/* 暫時移除 Turnstile */}
                                 <Turnstile
-                                    options={{ language: "zh-tw" }}
+                                    options={{language: "zh-tw"}}
                                     ref={turnstile}
                                     siteKey="0x4AAAAAABBGGF7DGYjKI4Qo"
                                     onSuccess={(token) => setCaptchaToken(token)}

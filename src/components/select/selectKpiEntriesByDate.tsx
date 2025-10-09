@@ -32,7 +32,7 @@ export default function SelectKpiEntriesByDate({ onSelectionChange, showYearRang
     const [selectedOrgId, setSelectedOrgId] = useState("");
 
     const { userRole, userOrgId } = useauthStore();
-    const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 1911 - i);
+    const yearOptions = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - 1911 - i);
     useEffect(() => {
         const fetchData = async () => {
             const enterprises = await enterpriseService.fetchData();

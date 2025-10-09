@@ -7,22 +7,22 @@ import { ArrowRightIcon, ClipboardDocumentCheckIcon, DocumentChartBarIcon, Penci
 import { useauthStore } from '@/Stores/authStore';
 import { AnimatedTooltip, TooltipStyles } from "@/components/AnimatedTooltip";
 import Link from "next/link";
-// import {OnboardingTour, makeStep, whenRole, whenPermAny, and, or} from '@/hooks/useDriverOnboarding';
-// import OnboardingFloatingLauncher from '@/components/OnboardingFloatingLauncher';
+import {OnboardingTour, makeStep, whenRole, whenPermAny, and, or} from '@/hooks/useDriverOnboarding';
+import OnboardingFloatingLauncher from '@/components/OnboardingFloatingLauncher';
 
 export default function Home() {
     const pathname = usePathname();
     const { userRole, permissions } = useauthStore();
-    // const steps = [
-    //     makeStep('#kpi', '績效指標', '查看儀表板、指標管理與未達標清單。'),
-    //     makeStep('#suggest', '委員建議', '查看儀表板、指標管理與未達標清單。'),
-    //     // 只有 admin 或 company 才顯示「審查/設定」導覽
-    //     makeStep('#upload', '系統設定',
-    //         '僅管理者可見的設定功能。',
-    //         or(whenRole('admin'), whenRole('company'))
-    //     ),
-    //     makeStep('#report', '上傳/匯入', '支援單筆與批次匯入資料。',),
-    // ];
+    const steps = [
+        makeStep('#kpi', '績效指標', '查看儀表板、指標管理與未達標清單。'),
+        makeStep('#suggest', '委員建議', '查看儀表板、指標管理與未達標清單。'),
+        // 只有 admin 或 company 才顯示「審查/設定」導覽
+        makeStep('#upload', '系統設定',
+            '僅管理者可見的設定功能。',
+            or(whenRole('admin'), whenRole('company'))
+        ),
+        makeStep('#report', '上傳/匯入', '支援單筆與批次匯入資料。',),
+    ];
 
     const isLoggedIn = useauthStore(state => state.isLoggedIn);
 
@@ -220,21 +220,21 @@ export default function Home() {
                 </div>
             </div>
 
-            {/*<OnboardingFloatingLauncher*/}
-            {/*    steps={steps}*/}
-            {/*    options={{*/}
-            {/*        ctx: { role: userRole ?? null, permissions: permissions ?? [], pathname },*/}
-            {/*        scope: 'home',              // 這頁的識別；快取 key 會包含它*/}
-            {/*        version: '1.0.0',*/}
-            {/*        autoStartInProd: false,     // ⬅︎ 重要：手動啟動*/}
-            {/*        devAutoStart: false,        // ⬅︎ 重要：手動啟動*/}
-            {/*        // chainNext: '/kpi/dashboard', // （可選）導覽最後一步出現「下一頁」*/}
-            {/*        // forceChain: true,            // （可選）即使下一頁已看過也強制顯示*/}
-            {/*    }}*/}
-            {/*    label="啟用導覽"*/}
-            {/*    position="br"  // br | bl | tr | tl*/}
-            {/*    pulse           // 帶脈衝動畫吸引注意（可拿掉）*/}
-            {/*/>*/}
+            <OnboardingFloatingLauncher
+                steps={steps}
+                options={{
+                    ctx: { role: userRole ?? null, permissions: permissions ?? [], pathname },
+                    scope: 'home',              // 這頁的識別；快取 key 會包含它
+                    version: '1.0.0',
+                    autoStartInProd: false,     // ⬅︎ 重要：手動啟動
+                    devAutoStart: false,        // ⬅︎ 重要：手動啟動
+                    // chainNext: '/kpi/dashboard', // （可選）導覽最後一步出現「下一頁」
+                    // forceChain: true,            // （可選）即使下一頁已看過也強制顯示
+                }}
+                label="啟用導覽"
+                position="br"  // br | bl | tr | tl
+                pulse           // 帶脈衝動畫吸引注意（可拿掉）
+            />
         </>
     );
 }

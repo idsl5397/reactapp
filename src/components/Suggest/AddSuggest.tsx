@@ -71,6 +71,7 @@ export default function AddSuggestPage() {
             <div className="mt-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-10">
                 {mode === 'single' && <SingleAddSuggest/>}
                 {mode === 'batch' && <BatchUploadSuggest />}
+
             </div>
         </>
     );

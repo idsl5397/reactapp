@@ -162,196 +162,202 @@ export default function Direction() {
             </div>
 
             <div className="flex min-h-full flex-1 flex-col items-center px-6 py-12 lg:px-8">
-                <div className="space-y-8 w-full mx-auto">
+                <div className="w-full max-w-7xl mx-auto space-y-8">
                     <h1 className="mt-10 text-center text-2xl sm:text-3xl leading-8 sm:leading-9 font-bold tracking-tight text-gray-900">
                         關於我們
                     </h1>
 
-                    <div className="card bg-white shadow-xl p-6 mt-6 max-w-3xl w-full mx-auto">
-                        <div className="card-body">
-                            <h2 className="card-title text-black">平台簡介</h2>
-                            <p className="text-gray-900">
-                                本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管的數位化工具。
-                                透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。
-                            </p>
+                    {/* 主要內容區域 - 響應式布局 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
+                        {/* 平台簡介區域 - 在大屏幕佔 2/3 寬度 */}
+                        <div className="lg:col-span-2">
+                            <div className="card bg-white shadow-xl p-6 h-fit">
+                                <div className="card-body">
+                                    <h2 className="card-title text-black">平台簡介</h2>
+                                    <p className="text-gray-900">
+                                        本平台由工安協會協助開發，專為政府單位與企業提供績效指標監管的數位化工具。
+                                        透過數據分析與審查紀錄，協助政府機構掌握企業的績效達成情形，並推動產業安全標準的持續提升。
+                                    </p>
 
-                            <h2 className="mt-6 text-lg font-semibold text-gray-800">平台功能</h2>
-                            <ul className="list-disc pl-6 space-y-2 text-gray-800">
-                                <li>監管企業績效指標的達成狀況</li>
-                                <li>記錄與管理工安審查委員的審查結果與建議</li>
-                                <li>提供企業即時查閱審查紀錄與改善建議</li>
-                                <li>促進政府、企業與審查委員之間的有效溝通</li>
-                            </ul>
+                                    <h2 className="mt-6 text-lg font-semibold text-gray-800">平台功能</h2>
+                                    <ul className="list-disc pl-6 space-y-2 text-gray-800">
+                                        <li>監管企業績效指標的達成狀況</li>
+                                        <li>記錄與管理工安審查委員的審查結果與建議</li>
+                                        <li>提供企業即時查閱審查紀錄與改善建議</li>
+                                        <li>促進政府、企業與審查委員之間的有效溝通</li>
+                                    </ul>
 
-                            <h2 className="mt-6 text-lg font-semibold text-gray-800">使用對象</h2>
-                            <ul className="list-disc pl-6 space-y-2 text-gray-800">
-                                <li>政府單位：負責監管企業績效並制定安全政策</li>
-                                <li>企業管理者：查閱與上傳績效指標與改善建議狀況</li>
-                                <li>工安審查委員：查看提交之審查意見</li>
-                            </ul>
+                                    <h2 className="mt-6 text-lg font-semibold text-gray-800">使用對象</h2>
+                                    <ul className="list-disc pl-6 space-y-2 text-gray-800">
+                                        <li>政府單位：負責監管企業績效並制定安全政策</li>
+                                        <li>企業管理者：查閱與上傳績效指標與改善建議狀況</li>
+                                        <li>工安審查委員：查看提交之審查意見</li>
+                                    </ul>
 
-                            <p className="mt-4 text-gray-800">
-                                為確保數據的準確性與安全性，本平台採用手動審核機制，僅限符合資格的政府機構與企業管理者註冊使用。
-                                我們致力於推動工業安全管理數位化，促進企業與監管機構之間的合作，共同提升產業安全標準。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 聯絡表單 */}
-                <div className="md:col-span-8 mt-8 w-full max-w-3xl">
-                    <div className="bg-base-200 p-6 rounded-lg shadow-md">
-                        <h2 className="text-xl font-semibold mb-4 text-base-content">聯絡表單</h2>
-
-                        <Alert />
-
-                        <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
-                            <div className="mb-4">
-                                <label htmlFor="name" className="block text-sm font-medium text-base-content mb-1">
-                                    姓名 *
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    required
-                                    autoComplete="name"
-                                    disabled={isSubmitting}
-                                    maxLength={50}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="email" className="block text-sm font-medium text-base-content mb-1">
-                                    電子郵件 *
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    required
-                                    autoComplete="email"
-                                    disabled={isSubmitting}
-                                    maxLength={120}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="organization" className="block text-sm font-medium text-base-content mb-1">
-                                    單位/組織 *
-                                </label>
-                                <input
-                                    type="text"
-                                    id="organization"
-                                    name="organization"
-                                    value={formData.organization}
-                                    onChange={handleInputChange}
-                                    required
-                                    disabled={isSubmitting}
-                                    maxLength={120}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="category" className="block text-sm font-medium text-base-content mb-1">
-                                    問題類別 *
-                                </label>
-                                <select
-                                    id="category"
-                                    name="category"
-                                    value={formData.category}
-                                    onChange={handleInputChange}
-                                    required
-                                    disabled={isSubmitting}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <option value="general">一般詢問</option>
-                                    <option value="technical">技術支援</option>
-                                    <option value="account">帳號問題</option>
-                                    <option value="report">報告相關</option>
-                                    <option value="tracking">問題追蹤相關</option>
-                                    <option value="suggestion">建議與回饋</option>
-                                </select>
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="subject" className="block text-sm font-medium text-base-content mb-1">
-                                    主旨 *
-                                </label>
-                                <input
-                                    type="text"
-                                    id="subject"
-                                    name="subject"
-                                    value={formData.subject}
-                                    onChange={handleInputChange}
-                                    required
-                                    disabled={isSubmitting}
-                                    maxLength={140}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="message" className="block text-sm font-medium text-base-content mb-1">
-                                    訊息內容 *
-                                </label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleInputChange}
-                                    required
-                                    rows={5}
-                                    disabled={isSubmitting}
-                                    maxLength={4000}
-                                    className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                />
-                            </div>
-
-                            {/* Cloudflare Turnstile 驗證 */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-base-content mb-2">人機驗證 *</label>
-                                <div className="flex justify-center">
-                                    <Turnstile
-                                        ref={turnstileRef}
-                                        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAABBGGF7DGYjKI4Qo'}
-                                        options={{ language: 'zh-tw' }}
-                                        onSuccess={token => {
-                                            setCaptchaToken(token);
-                                            setIsTurnstileVerified(true);
-                                        }}
-                                        onError={() => {
-                                            setIsTurnstileVerified(false);
-                                            setCaptchaToken(null);
-                                            setBanner({ type: 'error', text: '驗證失敗，請重試' });
-                                        }}
-                                        onExpire={() => {
-                                            setIsTurnstileVerified(false);
-                                            setCaptchaToken(null);
-                                            setBanner({ type: 'error', text: '驗證逾時，請重新驗證' });
-                                        }}
-                                    />
+                                    <p className="mt-4 text-gray-800">
+                                        為確保數據的準確性與安全性，本平台採用手動審核機制，僅限符合資格的政府機構與企業管理者註冊使用。
+                                        我們致力於推動工業安全管理數位化，促進企業與監管機構之間的合作，共同提升產業安全標準。
+                                    </p>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="text-right">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || !isTurnstileVerified}
-                                    className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-content rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-                                >
-                                    {isSubmitting && <span className="loading loading-spinner loading-xs" />}
-                                    {isSubmitting ? (status === 'retrying' ? '重試中…' : '送出中…') : '送出'}
-                                </button>
+                        {/* 聯絡表單區域 - 在大屏幕佔 1/3 寬度，小屏幕時會移到底部 */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-base-200 p-6 rounded-lg shadow-md h-fit sticky top-8">
+                                <h2 className="text-xl font-semibold mb-4 text-base-content">聯絡表單</h2>
+
+                                <Alert />
+
+                                <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
+                                    <div className="mb-4">
+                                        <label htmlFor="name" className="block text-sm font-medium text-base-content mb-1">
+                                            姓名 *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            required
+                                            autoComplete="name"
+                                            disabled={isSubmitting}
+                                            maxLength={50}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label htmlFor="email" className="block text-sm font-medium text-base-content mb-1">
+                                            電子郵件 *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            required
+                                            autoComplete="email"
+                                            disabled={isSubmitting}
+                                            maxLength={120}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label htmlFor="organization" className="block text-sm font-medium text-base-content mb-1">
+                                            單位/組織 *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="organization"
+                                            name="organization"
+                                            value={formData.organization}
+                                            onChange={handleInputChange}
+                                            required
+                                            disabled={isSubmitting}
+                                            maxLength={120}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label htmlFor="category" className="block text-sm font-medium text-base-content mb-1">
+                                            問題類別 *
+                                        </label>
+                                        <select
+                                            id="category"
+                                            name="category"
+                                            value={formData.category}
+                                            onChange={handleInputChange}
+                                            required
+                                            disabled={isSubmitting}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            <option value="general">一般詢問</option>
+                                            <option value="technical">技術支援</option>
+                                            <option value="account">帳號問題</option>
+                                            <option value="report">報告相關</option>
+                                            <option value="tracking">問題追蹤相關</option>
+                                            <option value="suggestion">建議與回饋</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label htmlFor="subject" className="block text-sm font-medium text-base-content mb-1">
+                                            主旨 *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="subject"
+                                            name="subject"
+                                            value={formData.subject}
+                                            onChange={handleInputChange}
+                                            required
+                                            disabled={isSubmitting}
+                                            maxLength={140}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label htmlFor="message" className="block text-sm font-medium text-base-content mb-1">
+                                            訊息內容 *
+                                        </label>
+                                        <textarea
+                                            id="message"
+                                            name="message"
+                                            value={formData.message}
+                                            onChange={handleInputChange}
+                                            required
+                                            rows={4}
+                                            disabled={isSubmitting}
+                                            maxLength={4000}
+                                            className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
+                                    </div>
+
+                                    {/* Cloudflare Turnstile 驗證 */}
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-medium text-base-content mb-2">人機驗證 *</label>
+                                        <div className="flex justify-center">
+                                            <Turnstile
+                                                ref={turnstileRef}
+                                                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAABBGGF7DGYjKI4Qo'}
+                                                options={{ language: 'zh-tw' }}
+                                                onSuccess={token => {
+                                                    setCaptchaToken(token);
+                                                    setIsTurnstileVerified(true);
+                                                }}
+                                                onError={() => {
+                                                    setIsTurnstileVerified(false);
+                                                    setCaptchaToken(null);
+                                                    setBanner({ type: 'error', text: '驗證失敗，請重試' });
+                                                }}
+                                                onExpire={() => {
+                                                    setIsTurnstileVerified(false);
+                                                    setCaptchaToken(null);
+                                                    setBanner({ type: 'error', text: '驗證逾時，請重新驗證' });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting || !isTurnstileVerified}
+                                            className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-content rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                                        >
+                                            {isSubmitting && <span className="loading loading-spinner loading-xs" />}
+                                            {isSubmitting ? (status === 'retrying' ? '重試中…' : '送出中…') : '送出'}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
