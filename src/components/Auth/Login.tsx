@@ -166,7 +166,7 @@ export default function Login() {
                 setErrorMessage("");
 
                 setTimeout(() => {
-                    router.push("/home");
+                    router.push("/platform");
                 }, 100);
             } else {
                 setErrorMessage(resp.message || "登入失敗，請稍後再試");

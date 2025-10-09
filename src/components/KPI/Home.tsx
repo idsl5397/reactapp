@@ -8,20 +8,25 @@ import { useauthStore } from '@/Stores/authStore';
 import { AnimatedTooltip, TooltipStyles } from "@/components/AnimatedTooltip";
 import Link from "next/link";
 import {OnboardingTour, makeStep, whenRole, whenPermAny, and, or} from '@/hooks/useDriverOnboarding';
-import OnboardingFloatingLauncher from '@/components/OnboardingFloatingLauncher';
+// 用動態載入 + ssr: false，確保只在瀏覽器載入
+import dynamic from 'next/dynamic';
+const OnboardingFloatingLauncher = dynamic(
+    () => import('@/components/OnboardingFloatingLauncher'),
+    { ssr: false }
+);
 
 export default function Home() {
     const pathname = usePathname();
     const { userRole, permissions } = useauthStore();
     const steps = [
-        makeStep('#kpi', '績效指標', '查看儀表板、指標管理與未達標清單。'),
-        makeStep('#suggest', '委員建議', '查看儀表板、指標管理與未達標清單。'),
+        makeStep('#kpi', '績效指標', '查看指標與新增指標管理。'),
+        makeStep('#suggest', '委員建議', '查看委員建議清單。'),
         // 只有 admin 或 company 才顯示「審查/設定」導覽
-        makeStep('#upload', '系統設定',
-            '僅管理者可見的設定功能。',
+        makeStep('#upload', '填報資料',
+            '支援單筆與批次匯入資料。',
             or(whenRole('admin'), whenRole('company'))
         ),
-        makeStep('#report', '上傳/匯入', '支援單筆與批次匯入資料。',),
+        makeStep('#report', '報表檢視', '各間公司績效指標與建議執行情形表現。',),
     ];
 
     const isLoggedIn = useauthStore(state => state.isLoggedIn);
