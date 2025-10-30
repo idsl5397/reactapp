@@ -170,6 +170,7 @@ function applySecurity(req: NextRequest) {
         res.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         res.headers.set('Pragma', 'no-cache');
         res.headers.set('Expires', '0');
+        res.headers.set('Surrogate-Control', 'no-store');
     }
     
     if (req.headers.get('host')?.includes('localhost')) {
