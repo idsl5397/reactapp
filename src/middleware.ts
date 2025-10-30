@@ -158,7 +158,20 @@ function applySecurity(req: NextRequest) {
         res.headers.set('X-Forwarded-For', clientIP);
         res.headers.set('X-Client-IP', clientIP);
     }
+    const cleanedPath = req.nextUrl.pathname.replace(
+        new RegExp(`^${process.env.NEXT_PUBLIC_BASE_PATH || ""}`), 
+        ""
+    );
+    const isPublicPath = PUBLIC_PATHS.some(path => cleanedPath.startsWith(path)) ||
+        cleanedPath.match(/\.(svg|png|jpg|jpeg|webp|ico|woff2|xlsx|txt|xml?)$/);
 
+        // 🔥 如果不是公開路徑，設定不快取
+    if (!isPublicPath) {
+        res.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.headers.set('Pragma', 'no-cache');
+        res.headers.set('Expires', '0');
+    }
+    
     if (req.headers.get('host')?.includes('localhost')) {
         return NextResponse.next();
     }
