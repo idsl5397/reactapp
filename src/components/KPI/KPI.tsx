@@ -87,7 +87,7 @@ export default function KPI() {
             const token = await getAccessToken();
             const response = await api.get("/Kpi/display", {
                 headers: {Authorization: `Bearer ${token?.value}`},
-                params, timeout: 10000,
+                params, timeout: 90000,
             });
 
             if (response.data?.success) {
@@ -226,7 +226,7 @@ export default function KPI() {
                         </Link>
                     </div>
                     {/* Combined Filter and Category section */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-200">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                             {/* Left column - Date filter */}
                             <div className="mb-6">
@@ -349,7 +349,8 @@ export default function KPI() {
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Data grid */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                         <div className="p-6 border-b border-gray-200">

@@ -19,7 +19,8 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const { name, state, setState } = props;
 
     const [isLoading] = useState(false);
-    const {isLoggedIn, setIsLoggedIn} = useauthStore(); // 登入狀態
+    const {isLoggedIn, setIsLoggedIn,permissions} = useauthStore(); // 登入狀態
+    const hasSettingAudit = permissions.includes('setting-audit');
 
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -89,7 +90,9 @@ export default function AvatarMenu(props: AvatarMenuProps) {
     const items = isLoggedIn
         ? [
             { label: "個人資料", link: "/profile" },
-            // { label: "設定", link: "/settings" },
+            ...(hasSettingAudit
+                ? [{ label: "設定", link: "/admin" }] // ✅ 只有有權限才加進來
+                : []),
             { label: "登出", onClick: handleLogout },
         ]
         : [{ label: "登入", onClick: handleLogin }];
