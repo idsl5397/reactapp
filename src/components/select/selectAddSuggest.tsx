@@ -300,36 +300,46 @@ export default forwardRef(function SelectAddAll(_, ref) {
 
                         <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-900">年月日 (必填的)</label>
-                            <input
-                                type="date"
-                                id="date"
-                                name="date"
-                                aria-label="日期"
-                                value={formData.date ?? ""}
-                                onChange={(e) => handleChange("date", e.target.value)}
-                                required
-                                className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-gray-500"
-                            />
+                            <div className="mt-2 grid grid-cols-1">
+                                <input
+                                    type="date"
+                                    id="date"
+                                    name="date"
+                                    aria-label="日期"
+                                    value={formData.date ?? ""}
+                                    onChange={(e) => handleChange("date", e.target.value)}
+                                    required
+                                    className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-gray-500"
+                                />
+                            </div>
                         </div>
 
                         <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-900">會議/活動 (必填的)</label>
-                            <select
-                                id="eventType"
-                                name="eventType"
-                                aria-label="會議/活動"
-                                value={formData.eventType ?? ""}
-                                onChange={(e) => handleChange("eventType", e.target.value)}
-                                required
-                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
-                            >
-                                <option value="">請選擇</option>
-                                <option value="書面審查會議">書面審查會議</option>
-                                <option value="實地進廠查驗">實地進廠查驗</option>
-                                <option value="領先指標輔導">領先指標輔導</option>
-                                <option value="工安管理訪查會議">工安管理訪查會議</option>
-                                <option value="事故改善暨平行展開管理追蹤檢討會議">事故改善暨平行展開管理追蹤檢討會議</option>
-                            </select>
+                            <div className="mt-2 grid grid-cols-1">
+                                <select
+                                    id="eventType"
+                                    name="eventType"
+                                    aria-label="會議/活動"
+                                    value={formData.eventType ?? ""}
+                                    onChange={(e) => handleChange("eventType", e.target.value)}
+                                    required
+                                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
+                                >
+                                    <option value="">請選擇</option>
+                                    <option value="書面審查會議">書面審查會議</option>
+                                    <option value="實地進廠查驗">實地進廠查驗</option>
+                                    <option value="領先指標輔導">領先指標輔導</option>
+                                    <option value="工安管理訪查會議">工安管理訪查會議</option>
+                                    <option
+                                        value="事故改善暨平行展開管理追蹤檢討會議">事故改善暨平行展開管理追蹤檢討會議
+                                    </option>
+                                </select>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                />
+                            </div>
                         </div>
                     </div>
                 </fieldset>
@@ -447,20 +457,26 @@ export default forwardRef(function SelectAddAll(_, ref) {
 
                         <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-900">建議類別 (必填的)</label>
-                            <select
-                                id="suggestionType"
-                                name="suggestionType"
-                                aria-label="建議類別"
-                                value={formData.suggestionType ?? ""}
-                                onChange={(e) => handleChange("suggestionType", e.target.value)}
-                                required
-                                className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
-                            >
-                                <option value="">請選擇建議類別</option>
-                                <option value="改善建議">改善建議</option>
-                                <option value="精進建議">精進建議</option>
-                                <option value="可資借鏡">可資借鏡</option>
-                            </select>
+                            <div className="mt-2 grid grid-cols-1">
+                                <select
+                                    id="suggestionType"
+                                    name="suggestionType"
+                                    aria-label="建議類別"
+                                    value={formData.suggestionType ?? ""}
+                                    onChange={(e) => handleChange("suggestionType", e.target.value)}
+                                    required
+                                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
+                                >
+                                    <option value="">請選擇建議類別</option>
+                                    <option value="改善建議">改善建議</option>
+                                    <option value="精進建議">精進建議</option>
+                                    <option value="可資借鏡">可資借鏡</option>
+                                </select>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                />
+                            </div>
                         </div>
                     </div>
                 </fieldset>
@@ -484,17 +500,23 @@ export default forwardRef(function SelectAddAll(_, ref) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                             <div className="mt-4">
                                 <label className="block text-sm font-medium text-gray-900">是否參採</label>
-                                <select
-                                    value={formData.isAdopted ?? ""}
-                                    onChange={(e) => handleChange("isAdopted", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
-                                >
-                                    <option value="">請選擇</option>
-                                    <option value="1">是</option>
-                                    <option value="0">否</option>
-                                    <option value="2">不參採</option>
-                                    <option value="3">詳備註</option>
-                                </select>
+                                <div className="mt-2 grid grid-cols-1">
+                                    <select
+                                        value={formData.isAdopted ?? ""}
+                                        onChange={(e) => handleChange("isAdopted", e.target.value)}
+                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
+                                    >
+                                        <option value="">請選擇</option>
+                                        <option value="1">是</option>
+                                        <option value="0">否</option>
+                                        <option value="2">不參採</option>
+                                        <option value="3">詳備註</option>
+                                    </select>
+                                    <ChevronDownIcon
+                                        aria-hidden="true"
+                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                    />
+                                </div>
                                 {formData.isAdopted === "3" && (
                                     <input
                                         type="text"
@@ -530,17 +552,23 @@ export default forwardRef(function SelectAddAll(_, ref) {
 
                             <div className="mt-4">
                                 <label className="block text-sm font-medium text-gray-900">是否完成改善/辦理</label>
-                                <select
-                                    value={formData.isCompleted ?? ""}
-                                    onChange={(e) => handleChange("isCompleted", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
-                                >
-                                    <option value="">請選擇</option>
-                                    <option value="1">是</option>
-                                    <option value="0">否</option>
-                                    <option value="2">不參採</option>
-                                    <option value="3">詳備註</option>
-                                </select>
+                                <div className="mt-2 grid grid-cols-1">
+                                    <select
+                                        value={formData.isCompleted ?? ""}
+                                        onChange={(e) => handleChange("isCompleted", e.target.value)}
+                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
+                                    >
+                                        <option value="">請選擇</option>
+                                        <option value="1">是</option>
+                                        <option value="0">否</option>
+                                        <option value="2">不參採</option>
+                                        <option value="3">詳備註</option>
+                                    </select>
+                                    <ChevronDownIcon
+                                        aria-hidden="true"
+                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                    />
+                                </div>
                                 {formData.isCompleted === "3" && (
                                     <input
                                         type="text"
@@ -601,17 +629,23 @@ export default forwardRef(function SelectAddAll(_, ref) {
 
                             <div className="mt-4">
                                 <label className="block text-sm font-medium text-gray-900">是否平行展開推動執行</label>
-                                <select
-                                    value={formData.isParallel ?? ""}
-                                    onChange={(e) => handleChange("isParallel", e.target.value)}
-                                    className="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 custom-select text-gray-500"
-                                >
-                                    <option value="">請選擇</option>
-                                    <option value="1">是</option>
-                                    <option value="0">否</option>
-                                    <option value="2">不參採</option>
-                                    <option value="3">詳備註</option>
-                                </select>
+                                <div className="mt-2 grid grid-cols-1">
+                                    <select
+                                        value={formData.isParallel ?? ""}
+                                        onChange={(e) => handleChange("isParallel", e.target.value)}
+                                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 custom-select"
+                                    >
+                                        <option value="">請選擇</option>
+                                        <option value="1">是</option>
+                                        <option value="0">否</option>
+                                        <option value="2">不參採</option>
+                                        <option value="3">詳備註</option>
+                                    </select>
+                                    <ChevronDownIcon
+                                        aria-hidden="true"
+                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                    />
+                                </div>
                                 {formData.isParallel === "3" && (
                                     <input
                                         type="text"
