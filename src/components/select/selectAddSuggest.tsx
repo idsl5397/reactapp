@@ -309,7 +309,9 @@ export default forwardRef(function SelectAddAll(_, ref) {
                                     value={formData.date ?? ""}
                                     onChange={(e) => handleChange("date", e.target.value)}
                                     required
-                                    className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-gray-500"
+                                    className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2
+                                                text-black appearance-none
+                                                focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 />
                             </div>
                         </div>
