@@ -50,7 +50,7 @@ export default function PlatformSelection() {
             color: "gray",
             bgGradient: "from-gray-50 to-gray-100",
             iconBg: "bg-gray-100",
-            available: false,
+            available: true,
             features: [""]
         }
     ];

@@ -3,7 +3,6 @@ import { useStepContext} from "../StepComponse";
 import {EmailVerificationFormData} from "@/components/Auth/Register";
 
 
-
 export type Step1Ref = {
     focusEmail: () => void;
     getEmailInput: () => HTMLInputElement | null;
