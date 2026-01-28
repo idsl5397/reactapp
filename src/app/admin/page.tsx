@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "管理資料" };
 
 export default function page(){
     return (
-        <RequirePermission need="setting-audit">
+        <RequirePermission need="manage-users">
             <Dashboard />
         </RequirePermission>
     )

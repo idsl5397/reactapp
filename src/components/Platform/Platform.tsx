@@ -40,18 +40,18 @@ export default function PlatformSelection() {
             iconBg: "bg-indigo-100",
             available: true,
             features: ["績效指標檢視", "委員建議管理", "資料填報", "報表分析"]
-        },
-        {
-            id: "risk",
-            title: "風險管理平台",
-            description: "工廠安全風險評估與管控系統",
-            icon: <ShieldExclamationIcon className="w-16 h-16 text-gray-400" />,
-            href: "#",
-            color: "gray",
-            bgGradient: "from-gray-50 to-gray-100",
-            iconBg: "bg-gray-100",
-            available: true,
-            features: [""]
+        // },
+        // {
+        //     id: "risk",
+        //     title: "風險管理平台",
+        //     description: "工廠安全風險評估與管控系統",
+        //     icon: <ShieldExclamationIcon className="w-16 h-16 text-gray-400" />,
+        //     href: "#",
+        //     color: "gray",
+        //     bgGradient: "from-gray-50 to-gray-100",
+        //     iconBg: "bg-gray-100",
+        //     available: false,
+        //     features: [""]
         }
     ];
 
@@ -91,7 +91,7 @@ export default function PlatformSelection() {
                     </div>
 
                     {/* 平台選擇卡片 */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <div className={`grid grid-cols-1 ${platforms.length >= 2 ? 'lg:grid-cols-2 max-w-6xl' : 'max-w-xl'} gap-8 mx-auto`}>
                         {platforms.map((platform, index) => (
                             <div
                                 key={index}
