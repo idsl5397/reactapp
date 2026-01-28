@@ -4,7 +4,7 @@ import React, {useRef, useState} from 'react';
 import GridComponent,{IRow} from "@/components/KpiAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import SelectKpiEntriesByDate, { SelectionPayload } from "@/components/select/selectKpiEntriesByDate";
-import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { ColDef } from "ag-grid-community";
 import { Toaster, toast } from 'react-hot-toast';
 import type { AgGridReact as AgGridReactType } from 'ag-grid-react';
@@ -62,6 +62,7 @@ export default function KPI() {
     const [isLoading, setIsLoading] = useState(false);
     const [keyword, setKeyword] = useState("");
 
+    const router = useRouter();
     const [exportMode, setExportMode] = useState<'all' | 'failed'>('all');
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
@@ -73,6 +74,12 @@ export default function KPI() {
     const gridRef = useRef<AgGridReactType<any>>(null);
 
     const handleQuery = async () => {
+        const token = await getAccessToken();
+        if (!token?.value) {
+            toast.error("請先登入後再查詢");
+            return;
+        }
+
         setIsLoading(true);
         const params = {
             organizationId: selection.orgId || undefined,
@@ -84,9 +91,8 @@ export default function KPI() {
         };
 
         try {
-            const token = await getAccessToken();
             const response = await api.get("/Kpi/display", {
-                headers: {Authorization: `Bearer ${token?.value}`},
+                headers: {Authorization: `Bearer ${token.value}`},
                 params, timeout: 90000,
             });
 
@@ -214,16 +220,22 @@ export default function KPI() {
                             </div>
                         </div>
 
-                        <Link href="/kpi/newKpi" tabIndex={-1}>
-                            <button type="button"
-                                    className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                </svg>
-                                新增指標
-                            </button>
-                        </Link>
+                        <button type="button"
+                                onClick={async () => {
+                                    const token = await getAccessToken();
+                                    if (!token?.value) {
+                                        toast.error("請先登入後再操作");
+                                        return;
+                                    }
+                                    router.push("/kpi/newKpi");
+                                }}
+                                className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            新增指標
+                        </button>
                     </div>
                     {/* Combined Filter and Category section */}
                     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">

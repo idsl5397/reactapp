@@ -1,11 +1,13 @@
 'use client'
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { motion } from "framer-motion"
 import { CheckCircle, XCircle, Clock, Upload, FileUp, TrendingUp } from 'lucide-react';
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUploadOptionModalState } from "@/hooks/useUploadOptionModalState";
 import {UploadOptionModal} from "@/hooks/UploadOptionModal";
+import { getAccessToken } from "@/services/serverAuthService";
+import { toast, Toaster } from "react-hot-toast";
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const kpiitems = [
@@ -39,8 +41,14 @@ const sugitems = [
 ];
 
 export default function Report(){
+    const router = useRouter();
+    const [hasToken, setHasToken] = useState(false);
     const kpiModalState = useUploadOptionModalState();
     const sugModalState = useUploadOptionModalState();
+
+    useEffect(() => {
+        getAccessToken().then(token => setHasToken(!!token?.value));
+    }, []);
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "資料填報" }
@@ -116,6 +124,7 @@ export default function Report(){
 
     return (
         <>
+            <Toaster position="top-right" reverseOrder={false}/>
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
@@ -240,61 +249,87 @@ export default function Report(){
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {/* KPI Upload Button */}
                                 <motion.button
-                                    whileHover={{scale: 1.02, y: -2}}
-                                    whileTap={{scale: 0.98}}
-                                    onClick={kpiModalState.openModal}
-                                    className="group relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
+                                    whileHover={hasToken ? {scale: 1.02, y: -2} : {}}
+                                    whileTap={hasToken ? {scale: 0.98} : {}}
+                                    onClick={() => {
+                                        if (!hasToken) { toast.error("請先登入再操作"); return; }
+                                        kpiModalState.openModal();
+                                    }}
+                                    className={`group relative overflow-hidden rounded-xl p-6 shadow-lg custom-select ${
+                                        hasToken
+                                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-xl'
+                                            : 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-100 cursor-not-allowed'
+                                    }`}
                                 >
-                                    <div
-                                        className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    {hasToken && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    )}
                                     <div className="relative z-10">
-                                        <div
-                                            className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                        <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                             <TrendingUp className="w-6 h-6"/>
                                         </div>
                                         <h3 className="text-lg font-semibold mb-2">更新指標項目</h3>
-                                        <p className="text-sm text-indigo-100">上傳或更新績效指標數據</p>
+                                        <p className={`text-sm ${hasToken ? 'text-indigo-100' : 'text-gray-200'}`}>
+                                            {hasToken ? '上傳或更新績效指標數據' : '請先登入再操作'}
+                                        </p>
                                     </div>
                                 </motion.button>
 
                                 {/* Suggestion Upload Button */}
                                 <motion.button
-                                    whileHover={{scale: 1.02, y: -2}}
-                                    whileTap={{scale: 0.98}}
-                                    onClick={sugModalState.openModal}
-                                    className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
+                                    whileHover={hasToken ? {scale: 1.02, y: -2} : {}}
+                                    whileTap={hasToken ? {scale: 0.98} : {}}
+                                    onClick={() => {
+                                        if (!hasToken) { toast.error("請先登入再操作"); return; }
+                                        sugModalState.openModal();
+                                    }}
+                                    className={`group relative overflow-hidden rounded-xl p-6 shadow-lg custom-select ${
+                                        hasToken
+                                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:shadow-xl'
+                                            : 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-100 cursor-not-allowed'
+                                    }`}
                                 >
-                                    <div
-                                        className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    {hasToken && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    )}
                                     <div className="relative z-10">
-                                        <div
-                                            className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                        <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                             <Upload className="w-6 h-6"/>
                                         </div>
                                         <h3 className="text-lg font-semibold mb-2">更新改善建議</h3>
-                                        <p className="text-sm text-emerald-100">填報改善建議執行情況</p>
+                                        <p className={`text-sm ${hasToken ? 'text-emerald-100' : 'text-gray-200'}`}>
+                                            {hasToken ? '填報改善建議執行情況' : '請先登入再操作'}
+                                        </p>
                                     </div>
                                 </motion.button>
 
                                 {/* Report Upload Button */}
-                                <Link href="/reportEntry/Improvement" className="block" tabIndex={-1}>
-                                    <motion.div
-                                        whileHover={{scale: 1.02, y: -2}}
-                                        whileTap={{scale: 0.98}}
-                                        className="group relative overflow-hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl custom-select"
-                                    >
-                                        <div
-                                            className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                        <div className="relative z-10">
-                                            <div
-                                                className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                                                <FileUp className="w-6 h-6"/>
-                                            </div>
-                                            <h3 className="text-lg font-semibold mb-2">上傳改善報告書</h3>
-                                            <p className="text-sm text-amber-100">提交完整的改善報告書</p>
+                                <motion.button
+                                    whileHover={hasToken ? {scale: 1.02, y: -2} : {}}
+                                    whileTap={hasToken ? {scale: 0.98} : {}}
+                                    onClick={() => {
+                                        if (!hasToken) { toast.error("請先登入再操作"); return; }
+                                        router.push("/reportEntry/Improvement");
+                                    }}
+                                    className={`group relative overflow-hidden rounded-xl p-6 shadow-lg custom-select ${
+                                        hasToken
+                                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:shadow-xl'
+                                            : 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-100 cursor-not-allowed'
+                                    }`}
+                                >
+                                    {hasToken && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    )}
+                                    <div className="relative z-10">
+                                        <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                                            <FileUp className="w-6 h-6"/>
                                         </div>
-                                    </motion.div>
-                                </Link>
+                                        <h3 className="text-lg font-semibold mb-2">上傳改善報告書</h3>
+                                        <p className={`text-sm ${hasToken ? 'text-amber-100' : 'text-gray-200'}`}>
+                                            {hasToken ? '提交完整的改善報告書' : '請先登入再操作'}
+                                        </p>
+                                    </div>
+                                </motion.button>
                             </div>
                         </motion.div>
 

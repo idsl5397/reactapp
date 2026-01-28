@@ -27,9 +27,14 @@ export default function Report() {
         orgName: '',
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [hasToken, setHasToken] = useState(false);
 
     const { userRole, userOrgId, permissions } = useauthStore();
     const canViewRanking = permissions.includes("view-ranking");
+
+    useEffect(() => {
+        getAccessToken().then(token => setHasToken(!!token?.value));
+    }, []);
 
     // ✅ 共用拉資料邏輯
     const fetchRates = async (orgId?: string) => {
@@ -102,6 +107,18 @@ export default function Report() {
         return 'bg-red-500';
     };
 
+    const LoginRequiredPlaceholder = () => (
+        <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-500 mb-2">登入後即可查詢</h3>
+        </div>
+    );
+
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "報表" }
@@ -170,7 +187,9 @@ export default function Report() {
                                 )}
                             </div>
 
-                            {cards.length === 0 ? (
+                            {!hasToken ? (
+                                <LoginRequiredPlaceholder />
+                            ) : cards.length === 0 ? (
                                 <div className="text-center py-16">
                                     <div
                                         className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -230,12 +249,16 @@ export default function Report() {
                                     <div className="w-2 h-6 bg-purple-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">改善建議分佈圖</h2>
                                 </div>
-                                <div className="h-[450px]">
-                                    <SuggestionPieChart
-                                        organizationId={selection.orgId}
-                                        organizationName={selection.orgName || "所有公司"}
-                                    />
-                                </div>
+                                {hasToken ? (
+                                    <div className="h-[450px]">
+                                        <SuggestionPieChart
+                                            organizationId={selection.orgId}
+                                            organizationName={selection.orgName || "所有公司"}
+                                        />
+                                    </div>
+                                ) : (
+                                    <LoginRequiredPlaceholder />
+                                )}
                             </div>
                             <div
                                 className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300">
@@ -243,12 +266,16 @@ export default function Report() {
                                     <div className="w-2 h-6 bg-green-500 rounded-full mr-3"></div>
                                     <h2 className="text-xl font-semibold text-gray-800">KPI趨勢分析</h2>
                                 </div>
-                                <div className="h-[450px]">
-                                    <Aggridline
-                                        organizationId={selection.orgId}
-                                        organizationName={selection.orgName || "所有公司"}
-                                    />
-                                </div>
+                                {hasToken ? (
+                                    <div className="h-[450px]">
+                                        <Aggridline
+                                            organizationId={selection.orgId}
+                                            organizationName={selection.orgName || "所有公司"}
+                                        />
+                                    </div>
+                                ) : (
+                                    <LoginRequiredPlaceholder />
+                                )}
                             </div>
                         </div>
 

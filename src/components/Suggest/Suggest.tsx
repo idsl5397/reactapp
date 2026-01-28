@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Aggrid from "@/components/SuggestAggrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { SelectionPayload } from "@/components/select/selectEnterprise";
-import Link from "next/link";
+
 import { toast, Toaster } from "react-hot-toast";
 import { AgGridReact } from "ag-grid-react";
 import _ from 'lodash';
@@ -77,6 +77,12 @@ export default function Suggest() {
     const { userRole, userOrgId } = useauthStore();
 
     const handleQuery = async () => {
+        const token = await getAccessToken();
+        if (!token?.value) {
+            toast.error("請先登入後再查詢");
+            return;
+        }
+
         setIsLoading(true);
         const params: any = {};
         const fullSelection = { ...selection, keyword };
@@ -93,7 +99,6 @@ export default function Suggest() {
         if (fullSelection.keyword?.trim()) params.keyword = fullSelection.keyword.trim();
 
         try {
-            const token = await getAccessToken();
             const response = await api.get('/Suggest/GetAllSuggestData', {
                 headers: {
                     Authorization: `Bearer ${token?.value}`
@@ -225,16 +230,22 @@ export default function Suggest() {
                         </div>
 
                         {userRole !== 'company' && (
-                            <Link href="/suggest/newSuggest" tabIndex={-1}>
-                                <button
-                                    className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                    </svg>
-                                    新增建議
-                                </button>
-                            </Link>
+                            <button
+                                onClick={async () => {
+                                    const token = await getAccessToken();
+                                    if (!token?.value) {
+                                        toast.error("請先登入後再操作");
+                                        return;
+                                    }
+                                    router.push("/suggest/newSuggest");
+                                }}
+                                className="btn flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transform hover:scale-105">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                新增建議
+                            </button>
                         )}
                     </div>
 
