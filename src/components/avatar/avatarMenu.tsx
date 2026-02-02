@@ -20,7 +20,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
 
     const [isLoading] = useState(false);
     const {isLoggedIn, setIsLoggedIn,permissions} = useauthStore(); // 登入狀態
-    const hasSettingAudit = permissions.includes('manage-users');
+    const hasSettingAudit = permissions.includes('import');
 
     const menuRef = useRef<HTMLDivElement>(null);
 
