@@ -12,6 +12,7 @@ import { useMenuStore } from "@/Stores/menuStore";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
 import ForgotPasswordModal from './ForgotPasswordModal';
+import EmailVerifyModal from './EmailVerifyModal';
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import {Turnstile} from "@marsidev/react-turnstile";
 import { Eye, EyeOff, Lock } from "lucide-react";
@@ -32,6 +33,8 @@ export default function Login() {
     const { setIsLoggedIn, checkIsLoggedIn, isLoggedIn, checkAuthStatus } = useauthStore();
     const [showForgotModal, setShowForgotModal] = useState(false);
     const [modelType,setModelType] = useState<"forgotPassword"|"changepassword">("forgotPassword");
+    const [showEmailVerify, setShowEmailVerify] = useState(false);
+    const [verifyEmail, setVerifyEmail] = useState("");
     const { confirm } = useConfirmDialog();
     // const { confirmDialog, ConfirmComponent } = useConfirm();
 
@@ -106,6 +109,13 @@ export default function Login() {
 
             const resp = await userService.Login(usermail, password);
             console.log("login resp:", resp);
+
+            // A-0) Email 未驗證 → 彈出驗證 Modal
+            if (resp.needEmailVerification && resp.email) {
+                setVerifyEmail(resp.email);
+                setShowEmailVerify(true);
+                return;
+            }
 
             // A) 密碼已過期 → 導去變更密碼頁
             if (resp.forceChangePassword) {
@@ -335,6 +345,39 @@ export default function Login() {
                 onClose={() => setShowForgotModal(false)}
                 triggerRef={forgotTriggerRef}
             />
+
+            {/* Email 驗證 Modal */}
+            {showEmailVerify && verifyEmail && (
+                <EmailVerifyModal
+                    email={verifyEmail}
+                    onClose={() => setShowEmailVerify(false)}
+                    onVerified={async () => {
+                        setShowEmailVerify(false);
+                        // 驗證成功後自動重新登入
+                        try {
+                            const resp = await userService.Login(usermail, password);
+                            if (resp.success && resp.token && resp.refreshToken && resp.nickname && resp.email) {
+                                setUserData({
+                                    nickname: resp.nickname,
+                                    email: resp.email,
+                                    token: resp.token,
+                                });
+                                await storeAuthTokens(resp.token, resp.refreshToken);
+                                await checkAuthStatus();
+                                setIsLoggedIn(true);
+                                setErrorMessage("");
+                                setTimeout(() => {
+                                    router.push("/platform");
+                                }, 100);
+                            } else {
+                                setErrorMessage(resp.message || "自動登入失敗，請重新登入");
+                            }
+                        } catch {
+                            setErrorMessage("自動登入失敗，請重新登入");
+                        }
+                    }}
+                />
+            )}
 
         </>
     );

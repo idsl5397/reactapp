@@ -30,4 +30,5 @@ export interface LoginResult {
     passwordExpiryAt?: string;   // ISO 字串
     daysUntilExpiry?: number;
     forceChangePassword?: boolean;
+    needEmailVerification?: boolean;
 }

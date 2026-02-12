@@ -1,7 +1,26 @@
 import React from "react";
-import {CheckCircle, Clock, Eye, Filter, Search, Trash2} from "lucide-react";
+import {CheckCircle, Clock, Eye, Filter, Mail, MailX, Search, Trash2, X} from "lucide-react";
 import api from "@/services/apiService";
 import {getAccessToken} from "@/services/serverAuthService";
+
+type UserDetailDto = {
+    id: string;
+    username: string;
+    nickname?: string | null;
+    email?: string | null;
+    mobile?: string | null;
+    unit?: string | null;
+    position?: string | null;
+    organizationName?: string | null;
+    roles: string[];
+    isActive: boolean;
+    emailVerified: boolean;
+    emailVerifiedAt?: string | null;
+    createdAt: string;
+    lastLoginAt?: string | null;
+    passwordChangedAt?: string | null;
+    forceChangePassword: boolean;
+};
 
 async function authHeaders() {
     const token = await getAccessToken();
@@ -29,6 +48,7 @@ type UserListItemDto = {
     unit?: string | null;
     status: "active" | "pending" | "disabled";
     lastLoginAt?: string | null;
+    emailVerified: boolean;
 };
 
 type PagedResult<T> = {
@@ -139,6 +159,18 @@ export default function UserManagementView() {
         }
     }, [page, debouncedQ, role, status, fetchUsers]);
 
+    const onToggleEmailVerified = React.useCallback(async (u: UserListItemDto) => {
+        const newVal = !u.emailVerified;
+        if (!confirm(`確定要將「${u.name}」的 Email 驗證狀態設為「${newVal ? "已驗證" : "未驗證"}」？`)) return;
+        try {
+            await api.patch(`/Admin/users/${u.id}/email-verified`, { emailVerified: newVal }, { ...(await authHeaders())});
+            fetchUsers(page, debouncedQ, role, status);
+        } catch (e: any) {
+            console.error(e);
+            alert(`變更 Email 驗證狀態失敗：${e?.message || e}`);
+        }
+    }, [page, debouncedQ, role, status, fetchUsers]);
+
     const [rolesList, setRolesList] = React.useState<string[]>([]);
 
     React.useEffect(() => {
@@ -181,6 +213,23 @@ export default function UserManagementView() {
             alert(`刪除失敗：${e?.message || e}`);
         }
     }, [rows.length, page, total, pageSize, debouncedQ, role, status, fetchUsers]);
+
+    // ===== 使用者詳情 Modal =====
+    const [detailUser, setDetailUser] = React.useState<UserDetailDto | null>(null);
+    const [detailLoading, setDetailLoading] = React.useState(false);
+
+    const onViewDetail = React.useCallback(async (userId: string) => {
+        setDetailLoading(true);
+        try {
+            const { data } = await api.get<UserDetailDto>(`/Admin/users/${userId}`, await authHeaders());
+            setDetailUser(data);
+        } catch (e: any) {
+            console.error(e);
+            alert(`載入使用者詳情失敗：${e?.message || e}`);
+        } finally {
+            setDetailLoading(false);
+        }
+    }, []);
 
     return (
         <div className="space-y-6">
@@ -239,6 +288,7 @@ export default function UserManagementView() {
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">角色</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">單位</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">狀態</th>
+                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Email 驗證</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">最後登入</th>
                             <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">操作</th>
                         </tr>
@@ -277,6 +327,20 @@ export default function UserManagementView() {
 
                                 <td className="px-4 py-3 text-sm text-gray-600">{u.unit ?? "-"}</td>
                                 <td className="px-4 py-3 text-sm">{statusChip(u.status)}</td>
+                                <td className="px-4 py-3 text-center">
+                                    <button
+                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
+                                            u.emailVerified
+                                                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                                : "bg-red-100 text-red-700 hover:bg-red-200"
+                                        }`}
+                                        title={u.emailVerified ? "點擊設為未驗證" : "點擊設為已驗證"}
+                                        onClick={() => onToggleEmailVerified(u)}
+                                    >
+                                        {u.emailVerified ? <Mail size={14} /> : <MailX size={14} />}
+                                        {u.emailVerified ? "已驗證" : "未驗證"}
+                                    </button>
+                                </td>
                                 <td className="px-4 py-3 text-sm text-gray-600">{fmtTime(u.lastLoginAt)}</td>
 
                                 <td className="px-4 py-3 text-center">
@@ -284,7 +348,8 @@ export default function UserManagementView() {
                                         <button
                                             className="text-blue-500 hover:text-blue-600"
                                             aria-label="檢視"
-                                            onClick={() => alert("TODO: 檢視詳細（可開 Modal）")}
+                                            onClick={() => onViewDetail(u.id)}
+                                            disabled={detailLoading}
                                         >
                                             <Eye size={18}/>
                                         </button>
@@ -312,7 +377,7 @@ export default function UserManagementView() {
                         ))}
                         {rows.length === 0 && !loading && (
                             <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-500">查無資料</td>
+                                <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-500">查無資料</td>
                             </tr>
                         )}
                         </tbody>
@@ -340,6 +405,73 @@ export default function UserManagementView() {
                     </div>
                 </div>
             </div>
+
+            {/* 使用者詳情 Modal */}
+            {detailUser && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
+                    onMouseDown={(e) => { if (e.target === e.currentTarget) setDetailUser(null); }}
+                >
+                    <div className="bg-white w-full max-w-lg rounded-xl shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
+                        <button
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                            onClick={() => setDetailUser(null)}
+                            aria-label="關閉"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <h3 className="text-lg font-semibold mb-4">使用者詳情</h3>
+
+                        <div className="space-y-3 text-sm">
+                            <DetailRow label="帳號" value={detailUser.username} />
+                            <DetailRow label="姓名" value={detailUser.nickname} />
+                            <DetailRow label="Email" value={detailUser.email} />
+                            <DetailRow label="手機" value={detailUser.mobile} />
+                            <DetailRow label="組織" value={detailUser.organizationName} />
+                            <DetailRow label="單位" value={detailUser.unit} />
+                            <DetailRow label="職稱" value={detailUser.position} />
+                            <DetailRow label="角色" value={detailUser.roles.length > 0 ? detailUser.roles.join(", ") : null} />
+                            <DetailRow label="帳號狀態">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                                    detailUser.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                }`}>
+                                    {detailUser.isActive ? "啟用中" : "停用"}
+                                </span>
+                            </DetailRow>
+                            <DetailRow label="Email 驗證">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                                    detailUser.emailVerified ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                }`}>
+                                    {detailUser.emailVerified ? "已驗證" : "未驗證"}
+                                </span>
+                            </DetailRow>
+                            <DetailRow label="Email 驗證時間" value={fmtTime(detailUser.emailVerifiedAt)} />
+                            <DetailRow label="建立時間" value={fmtTime(detailUser.createdAt)} />
+                            <DetailRow label="最後登入" value={fmtTime(detailUser.lastLoginAt)} />
+                            <DetailRow label="密碼變更時間" value={fmtTime(detailUser.passwordChangedAt)} />
+                            <DetailRow label="強制變更密碼">
+                                <span className={`text-xs font-medium ${detailUser.forceChangePassword ? "text-red-600" : "text-gray-500"}`}>
+                                    {detailUser.forceChangePassword ? "是" : "否"}
+                                </span>
+                            </DetailRow>
+                        </div>
+
+                        <div className="mt-6 flex justify-end">
+                            <button className="btn btn-ghost text-black" onClick={() => setDetailUser(null)}>關閉</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function DetailRow({ label, value, children }: { label: string; value?: string | null; children?: React.ReactNode }) {
+    return (
+        <div className="flex border-b border-gray-100 pb-2">
+            <span className="w-32 flex-shrink-0 font-medium text-gray-600">{label}</span>
+            <span className="text-gray-800">{children ?? value ?? <span className="text-gray-400">-</span>}</span>
         </div>
     );
 }
