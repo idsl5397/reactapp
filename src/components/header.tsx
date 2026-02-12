@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     Dialog,
-    DialogPanel,
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
@@ -252,7 +251,7 @@ export default function Header() {
                                     />
                                 ) : (
                                     <Link
-                                        href={item.link}
+                                        href={item.link || "#"}
                                         className="text-base font-semibold text-gray-900 btn btn-ghost"
                                     >
                                         {item.label}

@@ -1,31 +1,24 @@
 'use client'
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {
     Settings,
     Users,
     Target,
     MessageSquare,
     Upload,
-    Download,
     BarChart3,
     Eye,
     Edit,
     Trash2,
     Plus,
     Search,
-    Filter,
-    CheckCircle,
-    XCircle,
     Clock,
     ChevronRight,
-    Home, Edit3, RefreshCw, Landmark, Building2, Factory, Squirrel, Network, AlertCircle, Info, ChevronDown,
+    Home,
 } from "lucide-react";
-import api from "@/services/apiService";
-import { ModuleRegistry, ClientSideRowModelModule } from "ag-grid-community";
-import {getAccessToken} from "@/services/serverAuthService";
-import {toast} from "react-hot-toast";
 
+import { ModuleRegistry, ClientSideRowModelModule } from "ag-grid-community";
 
 import UserManagementView from '@/components/Admin/System/UserManagementView'
 import PermissionManagementView from '@/components/Admin/System/PermissionManagementView'
@@ -33,10 +26,10 @@ import DataChangeLogView from '@/components/Admin/System/DataChangeLogView'
 import OrganizationStructure from '@/components/Admin/Organization/OrganizationStructure'
 import OrganizationRegistryView from '@/components/Admin/Organization/OrganizationRegistryView'
 import OrganizationTypesRulesView from '@/components/Admin/Organization/OrganizationTypesRulesView'
+import OrganizationDomainView from '@/components/Admin/Organization/OrganizationDomainView'
 import FieldsView from '@/components/Admin/Kpi/FieldsView'
 import KpiCyclesView from "@/components/Admin/Kpi/KpiCyclesView";
 import ItemsListView from '@/components/Admin/Kpi/ItemsListView'
-import ItemEditor from "@/components/Admin/Kpi/ItemEditor";
 import CategoriesView from "@/components/Admin/Kpi/CategoriesView";
 import StructureView from "@/components/Admin/Kpi/StructureView";
 import ImportExportView from "@/components/Admin/Kpi/ImportExportView";
@@ -97,6 +90,7 @@ export default function AdminDashboard() {
                     { id: "structure", name: "組織結構與階層" },   // Tree + DragDrop + Path
                     { id: "registry",  name: "企業/公司/工廠維護" }, // List + CRUD + 篩選
                     { id: "types",     name: "類型與階層規則" },     // Type + Hierarchy Rules
+                    { id: "domains",   name: "網域管理" },          // Domain CRUD
                 ],
             },
             {
@@ -215,6 +209,8 @@ export default function AdminDashboard() {
                                 <OrganizationRegistryView />
                             ) : activeSubMenu === "types" ? (
                                 <OrganizationTypesRulesView />
+                            ) : activeSubMenu === "domains" ? (
+                                <OrganizationDomainView />
                             ) : (
                                 <SectionHint text="請在左側選擇子功能" />
                             )}
@@ -407,141 +403,6 @@ function UsageBar({ label, value, percent }: { label: string; value: number; per
 }
 
 // ---------- KPI Management ----------
-function KPIManagementView() {
-    const kpis = [
-        { code: "PSM-001", name: "永續報告書發行率", category: "PSM", year: "2025/Q3", target: "100%", actual: "98%", status: "achieved" },
-        { code: "EP-023", name: "碳排放減量比例", category: "EP", year: "2025/Q3", target: "15%", actual: "12%", status: "not-achieved" },
-        { code: "FR-045", name: "供應商稽核完成率", category: "FR", year: "2025/Q3", target: "90%", actual: "95%", status: "achieved" },
-        { code: "ECO-012", name: "綠色採購金額比例", category: "ECO", year: "2025/Q3", target: "20%", actual: "22%", status: "achieved" },
-    ] as const;
-
-    const catClass = (c: string) =>
-        c === "PSM"
-            ? "bg-blue-100 text-blue-700"
-            : c === "EP"
-                ? "bg-green-100 text-green-700"
-                : c === "FR"
-                    ? "bg-purple-100 text-purple-700"
-                    : "bg-orange-100 text-orange-700";
-
-    return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">KPI 指標管理</h2>
-                <div className="flex gap-2">
-                    <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                        <Download size={20} />
-                        下載範本
-                    </button>
-                    <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                        <Upload size={20} />
-                        匯入資料
-                    </button>
-                    <button className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">
-                        <Plus size={20} />
-                        新增指標
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <SummaryCard label="基礎型指標" value={156} valueClass="text-blue-600" />
-                <SummaryCard label="客製型指標" value={186} valueClass="text-green-600" />
-                <SummaryCard label="已達標" value={298} valueClass="text-green-600" />
-                <SummaryCard label="未達標" value={44} valueClass="text-red-600" />
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex gap-4 mb-6">
-                    <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option>全部類別</option>
-                        <option>PSM - 永續管理</option>
-                        <option>EP - 環境保護</option>
-                        <option>FR - 公平責任</option>
-                        <option>ECO - 經濟發展</option>
-                    </select>
-                    <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option>2025年度</option>
-                        <option>2024年度</option>
-                        <option>2023年度</option>
-                    </select>
-                    <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option>全部季度</option>
-                        <option>Q1</option>
-                        <option>Q2</option>
-                        <option>Q3</option>
-                        <option>Q4</option>
-                    </select>
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                        <input
-                            type="text"
-                            placeholder="搜尋指標名稱或代碼..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">指標代碼</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">指標名稱</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">類別</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">年度/季度</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">目標值</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">實際值</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">達標狀態</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                        {kpis.map((kpi, idx) => (
-                            <tr key={idx} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-sm font-medium text-gray-800">{kpi.code}</td>
-                                <td className="px-4 py-3 text-sm text-gray-800">{kpi.name}</td>
-                                <td className="px-4 py-3 text-sm">
-                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${catClass(kpi.category)}`}>
-                      {kpi.category}
-                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-sm text-gray-600">{kpi.year}</td>
-                                <td className="px-4 py-3 text-sm text-gray-600">{kpi.target}</td>
-                                <td className="px-4 py-3 text-sm font-medium text-gray-800">{kpi.actual}</td>
-                                <td className="px-4 py-3 text-sm">
-                                    {kpi.status === "achieved" ? (
-                                        <span className="flex items-center gap-1 text-green-600">
-                        <CheckCircle size={16} /> 達標
-                      </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-red-600">
-                        <XCircle size={16} /> 未達標
-                      </span>
-                                    )}
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <div className="flex justify-center gap-2">
-                                        <button className="text-blue-500 hover:text-blue-600" aria-label="檢視">
-                                            <Eye size={18} />
-                                        </button>
-                                        <button className="text-green-500 hover:text-green-600" aria-label="編輯">
-                                            <Edit size={18} />
-                                        </button>
-                                        <button className="text-red-500 hover:text-red-600" aria-label="刪除">
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 function SummaryCard({ label, value, valueClass }: { label: string; value: number; valueClass?: string }) {
     return (

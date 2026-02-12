@@ -12,11 +12,18 @@ async function auth() {
     return { headers: { Authorization: token ? `Bearer ${token.value}` : "" } };
 }
 
+/** 輸入值 > 1911 視為西元年，自動轉民國；否則視為民國年直接使用 */
+function toRocYear(v: number): number {
+    return v > 1911 ? v - 1911 : v;
+}
+
+const currentRocYear = new Date().getFullYear() - 1911;
+
 export default function KpiCyclesView() {
     const [rows, setRows] = React.useState<KpiCycle[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [draft, setDraft] = React.useState<KpiCycleUpsert>({
-        name: "", startYear: new Date().getFullYear(), endYear: new Date().getFullYear(), isActive: true
+        name: "", startYear: currentRocYear, endYear: currentRocYear, isActive: true
     });
     const [editingId, setEditingId] = React.useState<number|null>(null);
 
@@ -31,7 +38,7 @@ export default function KpiCyclesView() {
 
     const resetDraft = ()=> {
         setEditingId(null);
-        setDraft({ name:"", startYear:new Date().getFullYear(), endYear:new Date().getFullYear(), isActive:true });
+        setDraft({ name:"", startYear:currentRocYear, endYear:currentRocYear, isActive:true });
     };
 
     const save = async ()=>{
@@ -74,13 +81,19 @@ export default function KpiCyclesView() {
                     <input className="border rounded px-3 py-2 w-full"
                            value={draft.name} onChange={e=>setDraft(d=>({...d, name:e.target.value}))}/>
                 </L>
-                <L label="開始年">
+                <L label="開始年（民國）">
                     <input className="border rounded px-3 py-2 w-full" type="number"
-                           value={draft.startYear} onChange={e=>setDraft(d=>({...d, startYear:Number(e.target.value)||new Date().getFullYear()}))}/>
+                           placeholder="例：114 或 2025"
+                           value={draft.startYear}
+                           onChange={e=>setDraft(d=>({...d, startYear:Number(e.target.value)||currentRocYear}))}
+                           onBlur={e=>{ const v = Number(e.target.value); if(v>1911) setDraft(d=>({...d, startYear: toRocYear(v)})); }}/>
                 </L>
-                <L label="結束年">
+                <L label="結束年（民國）">
                     <input className="border rounded px-3 py-2 w-full" type="number"
-                           value={draft.endYear} onChange={e=>setDraft(d=>({...d, endYear:Number(e.target.value)||draft.startYear}))}/>
+                           placeholder="例：114 或 2025"
+                           value={draft.endYear}
+                           onChange={e=>setDraft(d=>({...d, endYear:Number(e.target.value)||draft.startYear}))}
+                           onBlur={e=>{ const v = Number(e.target.value); if(v>1911) setDraft(d=>({...d, endYear: toRocYear(v)})); }}/>
                 </L>
                 <L label="啟用">
                     <input type="checkbox" checked={draft.isActive} onChange={e=>setDraft(d=>({...d, isActive:e.target.checked}))}/>
@@ -100,8 +113,8 @@ export default function KpiCyclesView() {
                 <thead>
                 <tr className="bg-gray-50">
                     <th className="p-2 text-left">名稱</th>
-                    <th className="p-2 text-center">開始年</th>
-                    <th className="p-2 text-center">結束年</th>
+                    <th className="p-2 text-center">開始年（民國）</th>
+                    <th className="p-2 text-center">結束年（民國）</th>
                     <th className="p-2 text-center">狀態</th>
                     <th className="p-2 text-right">操作</th>
                 </tr>
