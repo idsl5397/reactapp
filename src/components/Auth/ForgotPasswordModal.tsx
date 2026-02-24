@@ -141,10 +141,6 @@ export default function ForgotPasswordModal({
         setTimeout(() => triggerRef?.current?.focus(), 0);
     };
 
-    const handleBackdropClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
-        if (e.target === e.currentTarget) handleClose();
-    };
-
     // --- 驗證 + API ---
     const handleSendEmail = async () => {
         // 必填 & 格式
@@ -259,7 +255,6 @@ export default function ForgotPasswordModal({
             <Toaster position="top-right" reverseOrder={false} />
             <div
                 className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
-                onMouseDown={handleBackdropClick}
             >
                 <div
                     ref={dialogRef}

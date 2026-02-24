@@ -49,11 +49,10 @@ export default function AddKPIvalue() {
     ];
 
     // 步驟三需要的資訊（送出後記錄）
-    const [successData, setSuccessData] = useState<{
-        organizationId: number;
-        organizationName: string;
-        count: number;
-    } | null>(null);
+    type SuccessData = { organizationId: number; organizationName: string; count: number };
+    const [successData, setSuccessData] = useState<SuccessData | null>(null);
+    // ref 讓 downloadPdf 永遠讀到最新值，避免 AnimatePresence 動畫延遲造成 stale closure
+    const successDataRef = useRef<SuccessData | null>(null);
     const [downloading, setDownloading] = useState(false);
 
     const handleFormComplete = async (data: FormDataType): Promise<void> => {};
@@ -61,19 +60,22 @@ export default function AddKPIvalue() {
     const step1Ref = useRef<AddSugStep1Ref>(null);
 
     const downloadPdf = async () => {
-        if (!successData) return;
+        const data = successDataRef.current;   // 讀 ref，不受 stale closure 影響
+        if (!data) return;
         setDownloading(true);
         try {
-            const t = await getAccessToken();
+            const token = await getAccessToken();
             const response = await api.get("/Suggest/report-pdf", {
-                params: { organizationId: successData.organizationId },
+                params: { organizationId: data.organizationId },
                 responseType: "blob",
-                headers: { Authorization: t ? `Bearer ${t.value}` : "" },
+                headers: {
+                    Authorization: `Bearer ${token?.value}`
+                },
             });
             const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${successData.organizationName}_委員建議報告.pdf`;
+            a.download = `${data.organizationName}_委員建議報告.pdf`;
             a.click();
             URL.revokeObjectURL(url);
         } catch {
@@ -183,11 +185,13 @@ export default function AddKPIvalue() {
                                             }
 
                                             // 記錄成功資訊供步驟三使用
-                                            setSuccessData({
+                                            const sd = {
                                                 organizationId: selectCompany?.organizationId,
                                                 organizationName: selectCompany?.organizationName ?? "",
                                                 count: updatedList.length,
-                                            });
+                                            };
+                                            successDataRef.current = sd;  // 同步更新 ref，確保 downloadPdf 讀到最新值
+                                            setSuccessData(sd);
 
                                             toast.success("已成功更新委員建議執行狀況！");
                                             return true;
