@@ -1,5 +1,5 @@
 "use client"
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
     FormDataType,
     MultiStepForm,
@@ -15,6 +15,7 @@ import Step3 from '@/components/ReportKPI/AddKpiValueStep3';
 import api from "@/services/apiService"
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
+import { getAccessToken } from "@/services/serverAuthService";
 
 //步驟一 選擇公司/工廠
 export interface SelectCompany {
@@ -61,12 +62,39 @@ const steps = [
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+type StatusGate =
+    | { type: 'pending';   orgId: number; orgName: string; year: number; quarter: string }
+    | { type: 'finalized'; orgId: number; orgName: string; year: number; quarter: string }
+    | null;
+
 export default function AddKPIvalue() {
     const breadcrumbItems = [
         { label: "首頁", href: `${NPbasePath}/home` },
         { label: "填報資料" , href: `${NPbasePath}/reportEntry` },
         { label: "上傳績效指標報告"}
     ];
+
+    const [statusGate, setStatusGate] = useState<StatusGate>(null);
+    const [hasReturnedItems, setHasReturnedItems] = useState(false);
+
+    const downloadPdf = async (gate: { orgId: number; orgName: string; year: number; quarter: string }) => {
+        try {
+            const t = await getAccessToken();
+            const response = await api.get("/Kpi/report-pdf", {
+                params: { organizationId: gate.orgId, year: gate.year, quarter: gate.quarter },
+                responseType: "blob",
+                headers: { Authorization: t ? `Bearer ${t.value}` : "" },
+            });
+            const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${gate.orgName}_${gate.year}年${gate.quarter}_KPI報告.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            toast.error("PDF 下載失敗，請稍後再試");
+        }
+    };
 
     // 處理表單完成
     const handleFormComplete = async (data: FormDataType): Promise<void> => {
@@ -89,7 +117,7 @@ export default function AddKPIvalue() {
             const res = response.data;
 
             if (res.success) {
-                toast.success("報告送出成功！");
+                toast.success("報告已送出，等待 superAdmin 審核！");
             } else {
                 if (res.message.includes("重複")) {
                     toast.error("送出失敗：資料重複，請勿重複提交！");
@@ -153,7 +181,48 @@ export default function AddKPIvalue() {
             <div className="w-full flex justify-start">
                 <Breadcrumbs items={breadcrumbItems}/>
             </div>
+
+            {/* ── 狀態閘門畫面 ── */}
+            {statusGate ? (
+                <div className="max-w-2xl mx-auto p-4 mt-8">
+                    {statusGate.type === 'pending' && (
+                        <div className="bg-yellow-50 border border-yellow-300 rounded-2xl p-8 text-center space-y-4">
+                            <div className="text-5xl">⏳</div>
+                            <h2 className="text-xl font-bold text-yellow-800">資料審核中（待審核）</h2>
+                            <p className="text-yellow-700">
+                                <strong>{statusGate.orgName}</strong>　{statusGate.year} 年 {statusGate.quarter} 的 KPI 報告已送出，<br/>
+                                目前等待 superAdmin 審核，請耐心等候通知。
+                            </p>
+                            <button className="btn btn-outline btn-sm" onClick={() => setStatusGate(null)}>
+                                重新選擇
+                            </button>
+                        </div>
+                    )}
+                    {statusGate.type === 'finalized' && (
+                        <div className="bg-green-50 border border-green-300 rounded-2xl p-8 text-center space-y-4">
+                            <div className="text-5xl">✅</div>
+                            <h2 className="text-xl font-bold text-green-800">審核通過</h2>
+                            <p className="text-green-700">
+                                <strong>{statusGate.orgName}</strong>　{statusGate.year} 年 {statusGate.quarter} 的 KPI 報告已全部審核通過。
+                            </p>
+                            <div className="flex justify-center gap-3 flex-wrap">
+                                <button className="btn btn-primary" onClick={() => downloadPdf(statusGate)}>
+                                    📄 下載 PDF 報告
+                                </button>
+                                <button className="btn btn-outline btn-sm" onClick={() => setStatusGate(null)}>
+                                    重新選擇
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ) : (
             <div className="max-w-4xl mx-auto p-4">
+                {hasReturnedItems && (
+                    <div className="bg-red-50 border border-red-300 rounded-xl px-4 py-3 mb-4 text-red-700 text-sm font-medium">
+                        ⚠️ 以下 KPI 項目已被退回修正，請重新填寫後送出。
+                    </div>
+                )}
                 <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">上傳績效指標報告</h1>
 
                 <MultiStepForm
@@ -207,21 +276,39 @@ export default function AddKPIvalue() {
                                                 toast.error(res.message || "查詢失敗");
                                                 return false;
                                             }
-                                            const kpiDataList = res.data;
+                                            const kpiDataList = res.data as any[];
                                             if (!Array.isArray(kpiDataList) || kpiDataList.length === 0) {
                                                 toast.error("該公司尚無 KPI 資料可填報");
                                                 return false;
                                             }
-                                            toast.success(`抓到 ${kpiDataList.length} 筆 KPI 指標，可填報資料`);
-                                            console.log("抓到的 KPI 資料：",response.data);
-                                            console.log("抓到的 KPI 資料：", kpiDataList);
-                                            // ✅ 將資料暫存在 stepData 供 Step2 使用
-                                            updateStepData({
-                                                kpiDataInput: {
-                                                    kpiList: kpiDataList
-                                                }
-                                            });
 
+                                            // ── 狀態閘門判斷 ──
+                                            const selectCompany = stepData.SelectCompany as SelectCompany;
+                                            const statuses: number[] = kpiDataList.map((k) => k.status as number);
+                                            const allFinalized = statuses.length > 0 && statuses.every(s => s === 4);
+                                            const anyReturned  = statuses.some(s => s === 3);
+                                            const anyPending   = statuses.some(s => s === 1 || s === 2);
+
+                                            // ① 全部已核准 → 顯示下載頁面
+                                            if (allFinalized) {
+                                                setStatusGate({ type: 'finalized', orgId: orgId, orgName: selectCompany?.organizationName ?? "", year, quarter });
+                                                return false;
+                                            }
+                                            // ② 有退回項目 → 帶入退回的 KPI，顯示 banner
+                                            if (anyReturned) {
+                                                const returnedList = kpiDataList.filter(k => k.status === 3);
+                                                setHasReturnedItems(true);
+                                                updateStepData({ kpiDataInput: { kpiList: returnedList } });
+                                                return true;
+                                            }
+                                            // ③ 待審核（無退回）→ 顯示等待畫面
+                                            if (anyPending) {
+                                                setStatusGate({ type: 'pending', orgId: orgId, orgName: selectCompany?.organizationName ?? "", year, quarter });
+                                                return false;
+                                            }
+                                            // ④ 正常（草稿 / 未填）→ 帶入全部 KPI
+                                            setHasReturnedItems(false);
+                                            updateStepData({ kpiDataInput: { kpiList: kpiDataList } });
                                             return true; // ✅ 可以進入下一步
                                         } catch (error: any) {
                                             console.error("API Error:", error);
@@ -323,6 +410,7 @@ export default function AddKPIvalue() {
                     </StepAnimation>
                 </MultiStepForm>
             </div>
+            )}
         </>
     );
 }

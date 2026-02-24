@@ -1,5 +1,5 @@
 "use client"
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
     FormDataType,
     MultiStepForm,
@@ -25,19 +25,17 @@ export interface suggestReportData {
     reportList?: any[];
 }
 
-
 //步驟介面 ex: 步驟一 SelectCompany?: SelectCompany;
 interface ExtendedFormData extends FormDataType {
     SelectCompany?: SelectCompany;
     suggestReportData?: suggestReportData;
 }
 
-
 // 步驟定義
 const steps = [
     { title: '選擇公司/工廠' },
     { title: '填寫報告' },
-
+    { title: '完成' },
 ];
 
 const NPbasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -49,12 +47,38 @@ export default function AddKPIvalue() {
         { label: "上傳委員建議報告"}
     ];
 
-    // 處理表單完成
-    const handleFormComplete = async (data: FormDataType): Promise<void> => {
+    // 步驟三需要的資訊（送出後記錄）
+    const [successData, setSuccessData] = useState<{
+        organizationId: number;
+        organizationName: string;
+        count: number;
+    } | null>(null);
+    const [downloading, setDownloading] = useState(false);
 
-    };
+    const handleFormComplete = async (data: FormDataType): Promise<void> => {};
 
     const step1Ref = useRef<AddSugStep1Ref>(null);
+
+    const downloadPdf = async () => {
+        if (!successData) return;
+        setDownloading(true);
+        try {
+            const response = await api.get("/Suggest/report-pdf", {
+                params: { organizationId: successData.organizationId },
+                responseType: "blob",
+            });
+            const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${successData.organizationName}_委員建議報告.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            toast.error("PDF 下載失敗，請稍後再試");
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     return (
         <>
@@ -69,7 +93,7 @@ export default function AddKPIvalue() {
             <MultiStepForm
                 initialData={{} as ExtendedFormData}
                 onComplete={handleFormComplete}
-                totalStepsCount={2}
+                totalStepsCount={3}
             >
                 {/* 步驟指示器 */}
                 <StepIndicatorComponent steps={steps}/>
@@ -93,7 +117,6 @@ export default function AddKPIvalue() {
                                             return false;
                                         }
 
-
                                         try {
                                             const response = await api.get("/Suggest/selectOrg-for-report", {
                                                 params: {organizationId: orgId},
@@ -101,25 +124,28 @@ export default function AddKPIvalue() {
 
                                             const res = response.data;
 
-                                            // 若後端直接傳 array，無 success / message 結構：
                                             if (!Array.isArray(res) || res.length === 0) {
                                                 toast.error("該公司尚無委員建議資料");
                                                 return false;
                                             }
 
                                             toast.success(`抓到 ${res.length} 筆委員建議資料`);
-                                            console.log("抓到的委員建議資料：", res);
 
-                                            // ✅ 將資料暫存在 stepData，供下一步使用
+                                            const orgName: string =
+                                                (res as any[])[0]?.OrgName ??
+                                                (res as any[])[0]?.orgName ?? "";
                                             updateStepData({
+                                                SelectCompany: {
+                                                    ...(stepData.SelectCompany as SelectCompany),
+                                                    organizationName: orgName,
+                                                },
                                                 suggestReportData: {
                                                     reportList: res
                                                 }
                                             });
 
-                                            return true; // ✅ 可以進入下一步
+                                            return true;
                                         } catch (error: any) {
-                                            console.error("API Error:", error);
                                             toast.error(`API 發生錯誤：${error.message}`);
                                             return false;
                                         }
@@ -136,9 +162,10 @@ export default function AddKPIvalue() {
                                 <Step2 />
                                 <StepNavigationWrapper
                                     prevLabel="返回"
-                                    nextLabel="確認資料"
+                                    nextLabel="確認送出"
                                     onSubmit={async (stepData, updateStepData) => {
                                         const updatedList = (stepData.suggestReportData as { reportList?: any[] })?.reportList || [];
+                                        const selectCompany = stepData.SelectCompany as SelectCompany;
 
                                         if (!updatedList.length) {
                                             toast.error("無更新資料可送出");
@@ -146,16 +173,22 @@ export default function AddKPIvalue() {
                                         }
 
                                         try {
-                                            const res = await api.put("/Suggest/update-report", updatedList); // ⬅️ 使用 PUT 更新
+                                            const res = await api.put("/Suggest/update-report", updatedList);
                                             if (res.data?.success === false) {
                                                 toast.error(res.data.message || "更新失敗");
                                                 return false;
                                             }
 
+                                            // 記錄成功資訊供步驟三使用
+                                            setSuccessData({
+                                                organizationId: selectCompany?.organizationId,
+                                                organizationName: selectCompany?.organizationName ?? "",
+                                                count: updatedList.length,
+                                            });
+
                                             toast.success("已成功更新委員建議執行狀況！");
                                             return true;
                                         } catch (error: any) {
-                                            console.error("儲存錯誤：", error);
                                             toast.error("儲存失敗：" + error.message);
                                             return false;
                                         }
@@ -164,6 +197,41 @@ export default function AddKPIvalue() {
                             </StepCard>
                         </div>
                     </StepContent>
+
+                    {/* 步驟 3: 完成 */}
+                    <div className="max-w-4xl mx-auto p-4">
+                        <StepContent step={2}>
+                            <StepCard title="完成">
+                                <div className="flex flex-col items-center text-center space-y-5 py-6">
+                                    <div className="text-6xl">✅</div>
+                                    <h2 className="text-xl font-bold text-green-800">報告上傳成功</h2>
+                                    {successData && (
+                                        <p className="text-green-700">
+                                            <strong>{successData.organizationName || "已選擇公司"}</strong> 的委員建議報告
+                                            （共 {successData.count} 筆）已成功更新。
+                                        </p>
+                                    )}
+                                    <div className="flex justify-center gap-3 pt-2">
+                                        <button
+                                            className="btn btn-primary"
+                                            disabled={downloading}
+                                            onClick={downloadPdf}
+                                        >
+                                            {downloading ? (
+                                                <span className="loading loading-spinner loading-xs"/>
+                                            ) : "📄 下載 PDF 報告"}
+                                        </button>
+                                        <button
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => window.location.reload()}
+                                        >
+                                            重新填報
+                                        </button>
+                                    </div>
+                                </div>
+                            </StepCard>
+                        </StepContent>
+                    </div>
                 </StepAnimation>
             </MultiStepForm>
         </>

@@ -166,6 +166,31 @@ export default function Improvement(){
     const canSubmit = orgId && uploadedFiles.length > 0;
 
 
+    const handleDownloadStamp = async (f: getlist) => {
+        try {
+            const token = await getAccessToken();
+            const response = await api.get("/Improvement/download-stamp", {
+                params: {
+                    orgId: parseInt(orgId),
+                    year: parseInt(f.year),
+                    quarter: parseInt(f.quarter),
+                    oriName: f.oriName,
+                    filePath: f.filePath,
+                },
+                responseType: "blob",
+                headers: token ? { Authorization: `Bearer ${token.value}` } : {},
+            });
+            const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `改善報告書_下載記錄_${f.year}_Q${f.quarter}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            toast.error("下載記錄生成失敗，請稍後再試");
+        }
+    };
+
     const handleDownloadFile = async (filePath?: string, fileName?: string) => {
         // 提前验证参数
         if (!filePath || !fileName) {
@@ -366,8 +391,15 @@ export default function Improvement(){
                                                         </button>
                                                     </div>
                                                     <button
+                                                        onClick={() => handleDownloadStamp(f)}
+                                                        className="ml-1 p-2 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                        title="下載 PDF 記錄（含資料產製時間）"
+                                                    >
+                                                        <DocumentTextIcon className="w-4 h-4"/>
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleDeleteFile(f.filePath)}
-                                                        className="ml-3 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="ml-1 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                                                         title="刪除檔案"
                                                     >
                                                         <TrashIcon className="w-4 h-4"/>
@@ -406,16 +438,7 @@ export default function Improvement(){
 
                                     acceptedFileTypes={[
                                         "application/pdf",
-                                        "application/msword",
-                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                        "application/vnd.ms-excel",
-                                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                        "application/vnd.ms-powerpoint",
-                                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                        "text/plain",
-                                        "image/jpeg",
-                                        "image/png",
-                                        "image/gif"
+                                        ".pdf"
                                     ]}
                                     uploadOptions={{
                                         overwrite: true,
