@@ -13,6 +13,7 @@ import Step2 from '@/components/ReportSuggest/AddSugValueStep2';
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {toast, Toaster} from "react-hot-toast";
 import api from "@/services/apiService"
+import {getAccessToken} from "@/services/serverAuthService";
 
 //步驟一 選擇公司/工廠
 export interface SelectCompany {
@@ -63,9 +64,11 @@ export default function AddKPIvalue() {
         if (!successData) return;
         setDownloading(true);
         try {
+            const t = await getAccessToken();
             const response = await api.get("/Suggest/report-pdf", {
                 params: { organizationId: successData.organizationId },
                 responseType: "blob",
+                headers: { Authorization: t ? `Bearer ${t.value}` : "" },
             });
             const url = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
             const a = document.createElement("a");
