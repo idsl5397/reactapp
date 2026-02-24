@@ -23,6 +23,7 @@ import { ModuleRegistry, ClientSideRowModelModule } from "ag-grid-community";
 import UserManagementView from '@/components/Admin/System/UserManagementView'
 import PermissionManagementView from '@/components/Admin/System/PermissionManagementView'
 import DataChangeLogView from '@/components/Admin/System/DataChangeLogView'
+import MenuManagementView from '@/components/Admin/System/MenuManagementView'
 import OrganizationStructure from '@/components/Admin/Organization/OrganizationStructure'
 import OrganizationRegistryView from '@/components/Admin/Organization/OrganizationRegistryView'
 import OrganizationTypesRulesView from '@/components/Admin/Organization/OrganizationTypesRulesView'
@@ -80,6 +81,7 @@ export default function AdminDashboard() {
                     { id: "users", name: "使用者與角色管理" },
                     { id: "approval", name: "審核機制" },
                     { id: "logs", name: "日誌紀錄" },
+                    { id: "menu", name: "選單管理" },
                 ],
             },
             {
@@ -188,6 +190,8 @@ export default function AdminDashboard() {
                                         <Placeholder title="審核機制(未開發)" desc="建立帳號申請/權限變更審核流與批次核准。" />)
                                     : activeSubMenu === "logs" ? (
                                             <DataChangeLogView />)
+                                        : activeSubMenu === "menu" ? (
+                                            <MenuManagementView />)
                                         : (
                                             <SectionHint text="請在左側選擇子功能" />
                                         )}

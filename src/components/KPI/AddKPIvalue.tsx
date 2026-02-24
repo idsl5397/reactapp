@@ -117,7 +117,7 @@ export default function AddKPIvalue() {
             const res = response.data;
 
             if (res.success) {
-                toast.success("報告已送出，等待 superAdmin 審核！");
+                toast.success("報告已送出，等待審核！");
             } else {
                 if (res.message.includes("重複")) {
                     toast.error("送出失敗：資料重複，請勿重複提交！");
