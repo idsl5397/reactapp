@@ -268,9 +268,9 @@ export default function Report(){
                                         <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                             <TrendingUp className="w-6 h-6"/>
                                         </div>
-                                        <h3 className="text-lg font-semibold mb-2">更新指標項目</h3>
+                                        <h3 className="text-lg font-semibold mb-2">更新績效指標數據</h3>
                                         <p className={`text-sm ${hasToken ? 'text-indigo-100' : 'text-gray-200'}`}>
-                                            {hasToken ? '上傳或更新績效指標數據' : '請先登入再操作'}
+                                            {hasToken ? '填報績效指標數據並產生報告' : '請先登入再操作'}
                                         </p>
                                     </div>
                                 </motion.button>
@@ -296,9 +296,9 @@ export default function Report(){
                                         <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                             <Upload className="w-6 h-6"/>
                                         </div>
-                                        <h3 className="text-lg font-semibold mb-2">更新改善建議</h3>
+                                        <h3 className="text-lg font-semibold mb-2">更新改善建議執行情況</h3>
                                         <p className={`text-sm ${hasToken ? 'text-emerald-100' : 'text-gray-200'}`}>
-                                            {hasToken ? '填報改善建議執行情況' : '請先登入再操作'}
+                                            {hasToken ? '填報改善建議執行情況並產生報告' : '請先登入再操作'}
                                         </p>
                                     </div>
                                 </motion.button>
@@ -326,7 +326,7 @@ export default function Report(){
                                         </div>
                                         <h3 className="text-lg font-semibold mb-2">上傳改善報告書</h3>
                                         <p className={`text-sm ${hasToken ? 'text-amber-100' : 'text-gray-200'}`}>
-                                            {hasToken ? '提交完整的改善報告書' : '請先登入再操作'}
+                                            {hasToken ? '下載報告並提交更新的改善報告書' : '請先登入再操作'}
                                         </p>
                                     </div>
                                 </motion.button>
