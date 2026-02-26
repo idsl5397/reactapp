@@ -4,8 +4,8 @@ import api from "@/services/apiService";
 import { getAccessToken } from "@/services/serverAuthService";
 import { toast } from "react-hot-toast";
 
-type KpiCycle = { id:number; name:string; startYear:number; endYear:number; isActive:boolean; };
-type KpiCycleUpsert = { name:string; startYear:number; endYear:number; isActive:boolean; };
+type KpiCycle = { id:number; name:string; startYear:number; endYear:number; };
+type KpiCycleUpsert = { name:string; startYear:number; endYear:number; };
 
 async function auth() {
     const token = await getAccessToken();
@@ -23,7 +23,7 @@ export default function KpiCyclesView() {
     const [rows, setRows] = React.useState<KpiCycle[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [draft, setDraft] = React.useState<KpiCycleUpsert>({
-        name: "", startYear: currentRocYear, endYear: currentRocYear, isActive: true
+        name: "", startYear: currentRocYear, endYear: currentRocYear
     });
     const [editingId, setEditingId] = React.useState<number|null>(null);
 
@@ -38,7 +38,7 @@ export default function KpiCyclesView() {
 
     const resetDraft = ()=> {
         setEditingId(null);
-        setDraft({ name:"", startYear:currentRocYear, endYear:currentRocYear, isActive:true });
+        setDraft({ name:"", startYear:currentRocYear, endYear:currentRocYear });
     };
 
     const save = async ()=>{
@@ -76,7 +76,7 @@ export default function KpiCyclesView() {
             </div>
 
             {/* 編輯區 */}
-            <div className="grid grid-cols-5 gap-3 mb-4">
+            <div className="grid grid-cols-4 gap-3 mb-4">
                 <L label="名稱">
                     <input className="border rounded px-3 py-2 w-full"
                            value={draft.name} onChange={e=>setDraft(d=>({...d, name:e.target.value}))}/>
@@ -95,9 +95,6 @@ export default function KpiCyclesView() {
                            onChange={e=>setDraft(d=>({...d, endYear:Number(e.target.value)||draft.startYear}))}
                            onBlur={e=>{ const v = Number(e.target.value); if(v>1911) setDraft(d=>({...d, endYear: toRocYear(v)})); }}/>
                 </L>
-                <L label="啟用">
-                    <input type="checkbox" checked={draft.isActive} onChange={e=>setDraft(d=>({...d, isActive:e.target.checked}))}/>
-                </L>
                 <div className="flex items-end gap-2">
                     <button className="px-4 py-2 rounded bg-indigo-600 text-white" onClick={save}>
                         {editingId===null ? "新增" : "儲存"}
@@ -115,7 +112,6 @@ export default function KpiCyclesView() {
                     <th className="p-2 text-left">名稱</th>
                     <th className="p-2 text-center">開始年（民國）</th>
                     <th className="p-2 text-center">結束年（民國）</th>
-                    <th className="p-2 text-center">狀態</th>
                     <th className="p-2 text-right">操作</th>
                 </tr>
                 </thead>
@@ -125,14 +121,9 @@ export default function KpiCyclesView() {
                         <td className="p-2">{r.name}</td>
                         <td className="p-2 text-center">{r.startYear}</td>
                         <td className="p-2 text-center">{r.endYear}</td>
-                        <td className="p-2 text-center">
-              <span className={`px-2 py-0.5 rounded text-xs border ${r.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-200":"bg-gray-100 text-gray-600"}`}>
-                {r.isActive ? "啟用" : "停用"}
-              </span>
-                        </td>
                         <td className="p-2 text-right">
                             <button className="text-indigo-600 mr-3"
-                                    onClick={()=>{ setEditingId(r.id); setDraft({ name:r.name, startYear:r.startYear, endYear:r.endYear, isActive:r.isActive }); }}>
+                                    onClick={()=>{ setEditingId(r.id); setDraft({ name:r.name, startYear:r.startYear, endYear:r.endYear }); }}>
                                 編輯
                             </button>
                             <button className="text-red-600" onClick={()=>remove(r.id)}>刪除</button>
@@ -140,7 +131,7 @@ export default function KpiCyclesView() {
                     </tr>
                 ))}
                 {rows.length===0 && (
-                    <tr><td className="p-4 text-gray-500" colSpan={5}>尚無週期，請新增。</td></tr>
+                    <tr><td className="p-4 text-gray-500" colSpan={4}>尚無週期，請新增。</td></tr>
                 )}
                 </tbody>
             </table>
