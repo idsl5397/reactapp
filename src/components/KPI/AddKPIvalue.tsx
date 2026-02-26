@@ -191,7 +191,7 @@ export default function AddKPIvalue() {
                             <h2 className="text-xl font-bold text-yellow-800">資料審核中（待審核）</h2>
                             <p className="text-yellow-700">
                                 <strong>{statusGate.orgName}</strong>　{statusGate.year} 年 {statusGate.quarter} 的 KPI 報告已送出，<br/>
-                                目前等待 superAdmin 審核，請耐心等候通知。
+                                目前等待審核，請耐心等候。
                             </p>
                             <button className="btn btn-outline btn-sm" onClick={() => setStatusGate(null)}>
                                 重新選擇

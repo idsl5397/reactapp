@@ -209,7 +209,7 @@ export default function AddKPIvalue() {
                     <div className="max-w-4xl mx-auto p-4">
                         <StepContent step={2}>
                             <StepCard title="完成">
-                                <div className="flex flex-col items-center text-center space-y-5 py-6">
+                                <div className="bg-green-50 flex flex-col items-center text-center space-y-5 py-6">
                                     <div className="text-6xl">✅</div>
                                     <h2 className="text-xl font-bold text-green-800">報告上傳成功</h2>
                                     {successData && (

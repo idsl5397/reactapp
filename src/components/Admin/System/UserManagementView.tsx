@@ -46,6 +46,7 @@ type UserListItemDto = {
     account: string;
     roles: string[];
     unit?: string | null;
+    organizationName?: string | null;
     status: "active" | "pending" | "disabled";
     lastLoginAt?: string | null;
     emailVerified: boolean;
@@ -285,6 +286,7 @@ export default function UserManagementView() {
                         <tr>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">使用者名稱</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">帳號</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">所屬機構</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">角色</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">單位</th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">狀態</th>
@@ -298,6 +300,7 @@ export default function UserManagementView() {
                             <tr key={u.id} className="hover:bg-gray-50">
                                 <td className="px-4 py-3 text-sm text-gray-800">{u.name}</td>
                                 <td className="px-4 py-3 text-sm text-gray-600">{u.account}</td>
+                                <td className="px-4 py-3 text-sm text-gray-600">{u.organizationName ?? "-"}</td>
 
                                 {/* 角色欄：放下拉選單在這裡 */}
                                 <td className="px-4 py-3 text-sm">
@@ -377,7 +380,7 @@ export default function UserManagementView() {
                         ))}
                         {rows.length === 0 && !loading && (
                             <tr>
-                                <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-500">查無資料</td>
+                                <td colSpan={9} className="px-4 py-8 text-center text-sm text-gray-500">查無資料</td>
                             </tr>
                         )}
                         </tbody>
